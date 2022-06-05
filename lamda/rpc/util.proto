@@ -1,0 +1,55 @@
+// Copyright 2022 rev1si0n (ihaven0emmail@gmail.com). All rights reserved.
+//
+// Distributed under MIT license.
+// See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+syntax = "proto3";
+package lamda.rpc;
+
+message TouchDown {
+        int32 tid      = 1;
+        int32 x        = 2;
+        int32 y        = 3;
+        int32 pressure = 4;
+}
+
+message TouchUp {
+        int32 tid      = 1;
+}
+
+message TouchMove {
+        int32 tid      = 1;
+        int32 x        = 2;
+        int32 y        = 3;
+        int32 pressure = 4;
+}
+
+message TouchWait {
+        uint32 wait     = 1;
+}
+
+message TouchAction {
+oneof action {
+        TouchDown down     = 1;
+        TouchMove move     = 2;
+        TouchWait wait     = 3;
+        TouchUp up         = 4;
+}
+}
+
+message TouchSequence {
+        repeated TouchAction sequence = 1;
+}
+
+message PerformTouchRequest {
+        TouchSequence sequence  = 1;
+        bool wait               = 2;
+}
+
+message SetPropRequest {
+  string name   = 1;
+  string value  = 2;
+}
+
+message CertifiRequest {
+  bytes  cert  = 1;
+}

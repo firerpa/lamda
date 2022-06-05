@@ -1,0 +1,73 @@
+// Copyright 2022 rev1si0n (ihaven0emmail@gmail.com). All rights reserved.
+//
+// Distributed under MIT license.
+// See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+syntax = "proto3";
+package lamda.rpc;
+
+message WifiStatus {
+    string id               = 1;
+    string address          = 2;
+    string bssid            = 3;
+    string freq             = 4;
+    string group_cipher     = 5;
+    string ip_address       = 6;
+    string key_mgmt         = 7;
+    string mode             = 8;
+    string pairwise_cipher  = 9;
+    string ssid             = 10;
+    string wifi_generation  = 11;
+    string wpa_state        = 12;
+}
+
+message SignalPoll {
+    string RSSI             = 1;
+    string LINKSPEED        = 2;
+    string NOISE            = 3;
+    string FREQUENCY        = 4;
+    string WIDTH            = 5;
+    string AVG_RSSI         = 6;
+    string AVG_BEACON_RSSI  = 7;
+    string CENTER_FRQ1      = 8;
+}
+
+message WifiInfo {
+    string id               = 1;
+    string bssid            = 2;
+    string ssid             = 3;
+    string freq             = 4;
+    string noise            = 5;
+    string level            = 6;
+    string tsf              = 7;
+    string flags            = 8;
+}
+
+message ScanResult {
+    repeated WifiInfo stations  = 1;
+}
+
+message Network {
+    int32  nid              = 1;
+    string bssid            = 2;
+    string ssid             = 3;
+    string flags            = 4;
+}
+
+message NetworkList {
+    repeated Network networks   = 1;
+}
+
+message NetworkConfig {
+    Network network         = 1;
+    string name             = 2;
+    string value            = 3;
+}
+
+message WifiConfig {
+    string name             = 1;
+    string value            = 2;
+}
+
+message WifiBlacklist {
+    repeated string bssids   = 1;
+}

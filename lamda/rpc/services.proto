@@ -1,0 +1,232 @@
+// Copyright 2022 rev1si0n (ihaven0emmail@gmail.com). All rights reserved.
+//
+// Distributed under MIT license.
+// See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+syntax = "proto3";
+package lamda.rpc;
+
+import public "google/protobuf/empty.proto";
+import public "google/protobuf/any.proto";
+
+import public "types.proto";
+
+import public "util.proto";
+import public "shell.proto";
+import public "policy.proto";
+import public "debug.proto";
+import public "settings.proto";
+import public "status.proto";
+import public "application.proto";
+import public "uiautomator.proto";
+import public "proxy.proto";
+import public "file.proto";
+import public "wifi.proto";
+
+
+service Application {
+    rpc isForeground(ApplicationRequest) returns (Boolean) {}
+    rpc currentApplication(google.protobuf.Empty) returns (ApplicationInfo) {}
+    rpc enumerateAllPkgNames(google.protobuf.Empty) returns (ApplicationPkgNames) {}
+    rpc enumerateRunningProcesses(google.protobuf.Empty) returns (ApplicationProcesses) {}
+    rpc queryLaunchActivity(ApplicationRequest) returns (ApplicationActivityInfo) {}
+    rpc getPermissions(ApplicationRequest) returns (ApplicationPermissions) {}
+    rpc resetApplicationData(ApplicationRequest) returns (Boolean) {}
+    rpc deleteApplicationCache(ApplicationRequest) returns (Boolean) {}
+    rpc startActivity(ApplicationActivityRequest) returns (Boolean) {}
+    rpc applicationInfo(ApplicationRequest) returns (ApplicationInfo) {}
+    rpc startApplication(ApplicationRequest) returns (Boolean) {}
+    rpc stopApplication(ApplicationRequest) returns (Boolean) {}
+    rpc uninstallApplication(ApplicationRequest) returns (Boolean) {}
+    rpc installFromLocalFile(ApplicationRequest) returns (ApplicationInfo) {}
+    rpc enableApplication(ApplicationRequest) returns (Boolean) {}
+    rpc disableApplication(ApplicationRequest) returns (Boolean) {}
+    rpc grantPermission(ApplicationRequest) returns (Boolean) {}
+    rpc revokePermission(ApplicationRequest) returns (Boolean) {}
+    rpc isPermissionGranted(ApplicationRequest) returns (Boolean) {}
+    rpc isInstalled(ApplicationRequest) returns (Boolean) {}
+
+    rpc addToDozeModeWhiteList(ApplicationRequest) returns (Boolean) {}
+    rpc removeFromDozeModeWhiteList(ApplicationRequest) returns (Boolean) {}
+}
+
+service Debug {
+    rpc isIDARunning(google.protobuf.Empty) returns (Boolean) {}
+    rpc isIDA64Running(google.protobuf.Empty) returns (Boolean) {}
+    rpc isAndroidDebugBridgeRunning(google.protobuf.Empty) returns (Boolean) {}
+
+    rpc startIDA(IDAConfigRequest) returns (Boolean) {}
+    rpc startIDA64(IDAConfigRequest) returns (Boolean) {}
+    rpc startAndroidDebugBridge(ADBDConfigRequest) returns (Boolean) {}
+
+    rpc stopIDA(google.protobuf.Empty) returns (Boolean) {}
+    rpc stopIDA64(google.protobuf.Empty) returns (Boolean) {}
+    rpc stopAndroidDebugBridge(google.protobuf.Empty) returns (Boolean) {}
+    rpc setDebuggable(google.protobuf.Empty) returns (Boolean) {}
+}
+
+service Proxy {
+    rpc isOpenVPNRunning(google.protobuf.Empty) returns (Boolean) {}
+    rpc isGproxyRunning(google.protobuf.Empty) returns (Boolean) {}
+    rpc stopOpenVPN(google.protobuf.Empty) returns (Boolean) {}
+    rpc stopGproxy(google.protobuf.Empty) returns (Boolean) {}
+    rpc startOpenVPN(OpenVPNConfigRequest) returns (Boolean) {}
+    rpc startGproxy(GproxyConfigRequest) returns (Boolean) {}
+}
+
+service SelinuxPolicy {
+    rpc setEnforce(Boolean) returns (Integer) {}
+    rpc getEnforce(google.protobuf.Empty) returns (Integer) {}
+    rpc isEnabled(google.protobuf.Empty) returns (Boolean) {}
+
+    rpc policySetEnforce(String) returns (Boolean) {}
+    rpc policySetPermissive(String) returns (Boolean) {}
+    rpc policySetAllow(SelinuxPolicyRequest) returns (Boolean) {}
+    rpc policySetDisallow(SelinuxPolicyRequest) returns (Boolean) {}
+    rpc policyCreateDomain(String) returns (Boolean) {}
+}
+
+service Settings {
+    rpc putSettings(SettingsRequest) returns (Boolean) {}
+    rpc getSettings(SettingsRequest) returns (String) {}
+}
+
+service Shell {
+    rpc executeForeground(ShellRequest) returns (ShellResult) {}
+    rpc executeBackground(ShellRequest) returns (ShellTask) {}
+    rpc isBackgroundFinished(ShellTask) returns (Boolean) {}
+    rpc killBackground(ShellTask) returns (Boolean) {}
+}
+
+service Status {
+    rpc getBootTime(google.protobuf.Empty) returns (Integer) {}
+    rpc getDiskUsage(String) returns (DiskUsage) {}
+    rpc getBatteryInfo(google.protobuf.Empty) returns (BatteryInfo) {}
+    rpc getCpuInfo(google.protobuf.Empty) returns (CpuInfo) {}
+    rpc getOverallDiskIOInfo(google.protobuf.Empty) returns (DiskIOInfo) {}
+    rpc getOverallNetIOInfo(google.protobuf.Empty) returns (NetIOInfo) {}
+    rpc getMemInfo(google.protobuf.Empty) returns (MemInfo) {}
+    rpc getUserDataDiskIOInfo(google.protobuf.Empty) returns (DiskIOInfo) {}
+    rpc getNetIOInfo(String) returns (NetIOInfo) {}
+}
+
+service UiAutomator {
+    rpc click(ClickPointRequest) returns (Boolean) {}
+    rpc drag(DragPointRequest) returns (Boolean) {}
+    rpc swipe(SwipePointRequest) returns (Boolean) {}
+    rpc swipePoints(SwipePointsRequest) returns (Boolean) {}
+    rpc openNotification(google.protobuf.Empty) returns (Boolean) {}
+    rpc openQuickSettings(google.protobuf.Empty) returns (Boolean) {}
+    rpc wakeUp(google.protobuf.Empty) returns (Boolean) {}
+    rpc sleep(google.protobuf.Empty) returns (Boolean) {}
+    rpc isScreenOn(google.protobuf.Empty) returns (Boolean) {}
+    rpc isScreenLocked(google.protobuf.Empty) returns (Boolean) {}
+    rpc setClipboard(ClipboardRequest) returns (Boolean) {}
+    rpc getClipboard(google.protobuf.Empty) returns (String) {}
+    rpc freezeRotation(Boolean) returns (Boolean) {}
+    rpc setOrientation(OrientationRequest) returns (Boolean) {}
+    rpc pressKey(PressKeyRequest) returns (Boolean) {}
+    rpc pressKeyCode(PressKeyRequest) returns (Boolean) {}
+
+    rpc deviceInfo(google.protobuf.Empty) returns (DeviceInfo) {}
+
+    rpc takeScreenshot(TakeScreenshotRequest) returns (Bytes) {}
+    rpc dumpWindowHierarchy(google.protobuf.Empty) returns (Bytes) {}
+    rpc waitForIdle(Integer) returns (Boolean) {}
+
+    rpc selectorTakeScreenshot(SelectorTakeScreenshotRequest) returns (Bytes) {}
+
+    rpc selectorGetText(SelectorOnlyRequest) returns (String) {}
+    rpc selectorClearTextField(SelectorOnlyRequest) returns (Boolean) {}
+    rpc selectorSetText(SelectorSetTextRequest) returns (Boolean) {}
+
+    rpc selectorClick(SelectorClickRequest) returns (Boolean) {}
+    rpc selectorClickExists(SelectorClickRequest) returns (Boolean) {}
+    rpc selectorLongClick(SelectorClickRequest) returns (Boolean) {}
+
+    rpc selectorExists(SelectorOnlyRequest) returns (Boolean) {}
+
+    rpc selectorObjInfo(SelectorOnlyRequest) returns (ObjInfo) {}
+    rpc selectorObjInfoOfAllInstances(SelectorOnlyRequest) returns (ObjInfoList) {}
+    rpc selectorCount(SelectorOnlyRequest) returns (Integer) {}
+
+    rpc selectorDragTo(SelectorDragToRequest) returns (Boolean) {}
+
+    rpc selectorWaitForExists(SelectorWaitRequest) returns (Boolean) {}
+    rpc selectorWaitUntilGone(SelectorWaitRequest) returns (Boolean) {}
+    rpc selectorSwipe(SelectorSwipeRequest) returns (Boolean) {}
+
+    rpc selectorFlingToBeginning(SelectorFlingRequest) returns (Boolean) {}
+    rpc selectorFlingToEnd(SelectorFlingRequest) returns (Boolean) {}
+    rpc selectorFlingBackward(SelectorFlingRequest) returns (Boolean) {}
+    rpc selectorFlingForward(SelectorFlingRequest) returns (Boolean) {}
+
+    rpc selectorScrollToBeginning(SelectorScrollRequest) returns (Boolean) {}
+    rpc selectorScrollToEnd(SelectorScrollRequest) returns (Boolean) {}
+    rpc selectorScrollBackward(SelectorScrollRequest) returns (Boolean) {}
+    rpc selectorScrollForward(SelectorScrollRequest) returns (Boolean) {}
+
+    rpc setWatcherLoopEnabled(Boolean) returns (Boolean) {}
+    rpc getWatcherLoopEnabled(google.protobuf.Empty) returns (Boolean) {}
+    rpc getWatcherTriggeredCount(String) returns (Integer) {}
+    rpc resetWatcherTriggeredCount(String) returns (Boolean) {}
+
+    rpc removeWatcher(String) returns (Boolean) {}
+    rpc getAppliedWatchers(google.protobuf.Empty) returns (WatcherNameList) {}
+
+    rpc registerClickUiObjectWatcher(WatcherRegistRequest) returns (Boolean) {}
+    rpc registerPressKeysWatcher(WatcherRegistRequest) returns (Boolean) {}
+    rpc registerNoneOpWatcher(WatcherRegistRequest) returns (Boolean) {}
+}
+
+service Wifi {
+    rpc status(google.protobuf.Empty) returns (WifiStatus) {}
+    rpc blacklistAdd(String) returns (Boolean) {}
+    rpc blacklistClear(google.protobuf.Empty) returns (Boolean) {}
+    rpc blacklistAll(google.protobuf.Empty) returns (WifiBlacklist) {}
+    rpc scan(Boolean) returns (Boolean) {}
+    rpc scanResults(google.protobuf.Empty) returns (ScanResult) {}
+    rpc listNetworks(google.protobuf.Empty) returns (NetworkList) {}
+    rpc selectNetwork(Network) returns (Boolean) {}
+    rpc enableNetwork(Network) returns (Boolean) {}
+    rpc disableNetwork(Network) returns (Boolean) {}
+    rpc addNetwork(google.protobuf.Empty) returns (Network) {}
+    rpc removeNetwork(Network) returns (Boolean) {}
+    rpc setNetworkConfig(NetworkConfig) returns (Boolean) {}
+    rpc getNetworkConfig(NetworkConfig) returns (NetworkConfig) {}
+    rpc disconnect(google.protobuf.Empty) returns (Boolean) {}
+    rpc reconnect(google.protobuf.Empty) returns (Boolean) {}
+    rpc setConfig(WifiConfig) returns (Boolean) {}
+    rpc setAutoConnect(Boolean) returns (Boolean) {}
+    rpc saveConfig(google.protobuf.Empty) returns (Boolean) {}
+    rpc getMacAddr(google.protobuf.Empty) returns (String) {}
+    rpc signalPoll(google.protobuf.Empty) returns (SignalPoll) {}
+}
+
+service Util {
+    rpc recordTouch(google.protobuf.Empty) returns (TouchSequence) {}
+    rpc performTouch(PerformTouchRequest) returns (Boolean) {}
+
+    rpc reboot(google.protobuf.Empty) returns (Boolean) {}
+    rpc beepBeep(google.protobuf.Empty) returns (Boolean) {}
+    rpc isCACertificateInstalled(CertifiRequest) returns (Boolean) {}
+    rpc installCACertificate(CertifiRequest) returns (Boolean) {}
+    rpc uninstallCACertificate(CertifiRequest) returns (Boolean) {}
+    rpc shutdown(google.protobuf.Empty) returns (Boolean) {}
+    rpc reload(google.protobuf.Empty) returns (Boolean) {}
+    rpc setProp(SetPropRequest) returns (Boolean) {}
+    rpc getProp(String) returns (String) {}
+}
+
+service File {
+    rpc uploadFile(stream FileRequest) returns (FileStat) {}
+    rpc downloadFile(FileRequest) returns (stream FileDataResponse) {}
+    rpc deleteFile(FileRequest) returns (Boolean) {}
+    rpc fileChmod(FileRequest) returns (FileStat) {}
+    rpc fileStat(FileRequest) returns (FileStat) {}
+}
+
+service Lock {
+    rpc releaseLock(google.protobuf.Empty) returns (Boolean) {}
+    rpc acquireLock(Integer) returns (Boolean) {}
+    rpc refreshLock(Integer) returns (Boolean) {}
+}

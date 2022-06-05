@@ -1,0 +1,65 @@
+// Copyright 2022 rev1si0n (ihaven0emmail@gmail.com). All rights reserved.
+//
+// Distributed under MIT license.
+// See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+syntax = "proto3";
+package lamda.rpc;
+
+message BatteryInfo {
+    bool  batt_charging         = 1;
+    int32 batt_percent          = 2;
+    float batt_temperature      = 3;
+}
+
+message CpuInfo {
+    float cpu_percent           = 1;
+    int32 cpu_count             = 2;
+    float cpu_freq_current      = 3;
+    float cpu_freq_max          = 4;
+    float cpu_freq_min          = 5;
+    float cpu_times_user        = 6;
+    float cpu_times_system      = 7;
+    float cpu_times_idle        = 8;
+}
+
+message DiskUsage {
+    int64 disk_total            = 1;
+    int64 disk_used             = 2;
+    int64 disk_free             = 3;
+    float disk_percent          = 4;
+}
+
+message DiskIOInfo {
+    int64 disk_io_read_bytes    = 1;
+    int64 disk_io_read_count    = 2;
+    int64 disk_io_write_bytes   = 3;
+    int64 disk_io_write_count   = 4;
+    int64 disk_io_read_time     = 5;
+    int64 disk_io_write_time    = 6;
+    int64 disk_io_busy_time     = 7;
+}
+
+message NetIOInfo {
+    int64 net_io_bytes_sent     = 1;
+    int64 net_io_packets_sent   = 2;
+    int64 net_io_bytes_recv     = 3;
+    int64 net_io_packets_recv   = 4;
+    int64 net_io_dropin         = 5;
+    int64 net_io_dropout        = 6;
+    int64 net_io_errin          = 7;
+    int64 net_io_errout         = 8;
+}
+
+message MemInfo {
+    int64 mem_total             = 1;
+    int64 mem_available         = 2;
+    float mem_percent           = 3;
+    int64 mem_used              = 4;
+    int64 mem_free              = 5;
+    int64 mem_active            = 6;
+    int64 mem_inactive          = 7;
+    int64 mem_buffers           = 8;
+    int64 mem_cached            = 9;
+    int64 mem_shared            = 10;
+    int64 mem_slab              = 11;
+}

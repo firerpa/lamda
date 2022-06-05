@@ -1,0 +1,29 @@
+// Copyright 2022 rev1si0n (ihaven0emmail@gmail.com). All rights reserved.
+//
+// Distributed under MIT license.
+// See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+syntax = "proto3";
+package lamda.rpc;
+
+message FileStat {
+        string name     = 1;
+        string path     = 2;
+        bool  directory = 3;
+        int64 st_mode   = 4;
+        int64 st_atime  = 5;
+        int64 st_mtime  = 6;
+        int64 st_ctime  = 7;
+        int32 st_uid    = 8;
+        int32 st_gid    = 9;
+        int64 st_size   = 10;
+}
+
+message FileRequest {
+        string path     = 1;
+        uint64  mode    = 2;
+        bytes payload   = 3;
+}
+
+message FileDataResponse {
+        bytes payload   = 1;
+}

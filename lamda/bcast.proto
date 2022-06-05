@@ -1,0 +1,36 @@
+// Copyright 2022 rev1si0n (ihaven0emmail@gmail.com). All rights reserved.
+//
+// Distributed under MIT license.
+// See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+syntax = "proto3";
+package lamda;
+
+message BcastHeader {
+    // magic always 0x54534143 ("CAST")
+    uint32 magic            = 1;
+    // protocol version
+    string version          = 2;
+}
+
+message BcastDiscoverInfo {
+    string ID               = 1;
+    uint64 uptime           = 2;
+    string device           = 3;
+    string abi              = 4;
+    uint32 sdk              = 5;
+    string version          = 6;
+}
+
+message BcastResponse {
+    BcastHeader header = 1;
+oneof body {
+    BcastDiscoverInfo discoverinfo  = 10;
+    int32 errno                     = 11;
+    bytes data                      = 12;
+}
+}
+
+message BcastRequest {
+    BcastHeader header      = 1;
+    string method           = 2;
+}

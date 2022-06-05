@@ -1,0 +1,13 @@
+// Copyright 2022 rev1si0n (ihaven0emmail@gmail.com). All rights reserved.
+//
+// Distributed under MIT license.
+// See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+syntax = "proto3";
+package lamda.rpc;
+
+message SelinuxPolicyRequest {
+    string source       = 1;
+    string target       = 2;
+    string tclass       = 3;
+    string action       = 4;
+}

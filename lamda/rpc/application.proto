@@ -1,0 +1,73 @@
+// Copyright 2022 rev1si0n (ihaven0emmail@gmail.com). All rights reserved.
+//
+// Distributed under MIT license.
+// See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
+syntax = "proto3";
+package lamda.rpc;
+
+import "google/protobuf/struct.proto";
+
+enum GrantType {
+                GRANT_ALLOW       = 0;
+                GRANT_DENY        = 1;
+                GRANT_IGNORE      = 2;
+}
+
+message ApplicationRequest {
+    string name             = 1;
+    string permission       = 2;
+    GrantType mode          = 3;
+    string path             = 4;
+}
+
+message ApplicationActivityRequest {
+    string package          = 1;
+    string action           = 2;
+    string category         = 3;
+    string component        = 4;
+    google.protobuf.Struct extras = 5;
+    repeated string categories = 6;
+    int64  flags            = 7;
+    bool   debug            = 8;
+}
+
+message ApplicationActivityInfo {
+    string package          = 1;
+    string component        = 2;
+    string action           = 3;
+    repeated string categories = 4;
+}
+
+message ApplicationPermissions {
+    repeated string permissions = 1;
+}
+
+message ApplicationInfo {
+    string packageName      = 1;
+    uint32 uid              = 2;
+    bool   enabled          = 3;
+    string processName      = 4;
+    string sourceDir        = 5;
+    string dataDir          = 6;
+    uint32 baseRevisionCode = 7;
+    int64  firstInstallTime = 8;
+    int64  lastUpdateTime   = 9;
+    uint32 versionCode      = 10;
+    string versionName      = 11;
+    string activity         = 12;
+}
+
+message ApplicationProcess {
+    repeated string packages = 1;
+    string processName = 2;
+    int64  uid         = 3;
+    int64  pid         = 4;
+}
+
+message ApplicationProcesses {
+    repeated ApplicationProcess processes   = 1;
+}
+
+message ApplicationPkgNames {
+    repeated string names   = 1;
+}
