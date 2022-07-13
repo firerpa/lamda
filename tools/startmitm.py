@@ -8,6 +8,8 @@ import subprocess
 
 from socket import *
 from random import randint
+from packaging.version import parse as ver
+from mitmproxy.version import VERSION
 from lamda.client import *
 
 
@@ -35,6 +37,9 @@ pkgName = None
 host = sys.argv[1]
 if ":" in host:
     host, pkgName = host.split(":")
+if "dns_server=true" in sys.argv and ver(VERSION)<ver("8.1.0"):
+    print (time.ctime(), "dns_server needs mitmproxy>=8.1.0")
+    sys.exit(1)
 certfile = os.environ.get("CERTIFICATE", None)
 d = Device(host, certificate=certfile)
 
@@ -77,7 +82,8 @@ print (time.ctime(), "set proxy: %s:%s" % (host, port))
 # 初始化 proxy 配置
 profile = GproxyProfile()
 profile.type = GproxyType.HTTP_CONNECT
-profile.nameserver = "114.114.114.114"
+if "dns_server=true" in sys.argv:
+    profile.nameserver = host
 profile.drop_udp = True
 # http 代理不支持 udp
 #profile.udp_proxy = False
@@ -90,6 +96,11 @@ d.start_gproxy(profile)
 
 servercmd = []
 servercmd.append("mitmweb")
+# 默认监听的是 127.0.0.1，改为全局
+servercmd.append("--set")
+servercmd.append("dns_listen_host=0.0.0.0")
+servercmd.append("--set")
+servercmd.append("dns_listen_port=53")
 servercmd.append("--ssl-insecure")
 # 随机 web-port
 servercmd.append("--web-port")

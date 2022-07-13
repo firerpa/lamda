@@ -47,7 +47,7 @@ test.pem    # 用于加密客户端与服务端通信的证书
 
 ## startmitm.py
 
-启动中间人，这将会完全自动的在设备上开启全局的中间人代理，你就可以截获大部分APP的 http/s 流量。
+启动中间人，这将会完全自动的在设备上开启全局的中间人代理，你就可以截获大部分APP的 http/s 流量，当然，也包括 DNS 请求。
 
 首先确保当前电脑与设备在同一个网段，192.168.1.2 为运行了 lamda 的手机设备。
 其次，确保你已在命令行验证 mitmproxy 已安装成功（在命令行输入 `mitmdump` 进行验证）。
@@ -81,6 +81,31 @@ python3 -u startmitm.py localhost
 注意：你可能需要完全结束APP并重新打开使其生效。
 
 按下一次 `CONTROL` + `C` 退出脚本。
+
+### DNS 中间人
+
+截获 DNS 请求需要确保 mitmproxy 的版本 >= 8.1.0，且需要以**管理员**或者**root**身份运行脚本。
+```bash
+python3 -u startmitm.py 192.168.1.2 --set dns_server=true
+```
+即可。
+
+这些DNS请求默认会从本机发出，你也可以将这些 DNS 请求转发到指定的上游DNS服务器例如 `1.1.1.1`。
+```bash
+python3 -u startmitm.py 192.168.1.2 --set dns_server=true --set dns_mode=reverse:1.1.1.1
+```
+
+hook 脚本的方法名称定义有一些变化，正常 http 请求为 `response()`，截获 DNS 时需要使用 `dns_response()`。
+
+```python
+def response(flow):
+    print (flow, type(flow))
+
+def dns_response(flow):
+    print (flow, type(flow))
+```
+
+具体请查看 mitmproxy 的文档。
 
 ## ssh.sh
 

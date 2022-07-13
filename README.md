@@ -311,8 +311,8 @@ profile.port = 代理服务器端口
 profile.password = "代理服务器登录密码"
 profile.login = "代理服务器登录用户"
 
-# 注意目前无法通过TCP代理转发UDP流量，所以APP发出的任何UDP流量都是不经过代理的！
-# 因为这些原因，我们提供了一个选项让你可以选择是否只允许 TCP 流量
+# socks5 模式支持 udp 代理，但是 http 代理并不支持
+# 这会导致 udp 流量逃逸泄露你的真实IP地址，所以提供这个可选项
 # 当 drop_udp 为 True 时，应用的 UDP 流量将会被屏蔽，默认为 False
 profile.drop_udp = False
 
