@@ -1,72 +1,53 @@
 这是一个用于安卓逆向及自动化的辅助框架，它以编程化的接口大幅减少你的手动操作，你将不再需要关心琐碎的问题。通过它，你可以获得：
 
-* 极其简单的调用，封装了大量常用接口，你只需要会写 Python。
 * 零依赖，只需 root 即可。
-* 极高的兼容性，覆盖了常用的安卓架构，支持主流游戏模拟器以及6.0-12的安卓版本（但它确实不完全支持部分魔改的手机系统）。
-* 自动化操作你的手机，你将可以通过类似 selenium 的方式对手机/app进行控制，你可以通过这些操作来模拟人为行为对app进行编程性的操控。
-* 不再需要关心你的设备在哪里，只要有公网服务器便可以控制遍布于世界的任何设备，这也意味着，你将不再受到网络环境的限制，即使手机使用的是数据流量，你仍然可以对其掌控，你可以像在本地一样，远程操作设备屏幕，连接adb，连接 ssh，frida，接口调用，远程调试等等且已为你考虑到一台公网服务器接入成百上千甚至上万设备，你所需要做的仅仅是是几行简单的配置。
-* 脱离USB数据线，启动后即可抛弃任何USB数据传输。如果将框架置为开机自启，意味着除了充电，将不再需要USB连接。
-* 轻松管理大量设备，框架足够稳定且具备自恢复能力。
+* 极其简单的调用，封装了大量常用接口，你只需要会写 Python。
+* 极高的兼容性，覆盖了常用的安卓架构，支持主流游戏模拟器以及6.0-12的安卓版本。
+* 自动化操作你的手机，你将可以通过类似 selenium、appium 的方式对被测试应用进行点击滑动等操作。
+* 设置代理或者VPN实现对设备地址的切换来模拟网络环境的变化。
 * 没有复杂的安装配置过程，一条命令即可完成框架的启动。
-* 设置代理或者VPN实现对设备IP的切换。
+* 脱离 USB 数据线，启动后即可断开 USB 数据传输。
 
 如果你希望继续看下去，请先确保：手边有一台已经 root 且运行内存 **>= 3GB**，可用存储空间 **>=1GB** 的安卓设备或者安卓模拟器（推荐使用最新版**夜神**，**雷电**，**逍遥**模拟器，或者 AVD[Android Studio Virtual Device, 非 Google APIs 系统]）。**不完全支持** 网易 Mumu，**不支持**腾讯手游助手，蓝叠以及任何安卓内虚拟如 VMOS，等），对于真机，推荐运行最接近原生系统的设备如谷歌系、一加、安卓开发板等，或系统仅经过轻度改造的设备。目前**可能**不能在蓝绿厂/华为/小米类高度改造的安卓系统上正常运行，如果你只有此类品牌设备，建议使用模拟器。
 
 * 支持安卓 6.0 - 12（边缘版本未经完整测试）。
 * 支持通信加密
 * 支持标准游戏模拟器，AVD及真机，(arm/arm64/x86/x86_64）全架构
-* 内置 OpenVPN 可实现全局/非全局的 vpn
+* 内置 OpenVPN 可实现全局/非全局的 VPN
 * 内置 http/socks5 代理，可实现设置系统级别/单个应用级别的代理
 * 支持 OpenVPN 与代理共存
-* 可通过证书接口轻松设置系统证书，配合 http/socks5 代理实现 mitm 中间人
-* UI自动化，通过接口轻松实现自动化操作
+* 可通过接口轻松设置中间人证书，配合 http/socks5 代理实现中间人流量分析
+* UI自动化，通过接口实现自动化操作
 * 设备状态/资源消耗读取
 * 大文件上传下载
 * 接口锁
 * 唤起APP任意 Activity
 * 前后台运行脚本，授予撤销APP权限等
-* 系统属性/设置读取修改
+* 系统配置/属性读取修改
 * WIFI 相关功能
 * selinux 相关接口
-* 完整的滑动轨迹录制重放功能
 * 内置 frida, IDA 7.5 server 等工具
-* 类 sekiro 的内部 API 接口暴露功能
 * 可使用 ssh 登录设备
 * 支持 crontab 定时任务
 * 内置 Python3.9 及部分常用模块
-* 内网穿透，简单配置加上公网服务器即可控制任何地方的设备
-* 远程控制（web）
-* 远程调试
+* WIFI 远程桌面（web）
 
-> ### 免责声明及条款
+![远程桌面动图演示](lamda.gif)
 
-任何用户在使用 rev1si0n (以下简称本人) 开发的框架前，请仔细阅读此声明。
-您可以选择**不使用**，若您一旦开始下载或使用，即被视为您同意、认可、接受本声明的全部内容。
+## 免责声明及条款
 
-1. 您承诺不会利用本框架开展任何侵犯他人合法利益等恶意行为。
-2. 您承诺遵守 **中华人民共和国** 的 **法律法规**，合法以及合理使用本框架。
-3. 任何单位或个人因下载使用本框架而直接或间接产生的任何意外、侵权等任何有关的损失或毁坏，本人不承担任何法律责任。
-4. 您承诺关系中只存在 本人 与 您，若您再次发布相关文件至任何第三方，第三方违反此声明的行为及后果将由您承担，本人不承担任何法律责任。
-5. 您明确并同意本声明条款列举的全部内容，对使用本框架可能存在的风险和相关后果将完全由您自行承担，本人不承担任何法律责任。
-6. 您已多次阅读并表示接受本声明中列出的各项条款。
-7. 本声明解释权归开发者本人所有。
+为了下载使用由 rev1si0n (账号 github.com/rev1si0n)（以下简称“本人”）个人开发的软件 lamda ，您应当阅读并遵守《用户使用协议》（以下简称“本协议”）。请您务必审慎阅读、充分理解各条款内容，特别是免除或者限制责任的条款，并选择接受或不接受；除非您已阅读并接受本协议所有条款，否则您将无权下载、安装或使用本软件及相关服务。您的下载、安装、使用、获取账号、登录等行为即视为您已阅读并同意受到上述协议的约束；若您需要获得本服务，您（以下称"用户"）应当同意本协议的全部条款并按照页面上的提示完成全部申请使用程序。您可以在本文档的相同目录找到 [DISCLAIMER.TXT](https://github.com/rev1si0n/lamda/DISCLAIMER.TXT)，或者点此 [免责声明](https://github.com/rev1si0n/lamda/DISCLAIMER.TXT) 查阅。
 
 ## 前言
 
 文档目前只是介绍了基本使用，请配合下方示例手动输入语句辅助理解。如果你使用的是 Windows，附带的任何示例代码/命令可能在你的系统上不会正常工作(但是不包括客户端库)，建议在 Linux 或者 Mac 系统上操作文档及样例中的代码。
 
-**请勿在自用手机上运行（请确保阅读三遍）**，暂未开源但绝无后门，请放心使用。**但是需要注意** 本服务会产生自身及相关日志的**上传流量**，分为接口流量以及日志流量，接口流量仅有一个用于检查更新的定时任务会发送HTTP请求，请求数据包含当前设备架构型号自身版本等非敏感信息用于提供对应更新通道。日志流量包括设备型号、标识符等部分相关系统属性/调用的接口（统计接口使用情况用于功能统计，不会包含任何参数）/服务进程的内存CPU资源使用率/系统崩溃日志，在使用代理的情况下，还可能会包含代理服务器地址但绝对不会包含您的登录凭据。除此之外**不会**触碰任何设备上的数据、计算、网络资源、或者你用于调用本服务的任何配置信息如代理、VPN等，**请知悉**。你**有权禁用**日志上传功能，但是对于该设备遇到的接口异常也将无法获知及修复，如需禁用日志上传，请继续阅读至**服务端安装启动**相关章节。
+**请勿在自用手机上运行（请确保阅读三遍）**，暂未开源但绝无后门，请放心使用。
 
 > 问题反馈及功能建议
 
 因为安卓被各种设备广泛使用，无法保证百分百的兼容性，可能会有运行异常等各种未知情况，出现的异常情况包括：无故重启，APP经常崩溃，触摸失效或无故乱动等等，冻屏等情况。如果经常遇到，建议暂时停止使用。
 点此 [报告问题/建议](https://github.com/rev1si0n/lamda/issues/new)，请详细描述。虽然此文档个人认为已经用足够简单的方法描述，但是无法保证所有人都在同一水平，在使用前，你需要了解基本的 adb 命令以及有熟练的 Python 编写能力。
-
-> 开机自启动及反检测
-
-此服务支持以安卓原生内置服务的形式自启动，在不再安装任何其它任何ROOT框架的情况下，可以百分百过掉任何应用的ROOT检测。
-关于使用的**制作工具**，可以参考我的另一个项目 [rev1si0n/bxxt](https://github.com/rev1si0n/bxxt) 。
-由于各个机型及系统版本的操作皆不相同，后期将会写部分常见机型的制作教程。
 
 ## 安装
 
@@ -86,10 +67,8 @@
 
 > 无故重启/崩溃问题自查
 
-进行之前，请先确认你已完成上述事项中的检查。
-
 如果你在安卓设备上启动 lamda 后，设备多次出现无故重启或者出现应用崩溃的情况，
-请在启动 lamda 之前，在当前 shell 执行命令
+请在启动 lamda **之前**，在当前 shell 执行命令
 ```bash
 export lamda_crash_system=1
 ```
@@ -97,7 +76,7 @@ export lamda_crash_system=1
 但是将保证你可以使用大部分其他的内置接口。
 仅在出现多次重启的情况下设置此变量，否则请勿设置（多次代表十五分钟内出现 >=3 次重启/崩溃情况）。
 
-### 我不想听一句废话，只想快速安装看看怎么样
+### 我不想听一句废话，只想快速看看怎么样
 
 这是没有一句废话的快速安装过程，如果你想看详细的废话，请继续看下一节。
 或者，如果你看不懂下一节的废话，请直接套用这几条命令。
@@ -202,9 +181,6 @@ su
 cd  /data/local/tmp
 # 执行安装脚本并启动（这将解包并启动服务）
 sh arm64-v8a.tar.gz-install.sh
-# 这个 arm64-v8a.tar.gz-install.sh 支持传递 launch.sh 参数例如 --disable-log
-# 请查阅方式二中的 *启动服务* 相关参数描述，你可以将参数这样加上去例如
-# sh arm64-v8a.tar.gz-install.sh --disable-log
 ```
 
 #### 方式 2
@@ -242,9 +218,6 @@ cd /data/local/tmp
 # 注意，arm64-v8a 这个目录根据平台不同名称也不同
 # 如果你使用的是 x86 版本，那么这个目录名则是 x86/，你需要对命令做相应修改
 sh arm64-v8a/bin/launch.sh
-# 如果你不想产生的任何日志被上传，请使用以下命令启动
-# 注意：开发者也将无法修复此设备遇到的任何异常
-sh arm64-v8a/bin/launch.sh --disable-log
 # 如果你想要启用加密传输
 # 请先使用 tools/ 中的 cert.sh 来生成 lamda.pem 证书
 # 将其push到设备例如 /data/local/tmp/lamda.pem
@@ -252,7 +225,7 @@ sh arm64-v8a/bin/launch.sh --disable-log
 # 并使用以下命令启动
 sh arm64-v8a/bin/launch.sh --certificate=/data/local/tmp/lamda.pem
 # 这将加密任何通过 lamda 客户端产生的通信流量
-# 但不包括 webui 例如通过浏览器远程控制的功能
+# 但不包括 webui 例如通过浏览器远程桌面的功能
 ```
 
 静待退出，随即关闭终端，至此服务启动完成。
@@ -263,6 +236,20 @@ sh arm64-v8a/bin/launch.sh --certificate=/data/local/tmp/lamda.pem
 或者在执行启动或使用过程中多次遇到设备黑屏/重启以及非配置原因导致的机器卡顿等类似情况，
 请停止使用并反馈该问题。
 
+## 关闭 lamda 服务
+
+如果想使用接口关闭服务请参照下方 `关机重启/关闭服务` 章节。
+
+当然，考虑到你可能不方便使用接口，你也可以使用以下命令来使 lamda 服务端退出。
+你应该使用以下命令结束（确保以 su/root 身份执行命令）
+注意请勿直接 kill -9 结束服务端，可能会产生僵尸进程。
+
+```bash
+kill -SIGUSR2 $(cat /data/usr/lamda.pid)
+```
+
+如无必要请勿频繁启动关闭。
+
 ## 开始
 
 设备上的 `65000` 端口为本服务的标准公用端口，可能需要记住，但是大部分情况下，你不需要显式提供此端口号。
@@ -271,7 +258,7 @@ sh arm64-v8a/bin/launch.sh --certificate=/data/local/tmp/lamda.pem
 
 > 在网页端控制手机。
 
-在浏览器中打开 `http://192.168.0.2:65000` 可进入 web 控制界面，你可以在此操作设备以及通过该界面的root模拟终端实时执行命令。
+在浏览器中打开 `http://192.168.0.2:65000` 可进入 web 远程桌面，你可以在此操作设备以及通过该界面的root模拟终端执行命令。
 不支持多人访问，不保证兼容所有浏览器，建议使用 Chrome。
 
 注：如果启动服务端时指定了证书，打开页面时会要求输入密码，你可以在证书最后一行找到这个32位的密码。
@@ -324,11 +311,11 @@ profile.password = "代理服务器登录密码"
 profile.login = "代理服务器登录用户"
 
 # socks5 模式支持 udp 代理，但是 http 代理并不支持
-# 这会导致 udp 流量逃逸泄露你的真实IP地址，所以提供这个可选项
-# 当 drop_udp 为 True 时，应用的 UDP 流量将会被屏蔽，默认为 False
+# 因为 udp 多数情况下并不会被代理，所以禁用 udp 流量是一个不错的选择
+# 当 drop_udp 为 True 时，应用/系统的 UDP 流量将会被屏蔽，默认为 False
 profile.drop_udp = False
 
-# 本地流量是否需要*绕过*代理，如果为 True，本地流量
+# 本地流量是否需要*不经过*代理，如果为 True，本地流量
 # 如 192.168.x.x 10.x.x.x 等路由器内网网段的流量将不会经过代理，默认为 False
 profile.bypass_local_subnet = True
 
@@ -338,23 +325,16 @@ profile.bypass_local_subnet = True
 # 当你使用 http 代理或者 drop_udp 选项为 True，此设置将会被忽略
 profile.udp_proxy = False
 
-# 如果需要仅对特定APP应用代理（例如安卓浏览器，如果是全局则删除这两行）
+# 如果需要仅对特定应用使用代理（例如安卓浏览器，如果是全局则删除这两行）
 app = d.application("com.android.browser")
 profile.application.set(app)
 
 #     注意事项以及提示：
-# 设置代理后，正在运行的 app 是不会立即使用设置的代理的
-# 因为这些 app 在设置代理之前就已经完成了 tcp 连接的建立
-# 所以，需要你手动关闭 app 并启动，app 才会通过代理建立连接
+# 设置代理后，正在运行的应用是不会立即使用设置的代理的
+# 因为这些应用在设置代理之前就已经完成了 tcp 连接的建立
+# 所以，需要你手动关闭应用并启动，应用才会通过代理建立连接
 # 也就是说，如果你是做中间人流量分析，那设置代理后
-# 你需要关闭 app 再重新打开才会看到 app 的请求
-#
-# 已知已有 app 使用了 QUIC（UDP)，如果你是准备抓包
-# 这种 app 你是无法抓到包的，现有中间人方案也未见支持 QUIC，但是这种方案后必有备份方案
-# 对于这种 app，请将 drop_udp 选项设置为 True，这将会使 app 无法使用 udp 协议
-# app 可能会转而使用 tcp 协议进行传输
-# 而如果你仅仅是希望 app 使用代理，为了保证最大的合理性
-# 请使用支持 udp 的 socks5 服务器作为代理
+# 你需要关闭应用再重新打开才会看到应用的请求
 #
 # 注：本机的 DNS 流量始终不会经过代理
 
@@ -385,7 +365,7 @@ socks pass {
 }
 ```
 
-## 中间人流量劫持(MITM)
+## 中间人流量分析（MITM）
 
 请先确保你已经准备好 fiddler,mitmproxy给你的证书，对于 mitmproxy，
 给你的证书为 pem 格式如下示例。而对于 fiddler，则可能是 crt 格式，直接将该文件
@@ -554,120 +534,6 @@ frida -H 192.168.0.2:65000 -f com.android.settings
 0 8 * * *    echo 每天八点执行
 ```
 
-## 暴露APP内部接口（类sekiro）
-
-这个功能类似于 [virjar/sekiro](https://github.com/virjar/sekiro)，
-为什么需要这个功能，因为有些APP的内部签名甚为复杂，逆向协议难度较高，这时，可以选择直接暴露其接口。
-或者有时，你需要让其他开发人员调用但并不需要让其获知业务逻辑。
-接口调用基于 http 协议，你也可以在网络内的多个设备部署并在其前端加入 nginx 做负载均衡，这样可以获得极高的稳定性。
-
-> 此功能需要你能熟练编写 frida 脚本
-
-下面我们做出一个样例，这个样例是可以直接复制使用的（注意修改设备地址）
-
-```python
-from lamda.client import *
-script = """
-Java.perform(function() {
-    var String = Java.use("java.lang.String")
-    rpc.exports = {
-        getString: function () {
-            return performRpcJVMCall(function() {
-                    // 这是一个标准格式，所有 rpc 都要以这种格式编写
-                    return String.$new("helloWorld").toString()
-            })
-        },
-        getMyString: function(str) {
-            return performRpcJVMCall(function() {
-                    return str
-            })
-        }
-    }
-    createFridaRpc("myRpc", rpc.exports)
-});
-"""
-
-d = Device("192.168.0.2")
-# 设置应用是安卓就有，测试就hook它
-pid = d.frida.spawn("com.android.settings")
-session = d.frida.attach(pid)
-
-d.frida.resume(pid)
-sc = session.create_script(script)
-# 你也可以使用 frida 命令行注入上述脚本
-sc.load()
-sc.eternalize()
-```
-
-> 注意: 参数的总长度不能超过 32KB，
-> rpc.exports 里的函数返回值只能为 string list json 或者任意 js 中可以被 json 序列化的参数（Java String 不是 js string 不要混淆）
-
-请求链接格式：`http://192.168.0.2:65000/fridarpc/Rpc名称/方法名?args=参数列表`
-
-现在已经将接口暴露出来了，只需要请求 `http://192.168.0.2:65000/fridarpc/myRpc/getMyString?args=["helloFridaRpc"]` 即可得到脚本内方法的返回结果，链接也可以用浏览器打开，接口同时支持 POST 以及 GET，参数列表也可以同时使用多个参数。
-
-> 接口响应状态码
-* 200 一切正常
-* 410 需要重新注入脚本或者脚本未注入（目前不支持自动重新注入）
-* 500 脚本或参数异常
-* 400 参数错误
-
-> 用 requests 调用
-
-```python
-import requests
-url = "http://192.168.0.2:65000/fridarpc/myRpc/getMyString"
-data = requests.post(url, data={"args": '["helloFridaRpc"]'}).json()
-print (data["result"])
-```
-
-响应结果的格式是固定的，可在浏览器打开查看。
-
-## 如何远程控制离我十万八千里的设备
-
-有时候你可能遇到这种情况：你的手机在办公室，或者，你的手机在家里而你想在任何另一地点接入设备。
-在家里控制办公室的手机进行打卡是一个用途（当然其他方案很多）。这是一种情况，大部分情况下，我们可能需要将设备
-接入云端。
-
-在开始前，你可能需要先准备一台公网服务器，具备基本的 linux 编辑修改文件的能力。
-
-本服务使用了较为成熟的端口转发程序 [fatedier/frp](https://github.com/fatedier/frp)，关于如何配置服务端，请在此项目中自行探索。
-这里不会讲述如何配置此服务。**需要提醒**，请勿将转发后的端口绑定到公网地址，请确保你的公网服务器关闭了所以不必要的端口！
-当然，会给你一个最简单安全的配置，可以直接使用如下命令启动服务端（请自行修改密码及端口）
-
-```bash
-frps --token yespassword --bind_addr 0.0.0.0 --bind_port 6009 --proxy_bind_addr 127.0.0.1
-```
-
-随后，复制下列配置并修改**服务器地址**为你的服务器公网IP
-
-```ini
-fwd.host=服务器地址
-fwd.port=6009
-fwd.rport=2022
-fwd.token=yespassword
-fwd.protocol=tcp
-fwd.enable=true
-```
-进入设备的 ssh 命令行（可通过web控制台进入），执行
-
-```bash
-nano properties.local
-```
-
-将修改的配置粘贴或自行输入，并保存，随后重启设备即可。
-
-最后，在远端服务器使用客户端库
-
-```python
-from lamda.client import *
-# 端口为上面的 rport
-d = Device("127.0.0.1", port=2022)
-# 其余任何接口调用实现均统一，无需做改动
-```
-
-进行连接。
-
 ## 系统属性 (get/setprop)
 
 > 设置/读取系统属性
@@ -728,9 +594,9 @@ status.get_net_io_info("wlan0")
 status.get_mem_info()
 ```
 
-## 脚本执行
+## 在设备上执行命令
 
-> 在目标设备后台，前台执行 shell 脚本
+> 在设备后台，前台执行 shell 脚本/命令
 
 ```python
 shell = d.stub("Shell")
@@ -754,6 +620,8 @@ shell.kill_background_script(ID)
 
 注意：调用此接口成功后，系统会自动重启，你可能仍需像首次启动时等待一段时间到本框架恢复
 
+> 慎用，此功能可能不稳定且可能随时移除
+
 ```python
 debug = d.stub("Debug")
 
@@ -761,7 +629,7 @@ r = debug.set_debuggable()
 print (r)
 ```
 
-## IDA 调试
+## 启动 IDA 调试服务
 
 > 内置了 IDA 7.5 服务端
 
@@ -785,10 +653,9 @@ debug.start_ida64(port=22064, IDA_LIBC_PATH="/apex/com.android.runtime/lib64/bio
 # 当你的设备系统为32位平台时，start_ida64 将会无效
 ```
 
-## 远程 ADB 调试
+## 开启 WIFI ADB
 
-我为什么会单独将这个可有可无的接口拿出来，实际上你在本地运行时这个对你压根毫无用处
-但是有时候我们可能需要在其他地方调试，比如，当你需要连接远程设备上的 adb。
+> 慎用，此功能可能不稳定且可能随时移除
 
 ```python
 debug = d.stub("Debug")
@@ -799,9 +666,8 @@ debug.start_android_debug_bridge()
 # 启动后，你可以直接通过
 # adb connect 192.168.0.2:65000 连接到设备
 # 此时你可以执行任意 adb 命令。
-# 这个功能在本地使用时是可有可无的，但当你看了 *如何远程控制离我十万八千里的设备*
 # 你可以通过网络直接执行任意 adb forward/shell/pull/push 命令
-# 你的设备不需要任何实体连线即可连接adb，这就非常有用了。
+# 类似于 WIFI ADB 的功能。
 #
 # 停止 adb 服务
 debug.stop_android_debug_bridge()
@@ -811,7 +677,7 @@ debug.is_android_debug_bridge_running()
 
 ## 文件操作
 
-> 将文件上传至目标设备或从其下载文件（支持大文件）
+> 将文件上传至设备或从其下载文件（支持大文件）
 
 ```python
 # 下载文件到本地
@@ -831,6 +697,19 @@ d.file_chmod("/data/local/tmp/文件.txt", mode=0o777)
 # 获取设备上文件的信息
 d.file_stat("/data/local/tmp/文件.txt")
 ```
+
+## 关机重启/关闭服务
+
+```python
+# 关闭系统（等于关机）
+d.shutdown()
+# 重启系统（等于重启）
+d.reboot()
+
+# 关闭设备上运行的 lamda 服务
+d.exit()
+```
+
 
 ## 应用操作
 
@@ -1149,17 +1028,17 @@ resourceId              资源ID匹配
 上文都是介绍了如何坐标点击这种随意性的东西，现在开始介绍如何操作固定目标元素。首先，你需要知道如何选定元素。
 
 ```python
-# 选择界面上的包含文字 某APP 的元素
-element = d(textContains="某APP")
-# 当然，你不一定要这样赋值到 element，也可直接使用 d(textContains="某APP")
+# 选择界面上的包含文字 被测APP 的元素
+element = d(textContains="被测APP")
+# 当然，你不一定要这样赋值到 element，也可直接使用 d(textContains="被测APP")
 ```
 
 好了，现在你知道了如何获取元素了，当然，这时并没有获取到，只是代表，你想要在当前界面操作这个元素，下面开始操作。
 
 
 ```python
-# 我们现在假设，界面上这个 某APP 是手机上某APP的图标名称（图标下面的名称）。
-element = d(textContains="某APP")
+# 我们现在假设，界面上这个 被测APP 是手机上被测APP的图标名称（图标下面的名称）。
+element = d(textContains="被测APP")
 # 是否存在该元素
 element.exists()
 # 点击该元素，不存在则会抛出异常
@@ -1208,12 +1087,12 @@ element.drag_to(Selector(text="购物"))
 # 现在 element 改变了其意义，变为选择了输入框
 ############################
 
-# 示例为：在一加搜索应用界面的搜索框输入 某APP
+# 示例为：在一加搜索应用界面的搜索框输入 被测APP
 
 # 注意，不要直接往看似输入框的地方输入文字，可能并无法输入
 # 有些输入框需要点击一次才会进入真正的输入框，请使用此真正输入框的资源ID
 element = d(resourceId="net.oneplus.launcher:id/search_all_apps")
-element.set_text("某APP")
+element.set_text("被测APP")
 
 # 获取输入的内容
 element.get_text()
@@ -1378,7 +1257,7 @@ d.remove_watcher("PressBackWhenHomePageShows")
 
 ## 接口锁
 
-你可能会有这种需求，即，同时只允许一个客户端连接到设备上的接口，这里的基本功能让你可以锁定接口只能为当前实例使用。
+这里的基本功能让你可以锁定接口只能为当前 Device 实例使用。
 
 ```python
 # 获得锁，此锁将在60秒后被自动释放，其他客户端将可以获得锁，你可以更改此时间
@@ -1392,60 +1271,12 @@ d._refresh_lock(leaseTime=60)
 d._release_lock()
 ```
 
-## 轨迹录制及重放
-
-此接口可以让你从设备上录制你的滑动轨迹并在设备上重放，主要用来进行类人的滑动操作，即你在屏幕上怎么滑动，调用接口重放时仍然相同。
-
-> 注意: 只支持在相同屏幕大小的设备上重放，录制仅支持真实设备以及雷电模拟器，重放则兼容所有DPI分辨率相同的设备。
-> 使用前请确保关闭了web控制界面，进行时请不要触碰设备屏幕，否则会导致屏幕锁死。
-
-样例代码
-```python
-# record_touch 只支持带触摸屏的真实设备
-# 此接口一经调用将不会返回，直至你在设备屏幕上进行完一次滑动操作
-# 或者两分钟后的自动超时（同时会引发异常）
-seq = d.record_touch()
-# 重放
-d.perform_touch(seq)
-#
-#
-# 如何进行持久化保存
-seq.save("touch-record-file-0001")
-# 将会持久化保存轨迹到 touch-record-file-0001
-seq = TouchSequence.load("touch-record-file-0001")
-# 将会把轨迹重新加载到对象
-```
-
-> 怎样用这个功能来实现双击
-
-正常来说，一次双击的过程为，触碰屏幕 + 较小的延迟 + 离开屏幕 + 较大的两次触碰的延迟 + 触碰屏幕 + 较小的延迟 + 离开屏幕
-所以，这个方式用编程来解决就是
-
-```python
-def double_click(d, point):
-    seq = TouchSequence()
-    # 第一次触碰屏幕
-    seq.appendDown(x=point.x, y=point.y, pressure=50)
-    seq.appendWait(wait=50)
-    seq.appendUp()
-    # 两次点击之间的间隔
-    seq.appendWait(wait=100)
-    # 第二次触碰屏幕
-    seq.appendDown(x=point.x, y=point.y, pressure=50)
-    seq.appendWait(wait=35)
-    seq.appendUp()
-    # 执行
-    d.perform_touch(seq)
-```
-
-TIPS: 打开开发者选项并打开 `指针位置` 可显示滑动轨迹。
-
 ## 如何使用内部终端
 
-这里的内部终端，指的是你通过 web 界面或者 ssh 连接的终端，里面内置了一些命令以及Python模块，你可以
-直接在里面执行一些操作或者运行代码，也就是说在这个终端内就可以完成一部分任务。
+这里的内部终端，指的是你通过 web 远程桌面或者 ssh 连接的终端，里面内置了一些命令以及Python模块，你可以
+直接在里面执行一些操作或者运行一些 Python 代码。
 
-现在假设你已经打开了 web 控制界面，你应该已经在页面上看到了一个 linux 终端。
+现在假设你已经打开了 web 远程桌面，你应该已经在页面上看到了一个 linux 终端。
 执行命令 `cd` 可以切换到家目录（默认为 `/data/usr`），这是你的工作区，你可以在此存储文件，框架本身也会在此存储文件。
 
 * python           (Python)
@@ -1458,9 +1289,9 @@ TIPS: 打开开发者选项并打开 `指针位置` 可显示滑动轨迹。
 * ncdu             (查找磁盘文件占用)
 * socat            (网络工具)
 * sqlite3          (读取 SQLite 数据库，支持 cipher 版本)
-* ssh              (连接远程 ssh)
-* tcpdump          (网络抓包)
+* tcpdump          (流量分析)
 * busybox          (命令集合)
+* MemDumper        (https://github.com/kp7742/MemDumper)
 * frida            (frida-tools)
 * frida-ps         (frida-tools)
 * frida-trace      (frida-tools)
@@ -1521,19 +1352,15 @@ TIPS: 打开开发者选项并打开 `指针位置` 可显示滑动轨迹。
 
 * lamda            (自身)
 * Pillow           (图像处理)
-* opencv_python    (图像处理)
-* numpy            (数学计算)
 * capstone         (反汇编引擎)
 * keystone_engine  (汇编引擎)
 * unicorn          (CPU模拟引擎)
 * lief             (二进制程序解析)
 * lxml             (xml/html解析)
-* mitmproxy        (mitmproxy)
-* Flask            (web框架)
 * tornado          (web框架)
 * pyOpenSSL        (OpenSSL)
 * requests         (requests)
-* scapy            (网络抓包)
+* scapy            (流量分析)
 * ujson            (ujson)
 * frida            (frida)
 * urllib3          (urllib3)
@@ -1542,7 +1369,4 @@ TIPS: 打开开发者选项并打开 `指针位置` 可显示滑动轨迹。
 * jmespath         (jmespath)
 
 以及其相关依赖库，因为可能随着更新被移除，请不要使用不在上述列表的库。
-
-到这里越来越像 termux 了，但是和它完全不搭杆。
-
 这里不会介绍如何使用这些命令或库。

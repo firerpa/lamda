@@ -1013,6 +1013,12 @@ class UtilStubWrapper(BaseServiceStub):
         """
         r = self.stub.reload(protos.Empty())
         return r.value
+    def exit(self):
+        """
+        退出设备上运行的服务端
+        """
+        r = self.stub.exit(protos.Empty())
+        return r.value
     def beep(self):
         """
         播放一声蜂鸣（物理查找）
@@ -1608,6 +1614,8 @@ class Device(object):
         return self.stub("Util").reboot()
     def shutdown(self):
         return self.stub("Util").shutdown()
+    def exit(self):
+        return self.stub("Util").exit()
     def reload(self):
         return self.stub("Util").reload()
     def beep(self):

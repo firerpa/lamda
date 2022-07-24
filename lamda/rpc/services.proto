@@ -213,6 +213,7 @@ service Util {
     rpc uninstallCACertificate(CertifiRequest) returns (Boolean) {}
     rpc shutdown(google.protobuf.Empty) returns (Boolean) {}
     rpc reload(google.protobuf.Empty) returns (Boolean) {}
+    rpc exit(google.protobuf.Empty) returns (Boolean) {}
     rpc setProp(SetPropRequest) returns (Boolean) {}
     rpc getProp(String) returns (String) {}
 }
