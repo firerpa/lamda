@@ -47,7 +47,7 @@ test.pem    # 用于加密客户端与服务端通信的证书
 
 ## startmitm.py
 
-启动中间人，这将会完全自动的在设备上开启全局的中间人代理，你就可以截获大部分APP的 http/s 流量，当然，也包括 DNS 请求。
+启动中间人，这将会完全自动的在设备上开启全局的中间人，你就可以截获应用的 http/s 流量，当然，也包括 DNS 请求。
 
 首先确保当前电脑与设备在同一个网段，192.168.1.2 为运行了 lamda 的手机设备。
 其次，确保你已在命令行验证 mitmproxy 已安装成功（在命令行输入 `mitmdump` 进行验证）。
@@ -153,4 +153,23 @@ python3 discover.py
 
 ```bash
 bash emu-install 192.168.1.2
+```
+
+## globalmitm/
+
+用于分析需要使用代理才能访问的应用的流量，是一个整合的 docker 镜像，需要支持 UDP 协议的 shadowsocks 服务，请自行获取该服务。
+因为 Windows/Mac 上的 docker 实现问题，此镜像必须配合 `Linux` 系列系统使用。
+
+镜像已经构建并上传至 dockerhub，你也可以自行构建。
+
+首先拼接代理为以下链接格式
+
+```bash
+ss://加密算法:密码@地址:端口
+```
+
+现在执行命令
+
+```bash
+docker run --rm -it --net host -e SS=ss://加密算法:密码@地址:端口 rev1si0n/mitm 192.168.x.x
 ```

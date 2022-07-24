@@ -1,0 +1,57 @@
+#!/bin/bash
+export GRPC_DNS_RESOLVER=native
+IP=${1:-}
+                if [ -z "${IP}" ]; then
+exit 1
+                fi
+
+DNS=$(((RANDOM % 10000) + 10000))
+SOCKS5=$(((RANDOM % 10000) + 10000))
+HTTP=$(((RANDOM % 10000) + 10000))
+WEB=${WEBPORT:-1234}
+
+if [ ! -z "${SS}" ]; then
+cat <<EOL >/etc/privoxy/config
+confdir /etc/privoxy
+logdir /tmp
+
+actionsfile user.action
+filterfile user.filter
+
+debug     1
+hostname zeus
+listen-address 0.0.0.0:${HTTP}
+
+forward-socks5 / 127.0.0.1:${SOCKS5} .
+
+toggle 0
+enable-remote-toggle  0
+enable-remote-http-toggle  0
+enable-edit-actions 0
+enforce-blocks 0
+EOL
+
+PIDS=
+go-shadowsocks2 -c ${SS} -verbose \
+               -socks 127.0.0.1:${SOCKS5} -u \
+               -udptun 127.0.0.1:${DNS}=8.8.8.8:53 \
+               -tcptun 127.0.0.1:${DNS}=8.8.8.8:53 &
+PIDS="$PIDS $!"
+privoxy --no-daemon /etc/privoxy/config &
+PIDS="$PIDS $!"
+
+trap "kill -9 ${PIDS} 2>/dev/null" SIGINT SIGTERM
+startmitm.py ${IP} --set dns_server=true \
+               --set dns_mode=reverse:127.0.0.1:${DNS} \
+               --mode upstream:http://127.0.0.1:${HTTP} \
+               --set block_global=false \
+               --web-host=0.0.0.0 \
+               --web-port=${WEB} \
+               ${@: 2:999}
+else
+startmitm.py ${IP} --set block_global=false \
+               --web-host=0.0.0.0 \
+               --web-port=${WEB} \
+               ${@: 2:999}
+fi
+exit 0
