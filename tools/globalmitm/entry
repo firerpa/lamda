@@ -1,5 +1,6 @@
 #!/bin/bash
 export GRPC_DNS_RESOLVER=native
+export PROXYPORT=${PROXYPORT:-8118}
 IP=${1:-}
                 if [ -z "${IP}" ]; then
 exit 1

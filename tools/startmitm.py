@@ -27,10 +27,16 @@ def cleanup(*args, **kwargs):
     d.stop_gproxy()
 
 
-def get_default_interface_ip():
+def get_default_interface_ip_imp():
     s = socket(AF_INET, SOCK_DGRAM)
     s.connect(("114.114.114.114", 53))
     return s.getsockname()[0]
+
+
+def get_default_interface_ip():
+    default = get_default_interface_ip_imp()
+    ip = os.environ.get("LANIP", default)
+    return ip
 
 
 pkgName = None
@@ -48,7 +54,8 @@ is_usb = (host == "localhost")
 # 如果设备地址是 localhost，那么将本机的 mitmproxy 端口
 # 转发到设备的 8181 上，这样网络流量将经过 USB 而非本地局域网
 # 使得设备可以和本机不在相同网络内
-mitmport = randint(28080, 58080)
+mitmport = int(os.environ.get("PROXYPORT",
+                    randint(28080, 58080)))
 
 reversecmd = []
 reversecmd.append("adb")
