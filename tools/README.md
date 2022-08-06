@@ -146,6 +146,38 @@ bash scp.sh test/ 192.168.1.2:/sdcard
 python3 discover.py
 ```
 
+## fridarpc.py
+
+一个 fridarpc 功能的简单封装。
+
+此功能需要你能熟练编写 frida 脚本。示例中使用的脚本请参照 test-fridarpc.js 文件，特别注意: frida 脚本中 rpc.exports 定义的函数返回值只能为 string/list/json 或者任意 js 中可以被 json 序列化的值。假设设备IP为 192.168.0.2。
+
+> 执行以下命令注入 RPC 到 com.android.settings（注意查看是否有报错）
+
+```bash
+python3 fridarpc.py -f test-fridarpc.js -a com.android.settings -d 192.168.0.2
+```
+
+现在已经将接口拿出来了，只需要请求 `http://192.168.0.2:65000/fridarpc/myRpcName/getMyString?args=["A","B"]` 即可得到脚本内方法的返回结果，链接也可以用浏览器打开，接口同时支持 POST 以及 GET，参数列表也可以同时使用多个参数。
+
+注意参数的提供形式，是**双引号**，建议使用 json.dumps(["A", "B"])
+
+> 用 requests 调用
+```python
+import json
+import requests
+url = "http://192.168.0.2:65000/fridarpc/myRpcName/getMyString"
+data = requests.post(url, data={"args": json.dumps(["A", "B"])}).json()
+print (data["result"])
+
+#* 状态码 200 一切正常
+#* 状态码 410 需要重新注入脚本或者脚本未注入（目前不支持自动重新注入）
+#* 状态码 500 脚本或参数异常
+#* 状态码 400 参数错误
+```
+
+响应结果的格式是固定的，可在浏览器打开查看。
+
 ## emu-install.sh
 
 仅适用于主流模拟器的服务端安装脚本，需要设备开启 WIFI adb，需要提前下载

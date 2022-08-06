@@ -2,58 +2,64 @@
 
 * 零依赖，只需 root 即可。
 * 极其简单的调用，封装了大量常用接口，你只需要会写 Python。
-* 极高的兼容性，覆盖了常用的安卓架构，支持主流游戏模拟器以及6.0-12的安卓版本。
-* 自动化操作你的手机，你将可以通过类似 selenium、appium 的方式对被测试应用进行点击滑动等操作。
-* 设置代理或者VPN实现对设备地址的切换来模拟网络环境的变化。
-* 没有复杂的安装配置过程，一条命令即可完成框架的启动。
-* 脱离 USB 数据线，启动后即可断开 USB 数据传输。
-
-
-## 超完备一键抓包
-
-![抓包动图演示](image/mitm.gif)
-
-## 通过代码自动化
-
-![自动化动图演示](image/automation.gif)
-
-## 远程桌面连接
-
-![远程桌面动图演示](image/lamda.gif)
-
-如果你希望继续看下去，请先确保：手边有一台已经 root 且运行内存 **>= 3GB**，可用存储空间 **>=1GB** 的安卓设备或者安卓模拟器（推荐使用最新版**夜神**，**雷电**，**逍遥**模拟器，或者 AVD[Android Studio Virtual Device, 非 Google APIs 系统]）。**不完全支持** 网易 Mumu，**不支持**腾讯手游助手，蓝叠以及任何安卓内虚拟如 VMOS，等），对于真机，推荐运行最接近原生系统的设备如谷歌系、一加、安卓开发板等，或系统仅经过轻度改造的设备。目前**可能**不能在蓝绿厂/华为/小米类高度改造的安卓系统上正常运行，如果你只有此类品牌设备，建议使用模拟器。
-
-* 支持安卓 6.0 - 12（边缘版本未经完整测试）。
-* 支持通信加密
-* 支持标准游戏模拟器，AVD及真机，(arm/arm64/x86/x86_64）全架构
-* 内置 OpenVPN 可实现全局/非全局的 VPN
-* 内置 http/socks5 代理，可实现设置系统级别/单个应用级别的代理
+* 脱离 USB 数据线。
+* 支持安卓 6.0 - 12L。
+* 支持标准游戏/AVD模拟器及真机，全架构
+* 支持 OpenVPN 可实现全局/非全局的 VPN
+* 支持 http/socks5 代理，可实现设置系统级别/单个应用级别的代理
 * 支持 OpenVPN 与代理共存
 * 可通过接口轻松设置中间人证书，配合 http/socks5 代理实现中间人流量分析
+* 通过 frida 暴露内部 Java/Jni 接口（类sekiro）
+* 只要有网即可连接任意位置的设备
 * UI自动化，通过接口实现自动化操作
 * 设备状态/资源消耗读取
 * 大文件上传下载
-* 接口锁
 * 唤起APP任意 Activity
 * 前后台运行脚本，授予撤销APP权限等
 * 系统配置/属性读取修改
-* WIFI 相关功能
-* selinux 相关接口
 * 内置 frida, IDA 7.5 server 等工具
 * 可使用 ssh 登录设备
 * 支持 crontab 定时任务
 * 内置 Python3.9 及部分常用模块
 * WIFI 远程桌面（web）
 
+## 超完备一键抓包
+
+支持常规以及国际APP抓包，DNS抓包，得益于 [mitmproxy Event Hooks](https://docs.mitmproxy.org/stable/api/events.html)，你可以对任何请求做到最大限度的掌控，对标你用过的任何此类商业/非商业软件，一条命令即完成所有流程 （注：部分情况需自行解决证书固定等问题）
+
+通过 [lamda/tools](tree/master/tools) 的 `globalmitm`，`startmitm.py` 实现，使用方法请看其同目录 README
+
+![抓包动图演示](image/mitm.gif)
+
+## 通过代码自动化
+
+直接通过代码点点点，可以替代大部分手动操作。
+
+![自动化动图演示](image/automation.gif)
+
+## 远程桌面连接
+
+即使手机不在身边也可以随时操作界面。
+
+![远程桌面动图演示](image/lamda.gif)
+
+如果你希望继续看下去，请先确保：手边有一台已经 root 且运行内存 **>= 3GB**，可用存储空间 **>=1GB** 的安卓设备或者安卓模拟器（推荐使用最新版**夜神**，**雷电**，**逍遥**模拟器，或者 AVD[Android Studio Virtual Device, 非 Google APIs 系统]）。**不完全支持** 网易 Mumu，**不支持**腾讯手游助手，蓝叠以及任何安卓内虚拟如 VMOS，等），对于真机，推荐运行最接近原生系统的设备如谷歌系、一加、安卓开发板等，或系统仅经过轻度改造的设备。目前**可能**不能在蓝绿厂/华为/小米类高度改造的安卓系统上正常运行，如果你只有此类品牌设备，建议使用模拟器。
+
+> 建议一字一句读下去，因为其中会有一些问题及提示。
+
 ## 免责声明及条款
 
 为了下载使用由 rev1si0n (账号 github.com/rev1si0n)（以下简称“本人”）个人开发的软件 lamda ，您应当阅读并遵守《用户使用协议》（以下简称“本协议”）。请您务必审慎阅读、充分理解各条款内容，特别是免除或者限制责任的条款，并选择接受或不接受；除非您已阅读并接受本协议所有条款，否则您将无权下载、安装或使用本软件及相关服务。您的下载、安装、使用、获取账号、登录等行为即视为您已阅读并同意受到上述协议的约束；若您需要获得本服务，您（以下称"用户"）应当同意本协议的全部条款并按照页面上的提示完成全部申请使用程序。您可以在本文档的相同目录找到 [DISCLAIMER.TXT](DISCLAIMER.TXT)，或者点此 [免责声明](DISCLAIMER.TXT) 查阅。
+
+lamda 是一个免费软件 (freeware)，暂时没有开源，但个人承诺它没有任何对您违规或多余的行为，互相尊重，使用请遵守以上条款。合作请联系 ihaven0emmail#gmail.com。
 
 ## 前言
 
 文档目前只是介绍了基本使用，请配合下方示例手动输入语句辅助理解。如果你使用的是 Windows，附带的任何示例代码/命令可能在你的系统上不会正常工作(但是不包括客户端库)，建议在 Linux 或者 Mac 系统上操作文档及样例中的代码。
 
-**请勿在自用手机上运行（请确保阅读三遍）**，暂未开源但绝无后门，请放心使用。
+部分功能需要配合 `tools/` 目录下的工具实现，这些工具如何使用请参照 [tools/README.md](blob/master/tools/README.md)。
+
+**请特别注意**：**请勿在自用安卓设备上运行**。
 
 > 问题反馈及功能建议
 
@@ -249,6 +255,9 @@ sh arm64-v8a/bin/launch.sh --certificate=/data/local/tmp/lamda.pem
 
 ## 关闭 lamda 服务
 
+lamda 设计即为一个 7*24 小时后台运行的服务，不建议频繁启动关闭，如果确需这样做，
+请务必确保你通过以下两种方式关闭。
+
 如果想使用接口关闭服务请参照下方 `关机重启/关闭服务` 章节。
 
 当然，考虑到你可能不方便使用接口，你也可以使用以下命令来使 lamda 服务端退出。
@@ -259,7 +268,7 @@ sh arm64-v8a/bin/launch.sh --certificate=/data/local/tmp/lamda.pem
 kill -SIGUSR2 $(cat /data/usr/lamda.pid)
 ```
 
-如无必要请勿频繁启动关闭。
+lamda 服务完全退出可能需要十几秒的时间，请不要连续多次执行此命令。
 
 ## 开始
 
@@ -299,7 +308,7 @@ python3 -m lamda.client -device 192.168.0.2
 
 ## 设置 http/socks5 代理
 
-只支持 http 以及 socks5 代理，不支持 IPV6
+只支持 http 以及 socks5 代理，不支持 IPv6
 
 > 请认真阅读以下内容
 
@@ -378,9 +387,11 @@ socks pass {
 
 ## 中间人流量分析（MITM）
 
-请先确保你已经准备好 fiddler,mitmproxy给你的证书，对于 mitmproxy，
-给你的证书为 pem 格式如下示例。而对于 fiddler，则可能是 crt 格式，直接将该文件
-作为参数提供即可无需关心转换问题。
+> 建议你使用或参考已经封装好的 tools/ 目录下的 startmitm.py, globalmitm 工具
+
+请先确保你已经准备好 fiddler, mitmproxy 给你的证书，对于 mitmproxy，
+给你的证书为 pem 格式如下示例。而对于 fiddler，则可能是 crt 格式，直接将该文件路径
+作为参数提供即可无需关心任何转换/文件名问题。
 
 为了避免浪费不必要的时间，在这里推荐使用 `mitmproxy`，
 如果你使用的是 `Charles` 等，我无法确保你可以一次性完成设置，
@@ -388,13 +399,20 @@ socks pass {
 如果你一定要使用，建议使用 Charles 的 socks5 作为代理协议。
 
 ```python
+import os
+
+# 拼接 mitmproxy-ca-cert.pem 文件的路径
+HOME = os.path.expanduser("~")
+cert_path = os.path.join(HOME, ".mitmproxy", "mitmproxy-ca-cert.pem")
+
 # 以 mitmproxy 为例，使用如下代码安装证书
-d.install_ca_certificate("~/.mitmproxy/mitmproxy-ca-cert.pem")
+d.install_ca_certificate(cert_path)
+
 # 使用如下代码卸载证书（如不常变化不建议频繁安装卸载）
-d.uninstall_ca_certificate("~/.mitmproxy/mitmproxy-ca-cert.pem")
+d.uninstall_ca_certificate(cert_path)
 # 此证书安装接口是通用的，你可以用它安装任何应用要求你安装的证书
 # 你同样可以用其安装 Fiddler/Charles 要求你安装的证书
-# 只需要提供文件即可
+# 只需要提供文件路径即可
 ```
 
 接着，看 `设置 http/socks5 代理` 节，将代理设置为中间人应用监听的地址即可。
@@ -445,7 +463,7 @@ d.stop_openvpn()
 
 > 示例的 OpenVPN server 端配置文件（请勿直接复制，依据事实进行修改挑选）
 
-服务端的搭建涉及到较多系统配置以及防火墙配置可能较为复杂，自行部署的话建议尽量使用公开的docker进行。
+服务端的搭建涉及到较多系统配置以及防火墙配置可能较为复杂，自行部署的话建议尽量使用 docker 进行。
 这里不会讲述如何搭建。
 
 ```
@@ -515,6 +533,10 @@ device.enumerate_processes()
 ```
 
 2. 通过命令行方式使用
+
+对于所有 frida 官方命令行工具，你只需要加上参数 `-H 192.168.0.2:65000` 即可，
+对于第三方的 objection，则是添加参数 `-h 192.168.0.2 -p 65000`，其他未提及的第三方工具请自行查看其使用方法。
+
 ```bash
 # 如果你在服务端启动时指定了 certificate 选项，请注意在此加入此参数
 frida -H 192.168.0.2:65000 -f com.android.settings
@@ -544,6 +566,96 @@ frida -H 192.168.0.2:65000 -f com.android.settings
 * * * * *    echo 每一分钟执行
 0 8 * * *    echo 每天八点执行
 ```
+
+## 通过 frida 暴露内部 Java/Jni 接口（类sekiro）
+
+这个功能类似于 [virjar/sekiro](https://github.com/virjar/sekiro)，关于它的用途请参考 virjar 大佬的
+项目。此功能需要你能熟练编写 frida 脚本。
+
+> 请转到 tools 目录查看使用方法。
+
+此功能需要你能熟练编写 frida 脚本。示例中使用的脚本请参照 test-fridarpc.js 文件，特别注意: frida 脚本中 rpc.exports 定义的函数返回值只能为 string/list/json 或者任意 js 中可以被 json 序列化的值。假设设备IP为 192.168.0.2。
+
+> 执行以下命令注入 RPC 到 com.android.settings（注意查看是否有报错）
+
+```bash
+python3 fridarpc.py -f test-fridarpc.js -a com.android.settings -d 192.168.0.2
+```
+
+现在已经将接口拿出来了，只需要请求 `http://192.168.0.2:65000/fridarpc/myRpcName/getMyString?args=["A","B"]` 即可得到脚本内方法的返回结果，链接也可以用浏览器打开，接口同时支持 POST 以及 GET，参数列表也可以同时使用多个参数。
+
+注意参数的提供形式，是**双引号**，建议使用 json.dumps(["A", "B"])
+
+> 用 requests 调用
+```python
+import requests
+url = "http://192.168.0.2:65000/fridarpc/myRpcName/getMyString"
+data = requests.post(url, data={"args": '["A","B"]'}).json()
+print (data["result"])
+
+#* 状态码 200 一切正常
+#* 状态码 410 需要重新注入脚本或者脚本未注入（目前不支持自动重新注入）
+#* 状态码 500 脚本或参数异常
+#* 状态码 400 参数错误
+```
+
+响应结果的格式是固定的，可在浏览器打开查看。
+
+## 只要有网即可连接任意位置的设备
+
+有时候你可能遇到这种情况：你的手机在家里而你不在家该怎么使用呢。
+开始前，你可能需要先准备一台公网服务器。为了安全考虑，这里使用的是最保守的配置，最后会说明如何做到完整介绍的功能。
+
+本服务使用了较为成熟的端口转发程序 [fatedier/frp](https://github.com/fatedier/frp)，关于如何配置服务端，请在此项目中自行探索。注意：请勿将转发后的端口绑定到公网地址，请确保你的公网服务器关闭了所有不必要的端口。
+这里给你一个最简单安全的配置，可以直接使用如下命令启动服务端（请自行修改密码及端口）
+
+> 首先在你的公网服务器上执行以下命令启动 frps（注意防火墙配置）
+
+```bash
+frps --token lamda --bind_addr 0.0.0.0 --bind_port 6009 --proxy_bind_addr 127.0.0.1
+```
+
+> 然后开始在手机上配置
+
+复制下列配置并修改**服务器地址**为你的服务器公网IP
+
+```ini
+fwd.host=服务器地址
+fwd.port=6009
+fwd.rport=2022
+fwd.token=lamda
+fwd.protocol=tcp
+fwd.enable=true
+```
+
+进入设备的 ssh 命令行（也可通过 web 远程桌面进入），执行
+
+```bash
+cd # 先切换到家目录
+nano properties.local
+# 这个文件也可以放到 /data/local/tmp 下
+```
+
+将修改的配置粘贴或自行输入，并保存，随后重启设备和 lamda 服务。
+
+> 如何使用（需要在公网服务器上使用）
+
+```python
+from lamda.client import *
+# 端口为上面的 rport
+d = Device("127.0.0.1", port=2022)
+# 浏览器打开 http://127.0.0.1:2022 即可访问远程桌面
+# 其余任何接口调用实现均统一，无需做任何改动
+```
+
+
+> 我就是想在任意地方都能连接到设备
+
+首先，为了安全起见不建议你这么做，如果确实需要这样用的话，建议使用 OpenVPN 将设备和你的电脑置于同一网段来访问。
+如果你仍准备使用上述 frp 的方法实现任意访问，请先确保 lamda 服务启动时使用了**证书**，并将启动 frps 命令时的 `--proxy_bind_addr 127.0.0.1`
+改为 `--proxy_bind_addr 0.0.0.0`，这将导致 2022 端口绑定到公网。如果你未使用证书启动 lamda，任何人都将可以访问。
+其次需要注意，web 远程桌面的流量始终都是 http 的，如果有人在你和服务器通信之间进行中间人，你的登录凭证可能会被窃取。当然，如果此期间不用 web 桌面将不存在这个问题。
+
 
 ## 系统属性 (get/setprop)
 
@@ -1362,7 +1474,6 @@ d._release_lock()
 同样，Python 也内置了一些可以用来使用的三方库
 
 * lamda            (自身)
-* Pillow           (图像处理)
 * capstone         (反汇编引擎)
 * keystone_engine  (汇编引擎)
 * unicorn          (CPU模拟引擎)
