@@ -27,7 +27,7 @@
 
 支持常规以及国际APP抓包，DNS抓包，得益于 [mitmproxy Event Hooks](https://docs.mitmproxy.org/stable/api/events.html)，你可以对任何请求做到最大限度的掌控，对标你用过的任何此类商业/非商业软件，一条命令即完成所有流程 （注：部分情况需自行解决证书固定等问题）
 
-通过 [lamda/tools](tree/master/tools) 的 `globalmitm`，`startmitm.py` 实现，使用方法请看其同目录 README
+通过 tools/ 目录下的 `globalmitm`，`startmitm.py` 实现，使用方法请看其同目录 README。
 
 ![抓包动图演示](image/mitm.gif)
 
@@ -57,7 +57,7 @@ lamda 是一个免费软件 (freeware)，暂时没有开源，但个人承诺它
 
 文档目前只是介绍了基本使用，请配合下方示例手动输入语句辅助理解。如果你使用的是 Windows，附带的任何示例代码/命令可能在你的系统上不会正常工作(但是不包括客户端库)，建议在 Linux 或者 Mac 系统上操作文档及样例中的代码。
 
-部分功能需要配合 `tools/` 目录下的工具实现，这些工具如何使用请参照 [tools/README.md](blob/master/tools/README.md)。
+部分功能需要配合 `tools/` 目录下的工具实现，这些工具如何使用请参照 [tools/README.md](tools/README.md)。
 
 **请特别注意**：**请勿在自用安卓设备上运行**。
 
