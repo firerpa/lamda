@@ -7,29 +7,32 @@
 * 支持标准游戏/AVD模拟器及真机，全架构
 * 支持 OpenVPN 可实现全局/非全局的 VPN
 * 支持 http/socks5 代理，可实现设置系统级别/单个应用级别的代理
+* 支持 UDP 协议代理（socks5 udp 模式）
 * 支持 OpenVPN 与代理共存
 * 可通过接口轻松设置中间人证书，配合 http/socks5 代理实现中间人流量分析
 * 通过 frida 暴露内部 Java/Jni 接口（类sekiro）
-* 只要有网即可连接任意位置的设备
+* 只要有网即可连接任意地方运行了 lamda 的设备
 * UI自动化，通过接口实现自动化操作
 * 设备状态/资源消耗读取
 * 大文件上传下载
-* 唤起APP任意 Activity
-* 前后台运行脚本，授予撤销APP权限等
+* 唤起应用的 Activity
+* 前后台运行 shell 命令，授予撤销应用权限等
 * 系统配置/属性读取修改
 * 内置 frida, IDA 7.5 server 等工具
-* 可使用 ssh 登录设备
-* 支持 crontab 定时任务
+* 可使用 ssh 登录设备终端
+* 内置 crontab 定时任务
 * 内置 Python3.9 及部分常用模块
 * WIFI 远程桌面（web）
 
-## 超完备一键抓包
+同时，tools/ 目录下还包含了一些常用的脚本以及开箱即用的服务。
 
-支持常规以及国际APP抓包，DNS抓包，得益于 [mitmproxy Event Hooks](https://docs.mitmproxy.org/stable/api/events.html)，你可以对任何请求做到最大限度的掌控，对标你用过的任何此类商业/非商业软件，一条命令即完成所有流程 （注：部分情况需自行解决证书固定等问题）
+## 超完备一键中间人流量分析
+
+支持常规以及国际APP流量分析，DNS流量分析，得益于 [mitmproxy flow hook](https://docs.mitmproxy.org/stable/api/events.html)，你可以对任何请求做到最大限度的掌控，对标你用过的任何此类商业/非商业软件，一条命令即完成所有流程。
 
 通过 tools/ 目录下的 `globalmitm`，`startmitm.py` 实现，使用方法请看其同目录 README。
 
-![抓包动图演示](image/mitm.gif)
+![中间人流量分析动图演示](image/mitm.gif)
 
 ## 通过代码自动化
 
@@ -310,7 +313,23 @@ python3 -m lamda.client -device 192.168.0.2
 
 只支持 http 以及 socks5 代理，不支持 IPv6
 
-> 请认真阅读以下内容
+
+> 假设你从服务商处获得的代理为 http://123.123.123.123:8080，
+> 仅需如下几行代码来让设备上的 tcp 流量通过此代理
+
+```python
+profile = GproxyProfile()
+profile.type = GproxyType.HTTP_CONNECT
+
+# 此选项请根据实际情况选择你是否需要
+profile.drop_udp = True
+profile.host = "123.123.123.123"
+profile.port = 8080
+
+d.start_gproxy(profile)
+```
+
+> 详细的参数配置信息
 
 ```python
 profile = GproxyProfile()
@@ -337,11 +356,13 @@ profile.drop_udp = False
 
 # 本地流量是否需要*不经过*代理，如果为 True，本地流量
 # 如 192.168.x.x 10.x.x.x 等路由器内网网段的流量将不会经过代理，默认为 False
+# 注意：如果开启了 udp_proxy，此选项对于 UDP 流量无效
 profile.bypass_local_subnet = True
 
 # 是否需要代理 udp 流量
-# 注意，http 代理服务器不支持代理 udp 协议，开启此选项必须使用 socks5 作为代理服务器
-# (GproxyType.SOCKS5)，且 socks5 代理服务器必须开启 udp 代理模式（且与tcp同端口）
+# 注意，http 代理服务不支持代理 udp 协议，开启此选项必须使用 socks5 作为代理服务器
+# (GproxyType.SOCKS5)，且 socks5 代理服务器必须配置开启 udp 代理模式，
+# 需要稍加复杂的服务器配置，为了避坑，请参照 tools/socks5 里的介绍进行安装配置
 # 当你使用 http 代理或者 drop_udp 选项为 True，此设置将会被忽略
 profile.udp_proxy = False
 
@@ -364,26 +385,9 @@ d.start_gproxy(profile)
 d.stop_gproxy()
 ```
 
-> 此处附上一个简单无认证的 [Danted sock5 代理服务](https://www.inet.no/dante/index.html) 配置
+> 快速搭建一个 socks5 代理
 
-```
-internal: 0.0.0.0 port = 1080
-external: 出网接口名称
-
-clientmethod: none
-socksmethod: none
-
-client pass {
-    from: 0.0.0.0/0 to: 0.0.0.0/0
-	log: error
-}
-
-socks pass {
-    from: 0.0.0.0/0 to: 0.0.0.0/0
-    command: bind connect udpassociate bindreply udpreply
-    log: error
-}
-```
+lamda 在 tools/ 中提供了一个开箱即用的 socks5 代理服务 docker，请转到 tools/socks5 目录查看 README.md。
 
 ## 中间人流量分析（MITM）
 
@@ -421,9 +425,9 @@ d.uninstall_ca_certificate(cert_path)
 ## 设置 OpenVPN
 
 > 此 OpenVPN 只支持使用证书登录，可以与 http/socks5 代理共存。
-> 需要注意的是，部分配置项例如 all_traffic 可能会与服务器端配置存在关联，只有在服务器端配置为
-> 非全局 VPN (只VPN特定网段）下才会生效。只包含VPN的主要功能，除了 `DNS` 配置，暂无法应用服务端推送的其他配置信息。
-> 这些配置包括但不限于 PAC 代理，http 代理配置等。
+> 需要注意的是，此功能只包含OpenVPN的主要功能，除了 `DNS` 配置，暂无法应用服务端推送的其他配置信息。
+> 这些配置包括但不限于 PAC 代理，http 代理配置等。为了省却你安装服务的麻烦，
+> lamda 提供了一个开箱即用的 OpenVPN docker 镜像，请继续往下看。
 
 ```python
 profile = OpenVPNProfile()
@@ -461,53 +465,9 @@ d.start_openvpn(profile)
 d.stop_openvpn()
 ```
 
-> 示例的 OpenVPN server 端配置文件（请勿直接复制，依据事实进行修改挑选）
+> 快速搭建一个 OpenVPN 服务
 
-服务端的搭建涉及到较多系统配置以及防火墙配置可能较为复杂，自行部署的话建议尽量使用 docker 进行。
-这里不会讲述如何搭建。
-
-```
-user nobody
-group nogroup
-
-topology subnet
-server 192.168.168.0 255.255.255.0
-proto udp
-port 1233
-dev tun
-txqueuelen 1000
-ncp-disable
-cipher AES-256-CBC
-
-# 注意你可能会遇到客户端不断重连的状况
-# 因为安卓设备在息屏状态下，网络可能会由于省电措施中断
-# 你可能会需要更改此处配置但是有利弊
-keepalive 60 300
-
-ca         /etc/openvpn/server/keys/ca.crt
-dh         /etc/openvpn/server/keys/dh2048.pem
-cert       /etc/openvpn/server/keys/ovpn.crt
-key        /etc/openvpn/server/keys/ovpn.key
-
-client-to-client
-
-# 去掉注释为始终全局，即代表上文的 all_traffic 配置即使设为 False 也相当于 True
-# 所以这里直接注释掉此配置（不要加入此配置）
-#push "redirect-gateway def1 bypass-dhcp"
-
-push "route x.x.x.x 255.255.255.0"
-
-# 始终只会使用第一个 DNS，其他将会被忽略
-push "dhcp-option DNS 114.114.114.114"
-push "dhcp-option DNS 114.114.115.115"
-
-# *** 不支持 *** PROXY_AUTO_CONFIG_URL push
-#push "dhcp-option PROXY_AUTO_CONFIG_URL https://example.com/proxy.pac"
-
-# 同一个证书是否允许多个客户端使用
-duplicate-cn
-verb 4
-```
+lamda 在 tools/ 中提供了一个开箱即用的 OpenVPN docker，请转到 tools/openvpn 目录查看 README.md。
 
 ## 如何连接内置 frida
 
@@ -601,7 +561,7 @@ print (data["result"])
 
 响应结果的格式是固定的，可在浏览器打开查看。
 
-## 只要有网即可连接任意位置的设备
+## 只要有网即可连接任意地方运行了 lamda 的设备
 
 有时候你可能遇到这种情况：你的手机在家里而你不在家该怎么使用呢。
 开始前，你可能需要先准备一台公网服务器。为了安全考虑，这里使用的是最保守的配置，最后会说明如何做到完整介绍的功能。

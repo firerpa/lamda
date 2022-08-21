@@ -1,0 +1,65 @@
+#!/bin/bash
+export CLIENT=$2
+
+if [ -f "easy-rsa/pki/issued/${CLIENT}.crt" ]; then
+PROTO=$(sed -n -e 's/^proto \(.\+\).*/\1/p' config.ovpn)
+CIPHER=$(sed -n -e 's/^cipher \(.\+\).*/\1/p' config.ovpn)
+PORT=$(sed -n -e 's/^port \([[:digit:]]\+\).*/\1/p' config.ovpn)
+WANIP=$(curl -s https://httpbin.org/ip | jq -r .origin)
+
+CA=$(cat easy-rsa/pki/ca.crt)
+CERT=$(openssl x509 -in easy-rsa/pki/issued/${CLIENT}.crt)
+KEY=$(cat easy-rsa/pki/private/${CLIENT}.key)
+
+        if [ "g$1" = govpn ]; then
+cat <<EOL >&1
+client
+float
+nobind
+
+dev tun
+proto ${PROTO}
+remote ${WANIP} ${PORT}
+resolv-retry infinite
+
+cipher ${CIPHER}
+keepalive 15 60
+
+remote-cert-tls server
+
+<ca>
+${CA}
+</ca>
+
+<cert>
+${CERT}
+</cert>
+
+<key>
+${KEY}
+</key>
+EOL
+        else
+cat <<EOL >&1
+profile = OpenVPNProfile()
+profile.all_traffic  = False
+profile.proto        = OpenVPNProto.${PROTO^^}
+profile.host         = "${WANIP}"
+profile.port         = ${PORT}
+profile.cipher       = OpenVPNCipher.$(echo ${CIPHER}|tr '-' '_')
+
+# auto-generated lamda OpenVPN profile, CN=${CLIENT}
+profile.ca = """
+${CA}
+"""
+
+profile.cert = """
+${CERT}
+"""
+
+profile.key = """
+${KEY}
+"""
+EOL
+        fi
+fi

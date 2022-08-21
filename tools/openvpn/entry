@@ -1,0 +1,4 @@
+#!/bin/bash
+if [ -f "${OVPNCONFIG}" ] && [ -f "${VARS}" ]; then
+exec openvpn --config config.ovpn
+fi

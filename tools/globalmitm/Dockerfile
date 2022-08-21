@@ -1,5 +1,7 @@
 FROM debian:bullseye-slim
 
+LABEL maintainer="rev1si0n <ihaven0emmail@gmail.com>"
+
 ENV PYPIMIRROR=https://mirrors.ustc.edu.cn/pypi/web/simple
 ENV SSCLIENT=https://github.com/shadowsocks/go-shadowsocks2/releases/download/v0.1.5/shadowsocks2-linux.gz
 ENV SOURCESMIRROR=mirrors.ustc.edu.cn

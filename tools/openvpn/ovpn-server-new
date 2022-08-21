@@ -1,0 +1,18 @@
+#!/bin/bash
+mkdir -p /etc/openvpn/ccd
+mkdir -p /etc/openvpn/easy-rsa
+
+if [ ! -f ${OVPNCONFIG} ]; then
+cp /root/config.ovpn ${OVPNCONFIG}
+fi
+
+if [ ! -f ${VARS} ]; then
+cp /root/vars ${VARS}
+fi
+
+set -ex
+easyrsa init-pki
+easyrsa build-ca nopass
+easyrsa gen-dh
+easyrsa build-server-full lamda nopass
+easyrsa gen-crl

@@ -1,0 +1,55 @@
+#!/bin/bash
+LOGIN=${LOGIN:-lamda}
+PWD=${PASSWORD:-lamda}
+UDPRANGE=${UDPRANGE:-50000-55000}
+BIND=${BIND:-0.0.0.0}
+PORT=${PORT:-1080}
+
+# the default output interface
+DEFAULT_DEV=$(ip route | awk '/default/ { print $5 }')
+DEV=${DEV:-"${DEFAULT_DEV}"}
+
+deluser --remove-home ${LOGIN}       2>/dev/null
+adduser -D -H -s /bin/false ${LOGIN} 2>/dev/null
+echo "${LOGIN}:${PWD}" | chpasswd    2>/dev/null
+
+echo "SOCKS5 LOGIN:    ${LOGIN}"
+echo "SOCKS5 PASSWORD: ${PWD}"
+
+cat <<EOL >/etc/danted.conf
+internal: ${BIND} port = ${PORT}
+external: ${DEV}
+
+clientmethod: none
+socksmethod: username
+
+user.privileged: root
+user.unprivileged: nobody
+
+timeout.tcp_fin_wait: 15
+timeout.negotiate: 15
+timeout.connect: 15
+
+logoutput: /proc/self/fd/2
+
+socks pass {
+from: 0.0.0.0/0 to: 0.0.0.0/0
+command: bind connect udpassociate
+udp.portrange: ${UDPRANGE}
+log: error connect
+}
+
+socks pass {
+from: 0.0.0.0/0 to: 0.0.0.0/0
+command: bindreply udpreply
+udp.portrange: ${UDPRANGE}
+log: error connect
+}
+
+client pass {
+from: 0.0.0.0/0 to: 0.0.0.0/0
+log: error
+}
+EOL
+
+exec sockd -f /etc/danted.conf

@@ -1,0 +1,3 @@
+#!/bin/bash
+easyrsa revoke "$1"
+easyrsa gen-crl
