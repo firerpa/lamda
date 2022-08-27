@@ -10,7 +10,7 @@
 * 支持 UDP 协议代理（socks5 udp 模式）
 * 支持 OpenVPN 与代理共存
 * 可通过接口轻松设置中间人证书，配合 http/socks5 代理实现中间人流量分析
-* 通过 frida 暴露内部 Java/Jni 接口（类sekiro）
+* 通过 frida 暴露内部 Java/Jni 接口（类sekiro，可暴露于公网）
 * 只要有网即可连接任意地方运行了 lamda 的设备
 * UI自动化，通过接口实现自动化操作
 * 设备状态/资源消耗读取
@@ -48,7 +48,9 @@
 
 如果你希望继续看下去，请先确保：手边有一台已经 root 且运行内存 **>= 3GB**，可用存储空间 **>=1GB** 的安卓设备或者安卓模拟器（推荐使用最新版**夜神**，**雷电**，**逍遥**模拟器，或者 AVD[Android Studio Virtual Device, 非 Google APIs 系统]）。**不完全支持** 网易 Mumu，**不支持**腾讯手游助手，蓝叠以及任何安卓内虚拟如 VMOS，等），对于真机，推荐运行最接近原生系统的设备如谷歌系、一加、安卓开发板等，或系统仅经过轻度改造的设备。目前**可能**不能在蓝绿厂/华为/小米类高度改造的安卓系统上正常运行，如果你只有此类品牌设备，建议使用模拟器。
 
-> 建议一字一句读下去，因为其中会有一些问题及提示。
+**文档中部分内容太杂可能劝退一些人，为什么文档写了这么多奇怪无关的东西，因为这个文档连大部分你可能遇到的相关问题都写了进来。**
+
+> 如果您决定使用，建议一字一句读下去，因为其中会有一些问题及提示。
 
 ## 免责声明及条款
 
@@ -71,7 +73,7 @@ lamda 是一个免费软件 (freeware)，暂时没有开源，但个人承诺它
 
 ## 安装
 
-> 分为客户端以及服务端，客户端主要是Python相关库及接口，服务端则是运行在设备上的服务。
+> 分为客户端以及服务端，客户端主要是 Python 相关库及接口，服务端则是运行在设备上的服务。**如果只是想体验一下**，建议新建夜神模拟器（7/9）并在其中使用，虽然可能有部分小BUG，但主要功能均可正常使用，你遇到的问题也最少。
 
 ## 注意事项
 
@@ -84,6 +86,14 @@ lamda 是一个免费软件 (freeware)，暂时没有开源，但个人承诺它
 * 确认完毕重启设备
 
 并且不会在启动后启用任何上述任何标记为`必须`的条目。
+
+> 检查网络设置
+
+对于真机，你只需要确保电脑与手机在同一网络下即可。
+对于模拟器，默认创建的模拟器正常情况下与你的本机网络并不互通，如果你使用的是 android x86 (基于 VMWare 的安卓虚拟机)，
+请尝试在虚拟机设置中将网络模式设置为桥接模式。对于雷电，夜神等模拟器，需要在其设置中根据提示安装驱动并开启桥接模式随后重启模拟器。
+对于 Android Studio 的 Virtual Device，则没有相关设置，如果需要连接 AVD，请先执行 `adb forward tcp:65000 tcp:65000`，
+并使用 `localhost` （不要使用 127.0.0.1）进行连接。
 
 > 无故重启/崩溃问题自查
 
@@ -144,6 +154,16 @@ pip3 install -U 'lamda[frida]'
 正常情况下，对于现时代的手机，可以直接选择 `arm64-v8a` 版本，而对于模拟器如雷电，你会在新建模拟器时选择32或64位版本的安卓系统，
 32位模拟器系统对应 `x86`，64位则对应 `x86_64`，正常情况下，雷电模拟器默认创建的为基于 `x86` 的安卓 7.0 系统。
 
+> launch 可能出现的错误及解决方法
+
+```bash
+already running     (lamda 已经在运行)
+invalid TZ area     (时区未设置，在系统时间设置中设置时区即可，可能出现于国外或原生系统上)
+not run as root     (没有以 root 身份运行)
+unsupported sdk     (在不支持的安卓系统上运行，不是 6-12)
+abi not match       (使用了错误的 gz 包，例如在 x86_64 上运行了 x86 的包)
+```
+
 现在，从 `release` 页面 [rev1si0n/lamda/releases](https://github.com/rev1si0n/lamda/releases)
 下载对应架构的安装文件。假设你已经从上文得知你的手机/设备架构为 `arm64-v8a`，那么在此页面点击
 `arm64-v8a.tar.gz-install.sh` 以及 `arm64-v8a.tar.gz` 两个文件的链接来下载到本地。
@@ -162,9 +182,10 @@ adb remount
 ```
 真机应该会失败，无需关心是否报错。
 
-> 如果使用的是 AVD (Android Studio Virtual Device)，请使用这种方法
+> 如果使用的是 AVD (Android Studio Virtual Device)，则按照以下方法启动。
 
-请使用如下命令启动虚拟设备
+请使用如下命令启动虚拟设备（你可能会遇到找不到 emulator 命令的情况，
+请参阅此文档获知此命令的位置 [developer.android.com/studio/run/emulator-commandline](https://developer.android.com/studio/run/emulator-commandline?hl=zh-cn) 并将其加入 PATH 变量中，对于 Windows，它是 `emulator.exe`）
 
 ```bash
 # Pixel_4_API_29 为虚拟机ID，可以使用 emulator -list-avds 列出
@@ -174,6 +195,7 @@ emulator -avd Pixel_4_API_29 -writable-system
 并在启动后执行
 
 ```bash
+# 这些命令有可能报错，无视即可
 adb shell avbctl disable-verification
 adb disable-verity
 ```
@@ -409,6 +431,13 @@ import os
 HOME = os.path.expanduser("~")
 cert_path = os.path.join(HOME, ".mitmproxy", "mitmproxy-ca-cert.pem")
 
+# 注意这里可能会出现 Read-only system partition，如果出现异常，请检查你是否已完成
+# 上面的 remount 操作（不论是否报错，请在本文档搜索 remount）
+# 如果已完成仍然出现，请检查是否使用的最新版 root 软件 (magisk, supersu)
+# 如果仍然没问题，那可能是设备的 system 分区被锁死只读挂载
+# 这出现在部分 pixel 设备的系统上，有条件可以尝试降级到安卓7
+# 也可手动安装此证书，但这可能会损失一些 lamda 的描述能力
+#
 # 以 mitmproxy 为例，使用如下代码安装证书
 d.install_ca_certificate(cert_path)
 
@@ -506,9 +535,10 @@ frida -H 192.168.0.2:65000 -f com.android.settings
 
 ## 使用自带的 crontab (定时任务)
 
-内置了用于执行定时任务的 cron 服务，这样你可以在设备上定期执行一些脚本，所有规则都将以 root 身份执行
+内置了用于执行定时任务的 cron 服务，这样你可以在设备上定期执行一些脚本，所有规则都将以 root 身份执行。
 
-> 此功能需要你会编写 crontab 规则以及基础的 linux 命令行编辑文件的能力
+> 此功能需要你会编写 crontab 规则以及基础的 linux 命令行编辑文件的能力。
+> **注意**：受限于安卓休眠机制，息屏后定时任务可能并不会以你期望的时间运行，你可能需要将设备设置为常亮。
 
 注意这与你在 linux 使用 crontab 并不相同，在 linux 正常使用 `crontab -e` 命令
 来编辑任务，但是框架并未提供此命令，你需要直接编辑文件来写入规则（道理是相同的，都是编辑文件而已）
@@ -559,7 +589,7 @@ print (data["result"])
 #* 状态码 400 参数错误
 ```
 
-响应结果的格式是固定的，可在浏览器打开查看。
+响应结果的格式是固定的，可在浏览器打开查看。同样，配合下面一节的内容，你将可以在公网直接使用接口。
 
 ## 只要有网即可连接任意地方运行了 lamda 的设备
 
