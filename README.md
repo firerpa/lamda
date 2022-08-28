@@ -168,7 +168,7 @@ abi not match       (使用了错误的 gz 包，例如在 x86_64 上运行了 x
 下载对应架构的安装文件。假设你已经从上文得知你的手机/设备架构为 `arm64-v8a`，那么在此页面点击
 `arm64-v8a.tar.gz-install.sh` 以及 `arm64-v8a.tar.gz` 两个文件的链接来下载到本地。
 
-> `arm64-v8a.tar.gz-install.sh` 是整合了的安装脚本，它在自身打包了 `arm64-v8a.tar.gz` 以及以及用于解压此安装包的 `busybox`。
+> `arm64-v8a.tar.gz-install.sh` 是整合了的安装脚本，它在自身打包了 `arm64-v8a.tar.gz` 以及用于解压此安装包的 `busybox`。
 > 用它安装是最简便以及通用的，但仍无法保证各版本安卓的差异性导致可能的安装失败。所以，下面将会介绍两种安装方法，推荐第一种，第二种则是
 > 第一种完整的手动过程，你可以在第一种失败的情况下使用。
 
@@ -287,13 +287,27 @@ lamda 设计即为一个 7*24 小时后台运行的服务，不建议频繁启�
 
 当然，考虑到你可能不方便使用接口，你也可以使用以下命令来使 lamda 服务端退出。
 你应该使用以下命令结束（确保以 su/root 身份执行命令）
-注意请勿直接 kill -9 结束服务端，可能会产生僵尸进程。
+注意请勿直接 kill -9 结束服务端，会产生僵尸进程以及无法清理进程的运行时配置。
 
 ```bash
 kill -SIGUSR2 $(cat /data/usr/lamda.pid)
 ```
 
 lamda 服务完全退出可能需要十几秒的时间，请不要连续多次执行此命令。
+
+## 彻底卸载 lamda 服务
+
+lamda 对于自身数据的规划是比较规范的，您可以通过三条命令完全卸载 lamda，在进行前，
+请按照上方 `关闭 lamda 服务` 执行并等待半分钟以确保服务正常退出。
+
+```bash
+# 请以 root 身份执行
+# 删除 lamda 默认文件、用户数据目录
+rm -rf /data/local/tmp/arm64-v8a
+rm -rf /data/usr
+# 重启设备
+reboot
+```
 
 ## 开始
 
@@ -409,7 +423,7 @@ d.stop_gproxy()
 
 > 快速搭建一个 socks5 代理
 
-lamda 在 tools/ 中提供了一个开箱即用的 socks5 代理服务 docker，请转到 tools/socks5 目录查看 README.md。
+lamda 在 tools/ 中提供了一个开箱即用同时支持 udp 的 socks5 代理服务 docker，请转到 tools/socks5 目录查看 README.md。
 
 ## 中间人流量分析（MITM）
 
@@ -456,7 +470,7 @@ d.uninstall_ca_certificate(cert_path)
 > 此 OpenVPN 只支持使用证书登录，可以与 http/socks5 代理共存。
 > 需要注意的是，此功能只包含OpenVPN的主要功能，除了 `DNS` 配置，暂无法应用服务端推送的其他配置信息。
 > 这些配置包括但不限于 PAC 代理，http 代理配置等。为了省却你安装服务的麻烦，
-> lamda 提供了一个开箱即用的 OpenVPN docker 镜像，请继续往下看。
+> lamda 提供了一个开箱即用的 OpenVPN docker 镜像，它有脚本可以生成下面这个配置，请继续往下看。
 
 ```python
 profile = OpenVPNProfile()
@@ -507,7 +521,7 @@ lamda 在 tools/ 中提供了一个开箱即用的 OpenVPN docker，请转到 to
 1. 通过代码连接
 
 ```python
-# 使用框架时的做法
+# 使用 lamda 时的做法
 device = d.frida
 device.enumerate_processes()
 ```
@@ -524,11 +538,12 @@ device.enumerate_processes()
 2. 通过命令行方式使用
 
 对于所有 frida 官方命令行工具，你只需要加上参数 `-H 192.168.0.2:65000` 即可，
-对于第三方的 objection，则是添加参数 `-h 192.168.0.2 -p 65000`，其他未提及的第三方工具请自行查看其使用方法。
+对于第三方的例如 `objection`，则是添加参数 `-N -h 192.168.0.2 -p 65000`，其他未提及的第三方工具请自行查看其使用方法。这些第三方工具可能并不会完全遵循 frida，如果你需要使用这些第三方工具，请确保服务端启动时**没有使用** `--certificate` 参数（加密传输）。
 
 ```bash
-# 如果你在服务端启动时指定了 certificate 选项，请注意在此加入此参数
 frida -H 192.168.0.2:65000 -f com.android.settings
+# 如果你在服务端启动时指定了 certificate 选项，请注意也需要在此加入 --certificate 参数例如
+frida -H 192.168.0.2:65000 -f com.android.settings --certificate /path/to/lamda.pem
 ```
 
 即可。
@@ -564,24 +579,28 @@ frida -H 192.168.0.2:65000 -f com.android.settings
 
 > 请转到 tools 目录查看使用方法。
 
-此功能需要你能熟练编写 frida 脚本。示例中使用的脚本请参照 test-fridarpc.js 文件，特别注意: frida 脚本中 rpc.exports 定义的函数返回值只能为 string/list/json 或者任意 js 中可以被 json 序列化的值。假设设备IP为 192.168.0.2。
+此功能需要你能熟练编写 frida 脚本。示例中使用的脚本请参照 test-fridarpc.js 文件，特别注意: frida 脚本中 rpc.exports 定义的函数参数以及返回值只能为 int/float/string/list/jsdict 或者任意 js 中**可以被 JSON序列化**的值。假设设备IP为 192.168.0.2。
 
-> 执行以下命令注入 RPC 到 com.android.settings（注意查看是否有报错）
+> 执行以下命令注入 RPC 到 com.android.settings（注意查看是否有报错），下面的相关文件在 tools 目录
 
 ```bash
 python3 fridarpc.py -f test-fridarpc.js -a com.android.settings -d 192.168.0.2
 ```
 
-现在已经将接口拿出来了，只需要请求 `http://192.168.0.2:65000/fridarpc/myRpcName/getMyString?args=["A","B"]` 即可得到脚本内方法的返回结果，链接也可以用浏览器打开，接口同时支持 POST 以及 GET，参数列表也可以同时使用多个参数。
+现在已经将接口暴露出来了，只需要请求 `http://192.168.0.2:65000/fridarpc/myRpcName/getMyString?args=["A","B"]` 即可得到脚本内方法的返回结果，链接也可以用浏览器打开，接口同时支持 POST 以及 GET，参数列表也可以同时使用多个参数，空列表代表无参数，注意这里的 args 参数字符串最长**不能超过** `32KB`。
 
-注意参数的提供形式，是**双引号**，建议使用 json.dumps(["A", "B"])
+链接中的两个字符串参数 "A", "B" 即为注入的脚本中的方法 `getMyString(paramA, paramB)` 的位置参数。
+
+注意参数的提供形式，是**双引号**，请**不要手打**或者**字符串拼接**这个参数，务必使用 json.dumps(["A", "B"])
 
 > 用 requests 调用
 ```python
+import json
 import requests
 url = "http://192.168.0.2:65000/fridarpc/myRpcName/getMyString"
-data = requests.post(url, data={"args": '["A","B"]'}).json()
-print (data["result"])
+# 请求接口
+res = requests.post(url, data={"args": json.dumps(["A","B"])})
+print (res.status_code, res.json()["result"])
 
 #* 状态码 200 一切正常
 #* 状态码 410 需要重新注入脚本或者脚本未注入（目前不支持自动重新注入）
@@ -599,10 +618,10 @@ print (data["result"])
 本服务使用了较为成熟的端口转发程序 [fatedier/frp](https://github.com/fatedier/frp)，关于如何配置服务端，请在此项目中自行探索。注意：请勿将转发后的端口绑定到公网地址，请确保你的公网服务器关闭了所有不必要的端口。
 这里给你一个最简单安全的配置，可以直接使用如下命令启动服务端（请自行修改密码及端口）
 
-> 首先在你的公网服务器上执行以下命令启动 frps（注意防火墙配置）
+> 首先在你的公网服务器上执行以下命令启动 frps（注意你可能还需要配置防火墙）
 
 ```bash
-frps --token lamda --bind_addr 0.0.0.0 --bind_port 6009 --proxy_bind_addr 127.0.0.1
+frps --token lamda --bind_addr 0.0.0.0 --bind_port 6009 --proxy_bind_addr 127.0.0.1 --allow_ports 10000-15000
 ```
 
 > 然后开始在手机上配置
@@ -612,7 +631,7 @@ frps --token lamda --bind_addr 0.0.0.0 --bind_port 6009 --proxy_bind_addr 127.0.
 ```ini
 fwd.host=服务器地址
 fwd.port=6009
-fwd.rport=2022
+fwd.rport=12345
 fwd.token=lamda
 fwd.protocol=tcp
 fwd.enable=true
@@ -633,17 +652,23 @@ nano properties.local
 ```python
 from lamda.client import *
 # 端口为上面的 rport
-d = Device("127.0.0.1", port=2022)
-# 浏览器打开 http://127.0.0.1:2022 即可访问远程桌面
+d = Device("127.0.0.1", port=12345)
+# 浏览器打开 http://127.0.0.1:12345 即可访问远程桌面
 # 其余任何接口调用实现均统一，无需做任何改动
 ```
 
+> 如何批量转发而不用每次都改写一下 rport 配置
+
+如果你需要一次设置多台机器且不在乎每台机器绑定的端口，
+你可以将上方配置中的 `fwd.rport` 值改为 0，这将导致你的设备被随机绑定到 `10000-15000` 的端口范围中，
+随后将其保存为文件 `properties.local` 到你的本机，首次启动或者启动 lamda 前，将其 adb push 到 `/data/local/tmp` 即可（如果已经 push 过就没必要再次 push 了，直接启动 lamda 即可）。
+你可以通过后期轮训来定位设备转发绑定的对应端口。
 
 > 我就是想在任意地方都能连接到设备
 
-首先，为了安全起见不建议你这么做，如果确实需要这样用的话，建议使用 OpenVPN 将设备和你的电脑置于同一网段来访问。
+首先，为了安全起见不建议这么做，如果确实需要这样用的话，建议使用 OpenVPN 将设备和你的电脑置于同一网段的方法来访问。
 如果你仍准备使用上述 frp 的方法实现任意访问，请先确保 lamda 服务启动时使用了**证书**，并将启动 frps 命令时的 `--proxy_bind_addr 127.0.0.1`
-改为 `--proxy_bind_addr 0.0.0.0`，这将导致 2022 端口绑定到公网。如果你未使用证书启动 lamda，任何人都将可以访问。
+改为 `--proxy_bind_addr 0.0.0.0`，这将导致 12345 端口直接绑定到公网。如果你未使用证书启动 lamda，任何人都将可以访问，这是**非常非常危险**的。
 其次需要注意，web 远程桌面的流量始终都是 http 的，如果有人在你和服务器通信之间进行中间人，你的登录凭证可能会被窃取。当然，如果此期间不用 web 桌面将不存在这个问题。
 
 
@@ -714,7 +739,10 @@ status.get_mem_info()
 ```python
 shell = d.stub("Shell")
 # 执行前台脚本（执行时间短的脚本）
-shell.execute_script("pwd")
+cmd = shell.execute_script("pwd")
+print (cmd.exitstatus)
+print (cmd.stdout)
+print (cmd.stderr)
 
 # 执行后台脚本（执行时间长的脚本）
 # 对于后台脚本，因考虑可能用户写出死循环脚本无限输出导致内存占满等问题
