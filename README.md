@@ -1,20 +1,25 @@
 这是一个用于安卓逆向及自动化的辅助框架，它以编程化的接口大幅减少你的手动操作，你将不再需要关心琐碎的问题。通过它，你可以获得：
 
-* 零依赖，只需 root 即可。
-* 极其简单的调用，封装了大量常用接口，你只需要会写 Python。
-* 脱离 USB 数据线。
-* 支持安卓 6.0 - 12L。
-* 支持标准游戏/AVD模拟器及真机，全架构
+* 零依赖，只需 root 即可
+* 支持安卓 6.0 (M, API 23) - 13 (T, API 33)
+* 极其简单的调用，封装了大量常用接口，你只需要会写 Python
+* 只要有网即可连接任意地方运行了 lamda 的设备
+* 完全脱离 USB 数据线/USB HUB 等实体连接
+* 不会给现有运行环境增加任何可被检测的特征
+* 大大降低门槛以及闲杂琐事上的时间成本
+* 7*24 小时的稳定性
+* 支持标准游戏/AVD模拟器及真机、云手机，全架构
+* 可完美内置于安卓系统
 * 支持 OpenVPN 可实现全局/非全局的 VPN
 * 支持 http/socks5 代理，可实现设置系统级别/单个应用级别的代理
-* 支持 UDP 协议代理（socks5 udp 模式）
+* 支持 UDP 协议代理（socks5 UDP 模式）
 * 支持 OpenVPN 与代理共存
 * 可通过接口轻松设置中间人证书，配合 http/socks5 代理实现中间人流量分析
-* 通过 frida 暴露内部 Java/Jni 接口（类sekiro，可暴露于公网）
-* 只要有网即可连接任意地方运行了 lamda 的设备
+* 通过 frida 暴露内部 Java/JNI 接口（类 [virjar/sekiro](https://github.com/virjar/sekiro) 但基于 frida，可暴露于公网）
 * UI自动化，通过接口实现自动化操作
 * 设备状态/资源消耗读取
 * 大文件上传下载
+* WEB 文件上传
 * 唤起应用的 Activity
 * 前后台运行 shell 命令，授予撤销应用权限等
 * 系统配置/属性读取修改
@@ -28,7 +33,7 @@
 
 ## 超完备一键中间人流量分析
 
-支持常规以及国际APP流量分析，DNS流量分析，得益于 [mitmproxy flow hook](https://docs.mitmproxy.org/stable/api/events.html)，你可以对任何请求做到最大限度的掌控，对标你用过的任何此类商业/非商业软件，一条命令即完成所有流程。
+支持常规以及国际APP流量分析，DNS流量分析，得益于 [mitmproxy flow hook](https://docs.mitmproxy.org/stable/api/events.html)，你可以对任何请求做到最大限度的掌控，mitmproxy 功能足够丰富，你可以通过其 `Export` 选项导出特定请求的 `curl` 命令或者 `HTTPie` 命令，对标你用过的任何此类商业/非商业软件，一条命令即完成所有流程。
 
 通过 tools/ 目录下的 `globalmitm`，`startmitm.py` 实现，使用方法请看其同目录 README。
 
@@ -46,7 +51,13 @@
 
 ![远程桌面动图演示](image/lamda.gif)
 
-如果你希望继续看下去，请先确保：手边有一台已经 root 且运行内存 **>= 3GB**，可用存储空间 **>=1GB** 的安卓设备或者安卓模拟器（推荐使用最新版**夜神**，**雷电**，**逍遥**模拟器，或者 AVD[Android Studio Virtual Device, 非 Google APIs 系统]）。**不完全支持** 网易 Mumu，**不支持**腾讯手游助手，蓝叠以及任何安卓内虚拟如 VMOS，等），对于真机，推荐运行最接近原生系统的设备如谷歌系、一加、安卓开发板等，或系统仅经过轻度改造的设备。目前**可能**不能在蓝绿厂/华为/小米类高度改造的安卓系统上正常运行，如果你只有此类品牌设备，建议使用模拟器。
+## 拖拽上传文件
+
+可直接在远程桌面拖拽上传文件，最大支持 128MB 的文件上传，文件将始终被上传到 `/data/local/tmp` 目录下。
+
+![拖拽上传文件动图演示](image/upload.gif)
+
+如果你希望继续看下去，请先确保：手边有一台已经 root 且运行内存 **>= 3GB**，可用存储空间 **>= 1GB** 的安卓设备或者安卓模拟器（推荐使用最新版**夜神**，**雷电**，**逍遥**模拟器，或者 AVD [Android Studio Virtual Device]）。**不完全支持** 网易 Mumu，**不支持**腾讯手游助手，蓝叠以及任何安卓内虚拟如 VMOS，等），对于真机，推荐运行最接近原生系统的设备如谷歌系、一加、安卓开发板等，或系统仅经过轻度改造的设备。目前**可能不能**在蓝绿厂/华为/小米类高度改造的安卓系统上正常运行，如果你只有此类品牌设备，如果经过尝试无法正常运行，建议使用模拟器。
 
 **文档中部分内容太杂可能劝退一些人，为什么文档写了这么多奇怪无关的东西，因为这个文档连大部分你可能遇到的相关问题都写了进来。**
 
@@ -56,7 +67,7 @@
 
 为了下载使用由 rev1si0n (账号 github.com/rev1si0n)（以下简称“本人”）个人开发的软件 lamda ，您应当阅读并遵守《用户使用协议》（以下简称“本协议”）。请您务必审慎阅读、充分理解各条款内容，特别是免除或者限制责任的条款，并选择接受或不接受；除非您已阅读并接受本协议所有条款，否则您将无权下载、安装或使用本软件及相关服务。您的下载、安装、使用、获取账号、登录等行为即视为您已阅读并同意受到上述协议的约束；若您需要获得本服务，您（以下称"用户"）应当同意本协议的全部条款并按照页面上的提示完成全部申请使用程序。您可以在本文档的相同目录找到 [DISCLAIMER.TXT](DISCLAIMER.TXT)，或者点此 [免责声明](DISCLAIMER.TXT) 查阅。
 
-lamda 是一个免费软件 (freeware)，暂时没有开源，但个人承诺它没有任何对您违规或多余的行为，互相尊重，使用请遵守以上条款。合作请联系 ihaven0emmail#gmail.com。
+lamda 是一个免费软件 (freeware)，暂时仅客户端以及协议是开源的，但个人承诺它没有任何对您违规或多余的行为，互相尊重，使用请遵守以上条款。合作请联系 [ihaven0emmail#gmail.com](mailto:ihaven0emmail@gmail.com)。
 
 ## 前言
 
@@ -78,16 +89,16 @@ lamda 是一个免费软件 (freeware)，暂时没有开源，但个人承诺它
 ## 注意事项
 
 此框架主要设计在纯净 root 的设备上运行，任何其他 root 类框架及功能都有可能引起冲突发生不正常的表现
-最理想的环境是你仅仅刚刚 root（举个例子，新建的夜神模拟器，自带 root 的 lineageos 等，或者使用 magisk/supersu 刚 root 且未安装任何框架或者插件），在进行服务端启动前，请务必确保：
+最理想的环境是你仅仅刚刚 root（举个例子，新建的夜神模拟器，自带 root 的 lineageos 等，或者使用 Magisk/supersu 刚 root 且未安装任何框架或者插件），在进行服务端启动前，请**务必确保**：
 
-* 必须关闭 magisk hide
+* 必须关闭 Magisk Hide
 * 必须关闭 frida-server
-* 建议关闭 xposed/magisk 插件
+* 建议关闭 Xposed/Magisk 插件
 * 确认完毕重启设备
 
 并且不会在启动后启用任何上述任何标记为`必须`的条目。
 
-> 检查网络设置
+> 检查网络设置是否符合要求
 
 对于真机，你只需要确保电脑与手机在同一网络下即可。
 对于模拟器，默认创建的模拟器正常情况下与你的本机网络并不互通，如果你使用的是 android x86 (基于 VMWare 的安卓虚拟机)，
@@ -105,6 +116,11 @@ export lamda_crash_system=1
 这种情况多数是由 frida 导致的，这将禁用掉 frida 一些功能，也意味着你将无法正常使用内置的 frida。
 但是将保证你可以使用大部分其他的内置接口。
 仅在出现多次重启的情况下设置此变量，否则请勿设置（多次代表十五分钟内出现 >=3 次重启/崩溃情况）。
+
+> 其他情况
+
+首次启动时，有一定几率会出现 web 远程桌面一直加载中超过五分钟或者接口一直处于 ServiceUnavailable 状态
+出现这种情况时，请重启设备并重新启动 lamda。
 
 ### 我不想听一句废话，只想快速看看怎么样
 
@@ -135,7 +151,7 @@ sh arm64-v8a.tar.gz-install.sh
 
 > 通过PIP源直接安装
 
-请使用 3.6 - 3.10 版本的 Python
+请使用 3.6 - 3.10 版本的 Python，建议有条件的话使用 Python 3.9
 
 ```bash
 pip3 install -U lamda
@@ -146,6 +162,9 @@ pip3 install -U lamda
 # 你可能需要外网访问才能安装 frida，否则有几率会卡住许久(~10分钟)或安装失败
 # 如果你不需要 frida，请不要使用下面这条命令安装
 pip3 install -U 'lamda[frida]'
+# 请注意完成安装后，你需要同时使用 pip 更新任何使用了
+# frida 的第三方库例如 frida-tools objection 等（如果安装过的话）
+# 否则后期使用可能会出现难以察觉的异常
 ```
 
 ### 服务端安装及启动
@@ -154,17 +173,26 @@ pip3 install -U 'lamda[frida]'
 正常情况下，对于现时代的手机，可以直接选择 `arm64-v8a` 版本，而对于模拟器如雷电，你会在新建模拟器时选择32或64位版本的安卓系统，
 32位模拟器系统对应 `x86`，64位则对应 `x86_64`，正常情况下，雷电模拟器默认创建的为基于 `x86` 的安卓 7.0 系统。
 
+lamda 会定期检查更新，默认频道为 mainline，更新频率约 1+ 周一次，如果该频率会影响到你的使用，请在首次启动 lamda 之前执行以下命令创建更新配置，stable 的更新频率为 1-2 月。为了减小压力，建议定期从 github release 下载最新版本手动更新。
+
+```bash
+# 进入 adb shell 执行
+echo "upgrade.channel=stable" >>/data/local/tmp/properties.local
+```
+
 > launch 可能出现的错误及解决方法
 
 ```bash
-already running     (lamda 已经在运行)
+# 显示 llllaamDaa started 则服务已经正常进入 daemon 模式，可以退出终端
+
+already running     (lamda 已经在运行，请不要多次启动)
 invalid TZ area     (时区未设置，在系统时间设置中设置时区即可，可能出现于国外或原生系统上)
 not run as root     (没有以 root 身份运行)
-unsupported sdk     (在不支持的安卓系统上运行，不是 6-12)
+unsupported sdk     (在不支持的安卓系统上运行，不是 6-13)
 abi not match       (使用了错误的 gz 包，例如在 x86_64 上运行了 x86 的包)
 ```
 
-现在，从 `release` 页面 [rev1si0n/lamda/releases](https://github.com/rev1si0n/lamda/releases)
+现在，从 `release` 页面 [lamda/releases](https://github.com/rev1si0n/lamda/releases)
 下载对应架构的安装文件。假设你已经从上文得知你的手机/设备架构为 `arm64-v8a`，那么在此页面点击
 `arm64-v8a.tar.gz-install.sh` 以及 `arm64-v8a.tar.gz` 两个文件的链接来下载到本地。
 
@@ -189,7 +217,8 @@ adb remount
 
 ```bash
 # Pixel_4_API_29 为虚拟机ID，可以使用 emulator -list-avds 列出
-emulator -avd Pixel_4_API_29 -writable-system
+# -partition-size 部分新建的 AVD 可用存储空间可能只有百兆，这里修改为 4G
+emulator -avd Pixel_4_API_29 -partition-size 4096 -writable-system -no-snapshot-load
 ```
 
 并在启动后执行
@@ -200,7 +229,7 @@ adb shell avbctl disable-verification
 adb disable-verity
 ```
 
-随后重启设备，继续执行
+随后重启设备（`adb reboot`，需要等待一会），启动后继续执行
 
 ```bash
 adb root
@@ -320,6 +349,9 @@ reboot
 在浏览器中打开 `http://192.168.0.2:65000` 可进入 web 远程桌面，你可以在此操作设备以及通过该界面的root模拟终端执行命令。
 不支持多人访问，不保证兼容所有浏览器，建议使用 Chrome。
 
+你可以在此页面直接**拖动文件到左侧终端**上来上传文件到设备，不支持同时拖动多个或者文件夹，单个文件最大不得超过 128MB，
+文件将始终上传到 `/data/local/tmp`。
+
 注：如果启动服务端时指定了证书，打开页面时会要求输入密码，你可以在证书最后一行找到这个32位的密码。
 
 ## 连接设备
@@ -437,6 +469,8 @@ lamda 在 tools/ 中提供了一个开箱即用同时支持 udp 的 socks5 代�
 如果你使用的是 `Charles` 等，我无法确保你可以一次性完成设置，
 因为此类应用配置项目较为复杂且你可能需要理解各种代理类型才能正确配置SSL中间人，
 如果你一定要使用，建议使用 Charles 的 socks5 作为代理协议。
+
+注意：有可能不支持安卓 13
 
 ```python
 import os
@@ -637,7 +671,7 @@ fwd.protocol=tcp
 fwd.enable=true
 ```
 
-进入设备的 ssh 命令行（也可通过 web 远程桌面进入），执行
+进入设备的 ssh 命令行（也可通过 web 远程桌面拖拉上传文件），执行
 
 ```bash
 cd # 先切换到家目录

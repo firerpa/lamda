@@ -60,6 +60,23 @@ ${CERT}
 profile.key = """
 ${KEY}
 """
+
+# ----- properties.local -----
+"""
+# copy openvpn.* below and paste it
+# to /data/local/tmp/properties.local to let
+# OpenVPN auto start when lamda started
+# auto-generated lamda OpenVPN prop, CN=${CLIENT}
+openvpn.proto=${PROTO}
+openvpn.cipher=${CIPHER}
+openvpn.global=false
+openvpn.host=${WANIP}
+openvpn.port=${PORT}
+openvpn.ca=$(base64 -w 0 <<<"${CA}")
+openvpn.cert=$(base64 -w 0 <<<"${CERT}")
+openvpn.key=$(base64 -w 0 <<<"${KEY}")
+openvpn.enable=true
+"""
 EOL
         fi
 fi

@@ -90,6 +90,8 @@ python3 -u startmitm.py 192.168.1.2 --set dns_server=true
 ```
 即可。
 
+> 注意：由于实现原因，DNS中间人不支持使用 `startmitm.py localhost` 方式
+
 这些DNS请求默认会从本机发出，你也可以将这些 DNS 请求转发到指定的上游DNS服务器例如 `1.1.1.1`。
 ```bash
 python3 -u startmitm.py 192.168.1.2 --set dns_server=true --set dns_mode=reverse:1.1.1.1

@@ -32,7 +32,7 @@ sysctl -p
 ```bash
 *nat
 :POSTROUTING ACCEPT [0:0]
--A POSTROUTING -s 172.20.10.0/24 -o eth0 -j MASQUERADE
+-A POSTROUTING -s 172.27.27.0/24 -o eth0 -j MASQUERADE
 COMMIT
 ```
 
@@ -77,12 +77,12 @@ docker run -it --rm --privileged --net host -v ~/lamda-openvpn-server:/etc/openv
 
 ```ini
 # VPN 的网段以及掩码
-server 172.20.10.0 255.255.255.0
+server 172.27.27.0 255.255.255.0
 # VPN 服务端口
 port 1190
 
 # 改了 VPN 的网段也需要同时修改这里
-push "route 172.20.10.0 255.255.255.0"
+push "route 172.27.27.0 255.255.255.0"
 # 或者如果你需要服务器上某个网络接口可以被VPN客户端访问
 # 你也可以增加一条路由，但是注意此时你也只能访问到当前主机在此网段的IP
 # 如果需要客户端对此网段的完全访问，你还需进行额外设置
@@ -108,6 +108,8 @@ docker run -it --rm --privileged --net host -v ~/lamda-openvpn-server:/etc/openv
 # 生成 ovpn 配置，并重定向保存到文件 myname.ovpn，这个文件可以用于 OpenVPN-Connect 等 APP
 docker run -it --rm --privileged --net host -v ~/lamda-openvpn-server:/etc/openvpn rev1si0n/openvpn ovpn-client-profile ovpn myname >myname.ovpn
 # 生成 lamda 使用的 OpenVPNProfile，可以直接在 lamda 中使用
+# 其中包含一段 properties.local 注释部分，你可以将其中的 openvpn.* 配置
+# 复制到 /data/local/tmp/properties.local 中以实现自动连接 VPN
 docker run -it --rm --privileged --net host -v ~/lamda-openvpn-server:/etc/openvpn rev1si0n/openvpn ovpn-client-profile lamda myname
 ```
 
