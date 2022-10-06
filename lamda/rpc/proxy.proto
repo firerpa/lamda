@@ -39,6 +39,21 @@ enum OpenVPNCipher {
                 AES_256_CBC      = 4;
 }
 
+enum OpenVPNKeyDirection {
+// because 0 is a default value
+// so we use 1 as key-direction 0
+                KEY_DIRECTION_NONE = 0;
+                KEY_DIRECTION_0    = 1;
+                KEY_DIRECTION_1    = 2;
+}
+
+enum OpenVPNEncryption {
+                TLS_NONE        = 0;
+                TLS_AUTH        = 1;
+                TLS_CRYPT       = 2;
+                TLS_CRYPT_V2    = 3;
+}
+
 message OpenVPNConfigRequest {
     bool all_traffic            = 1;
     OpenVPNProto    proto       = 2;
@@ -48,4 +63,7 @@ message OpenVPNConfigRequest {
     string ca                   = 6;
     string cert                 = 7;
     string key                  = 8;
+    OpenVPNEncryption tls_encryption = 9;
+    OpenVPNKeyDirection tls_key_direction = 10;
+    string tls_key              = 11;
 }

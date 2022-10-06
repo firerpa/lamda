@@ -52,6 +52,8 @@ __all__ = [
                 "Keys",
                 "KeyCode",
                 "KeyCodes",
+                "OpenVPNEncryption",
+                "OpenVPNKeyDirection",
                 "OpenVPNCipher",
                 "OpenVPNProto",
                 "Orientation",
@@ -151,6 +153,8 @@ Keys = protos.Key # make an alias
 KeyCode = protos.KeyCode
 KeyCodes = protos.KeyCode # make an alias
 
+OpenVPNEncryption = protos.OpenVPNEncryption
+OpenVPNKeyDirection = protos.OpenVPNKeyDirection
 OpenVPNCipher = protos.OpenVPNCipher
 OpenVPNProto = protos.OpenVPNProto
 Orientation = protos.Orientation
@@ -1042,6 +1046,25 @@ class UtilStubWrapper(BaseServiceStub):
 
 
 class DebugStubWrapper(BaseServiceStub):
+    def _read_pubkey(self, pubkey):
+        with open(pubkey, "rb") as fd:
+            return fd.read()
+    def install_adb_pubkey(self, pubkey):
+        """
+        给内置 adb 服务添加公钥
+        """
+        req = protos.ADBDConfigRequest()
+        req.adb_pubkey = self._read_pubkey(pubkey)
+        r = self.stub.installADBPubKey(req)
+        return r.value
+    def uninstall_adb_pubkey(self, pubkey):
+        """
+        从内置 adb 服务移除公钥
+        """
+        req = protos.ADBDConfigRequest()
+        req.adb_pubkey = self._read_pubkey(pubkey)
+        r = self.stub.uninstallADBPubKey(req)
+        return r.value
     def is_android_debug_bridge_running(self):
         """
         远端 adb daemon 是否在运行
@@ -1060,20 +1083,11 @@ class DebugStubWrapper(BaseServiceStub):
         """
         r = self.stub.isIDA64Running(protos.Empty())
         return r.value
-    def _get_local_adb_pubkey(self):
-        """
-        读取本地 adb 公钥的内容
-        """
-        fpath = joinpath("~", ".android", "adbkey.pub")
-        with open(expanduser(fpath), "rt") as fd:
-            return fd.read()
     def start_android_debug_bridge(self):
         """
-        启动 adbd (同时将本地 adb 公钥上传以避免认证)
+        启动 adbd (默认随框架启动)
         """
-        req = protos.ADBDConfigRequest()
-        req.adb_pubkey = self._get_local_adb_pubkey()
-        r = self.stub.startAndroidDebugBridge(req)
+        r = self.stub.startAndroidDebugBridge(protos.Empty())
         return r.value
     def start_ida(self, port=23932, **env):
         """
@@ -1625,6 +1639,10 @@ class Device(object):
     def getprop(self, name):
         return self.stub("Util").getprop(name)
     # 快速调用: Debug
+    def install_adb_pubkey(self, pubkey):
+        return self.stub("Debug").install_adb_pubkey(pubkey)
+    def uninstall_adb_pubkey(self, pubkey):
+        return self.stub("Debug").uninstall_adb_pubkey(pubkey)
     def start_android_debug_bridge(self):
         return self.stub("Debug").start_android_debug_bridge()
     def is_android_debug_bridge_running(self):

@@ -1,0 +1,45 @@
+#!/bin/bash
+TOKEN=${TOKEN:-lamda0fwd}
+cat <<EOL >/etc/frps.ini
+[common]
+bind_addr               = 0.0.0.0
+bind_port               = 6009
+
+token                   = ${TOKEN}
+use_encryption          = true
+allow_ports             = ${PORTS:-2000-5000}
+authentication_timeout  = 60
+
+dashboard_port          = 6119
+dashboard_user          = lamda
+dashboard_pwd           = ${TOKEN}
+
+proxy_bind_addr         = ${BIND:-127.0.0.1}
+max_pool_count          = 15
+EOL
+
+WANIP=$(curl -s https://httpbin.org/ip | jq -r .origin)
+
+echo "----- FRPS  CONFIG -----"
+cat /etc/frps.ini
+
+echo
+echo "----- LAMDA CONFIG -----"
+
+cat <<EOL
+# auto-generated lamda frp prop
+# change rport to the port you want
+# copy lines below to properties.local to let frp
+# auto forward when lamda started
+fwd.host=${WANIP}
+fwd.port=6009
+fwd.rport=0
+fwd.token=${TOKEN}
+fwd.protocol=tcp
+fwd.enable=true
+EOL
+
+echo
+echo
+echo "----- SERVER   LOG -----"
+exec frps -c /etc/frps.ini

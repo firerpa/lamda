@@ -45,6 +45,12 @@ test.id_rsa # 用于连接 SSH 的对应 ID_RSA
 test.pem    # 用于加密客户端与服务端通信的证书
 ```
 
+## cert.py
+
+用来生成用于传输加密的证书，等效于 `cert.sh` 只不过这个脚本同时可以运行于 Windows，用法等同于 cert.sh。
+
+> 注：你有可能需要手动安装依赖库 `pip install pyOpenSSL`
+
 ## startmitm.py
 
 启动中间人，这将会完全自动的在设备上开启全局的中间人，你就可以截获应用的 http/s 流量，当然，也包括 DNS 请求。
@@ -108,6 +114,25 @@ def dns_response(flow):
 ```
 
 具体请查看 mitmproxy 的文档。
+
+## adb_pubkey.py
+
+用于安装本机的 adb pubkey 到 lamda 的脚本，否则 adb 连接将会显示未授权
+
+```bash
+# 安装 adb pubkey
+python3 -u adb_pubkey.py install 192.168.1.2
+# 卸载 adb pubkey
+python3 -u adb_pubkey.py uninstall 192.168.1.2
+```
+
+安装后，执行
+```bash
+adb kill-server
+adb connect 192.168.1.2:65000
+adb -s 192.168.1.2:65000 shell
+```
+来连接 lamda adb。
 
 ## ssh.sh
 

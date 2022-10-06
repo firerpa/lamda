@@ -115,7 +115,7 @@ docker run -it --rm --privileged --net host -v ~/lamda-openvpn-server:/etc/openv
 
 ## 撤销客户端凭证
 
-如果需要撤销某个客户端凭证请执行以下命令，撤销后需重新启动 OpenVPN 服务
+如果需要撤销某个客户端凭证请执行以下命令，撤销后可能需重新启动 OpenVPN 服务
 
 ```bash
 docker run -it --rm --privileged --net host -v ~/lamda-openvpn-server:/etc/openvpn rev1si0n/openvpn ovpn-client-revoke myname

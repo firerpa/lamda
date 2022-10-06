@@ -11,6 +11,10 @@ cp /root/vars ${VARS}
 fi
 
 set -ex
+openvpn --genkey --secret /etc/openvpn/ta.key
+openvpn --genkey tls-crypt-v2-server /etc/openvpn/tls-crypt-v2-server.key
+mkdir -p /etc/openvpn/tls-crypt-v2-client
+
 easyrsa init-pki
 easyrsa build-ca nopass
 easyrsa gen-dh

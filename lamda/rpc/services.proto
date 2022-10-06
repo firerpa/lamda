@@ -54,9 +54,12 @@ service Debug {
     rpc isIDA64Running(google.protobuf.Empty) returns (Boolean) {}
     rpc isAndroidDebugBridgeRunning(google.protobuf.Empty) returns (Boolean) {}
 
+    rpc installADBPubKey(ADBDConfigRequest) returns (Boolean) {}
+    rpc uninstallADBPubKey(ADBDConfigRequest) returns (Boolean) {}
+
     rpc startIDA(IDAConfigRequest) returns (Boolean) {}
     rpc startIDA64(IDAConfigRequest) returns (Boolean) {}
-    rpc startAndroidDebugBridge(ADBDConfigRequest) returns (Boolean) {}
+    rpc startAndroidDebugBridge(google.protobuf.Empty) returns (Boolean) {}
 
     rpc stopIDA(google.protobuf.Empty) returns (Boolean) {}
     rpc stopIDA64(google.protobuf.Empty) returns (Boolean) {}

@@ -1,2 +1,3 @@
 #!/bin/bash
+openvpn --genkey tls-crypt-v2-client "/etc/openvpn/tls-crypt-v2-client/$1" --tls-crypt-v2 /etc/openvpn/tls-crypt-v2-server.key
 easyrsa build-client-full "$1" nopass

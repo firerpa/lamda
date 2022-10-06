@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 if __name__ == "__main__":
+    import os
     import time
     import argparse
     from lamda.client import *
 
+    cert = os.environ.get("CERTIFICATE", None)
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", type=str, dest="device",
                             help="service ip address", required=True)
@@ -15,7 +17,7 @@ if __name__ == "__main__":
                             help="frida script", required=True)
     parser.add_argument("-delay", type=int, dest="delay", default=0,
                             help="attach after delay")
-    parser.add_argument("-cert", type=str, default=None,
+    parser.add_argument("-cert", type=str, default=cert,
                                    help="ssl cert")
     args = parser.parse_args()
 

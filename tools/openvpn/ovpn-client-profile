@@ -2,15 +2,53 @@
 export CLIENT=$2
 
 if [ -f "easy-rsa/pki/issued/${CLIENT}.crt" ]; then
-PROTO=$(sed -n -e 's/^proto \(.\+\).*/\1/p' config.ovpn)
-CIPHER=$(sed -n -e 's/^cipher \(.\+\).*/\1/p' config.ovpn)
-PORT=$(sed -n -e 's/^port \([[:digit:]]\+\).*/\1/p' config.ovpn)
+
+CRYPT_cfg_n="$(grep -Eo '^tls-(auth|crypt|crypt-v2)' config.ovpn | wc -l)"
+if [ 0"${CRYPT_cfg_n}" -gt 1 ]; then
+echo "Multiple tls-auth/crypt/crypt-v2 config detected"; exit 1
+fi
+
+TLS_ENCRYPTION=
+if [ 0"${CRYPT_cfg_n}" -eq 1 ]; then
+TLS_ENCRYPTION=$(grep -Eo '^tls-(auth|crypt|crypt-v2)' config.ovpn)
+TLS_CRYPT=$(echo ${TLS_ENCRYPTION}|tr '-' '_')
+else
+TLS_CRYPT=tls_none
+fi
+
+PROTO=$(sed -n -e 's/^proto *\(.\+\).*/\1/p' config.ovpn)
+CIPHER=$(sed -n -e 's/^cipher *\(.\+\).*/\1/p' config.ovpn)
+PORT=$(sed -n -e 's/^port *\([[:digit:]]\+\).*/\1/p' config.ovpn)
 WANIP=$(curl -s https://httpbin.org/ip | jq -r .origin)
 
 CA=$(cat easy-rsa/pki/ca.crt)
 CERT=$(openssl x509 -in easy-rsa/pki/issued/${CLIENT}.crt)
 KEY=$(cat easy-rsa/pki/private/${CLIENT}.key)
 
+SERVER_KEY_DIRECTION_n=$(sed -n -e 's/^tls-auth *.* \([[:digit:]]\).*/\1/p' config.ovpn)
+if [ x"${SERVER_KEY_DIRECTION_n}"x = xx ]; then
+SERVER_KEY_DIRECTION_n=$(sed -n -e 's/^key-direction *\(.\+\).*/\1/p' config.ovpn)
+fi
+
+CLIENT_KEY_DIRECTION_n=
+if [ x"${SERVER_KEY_DIRECTION_n}"x != xx ]; then
+CLIENT_KEY_DIRECTION_n=$((1^SERVER_KEY_DIRECTION_n))
+fi
+
+CLIENT_KEY_DIRECTION_inline=
+CLIENT_KEY_DIRECTION=KEY_DIRECTION_NONE
+if [ x"${CLIENT_KEY_DIRECTION_n}"x != xx ]; then
+CLIENT_KEY_DIRECTION_inline="key-direction ${CLIENT_KEY_DIRECTION_n}"
+CLIENT_KEY_DIRECTION=KEY_DIRECTION_${CLIENT_KEY_DIRECTION_n}
+fi
+
+if [ "${TLS_ENCRYPTION}" = "tls-crypt-v2" ]; then
+TA=$(cat /etc/openvpn/tls-crypt-v2-client/${CLIENT})
+elif [ ! -z "${TLS_ENCRYPTION}" ]; then
+TA=$(sed '/^#/d' ta.key)
+else
+TA=
+fi
         if [ "g$1" = govpn ]; then
 cat <<EOL >&1
 client
@@ -26,6 +64,11 @@ cipher ${CIPHER}
 keepalive 15 60
 
 remote-cert-tls server
+
+${CLIENT_KEY_DIRECTION_inline}
+<${TLS_ENCRYPTION}>
+${TA}
+</${TLS_ENCRYPTION}>
 
 <ca>
 ${CA}
@@ -49,6 +92,12 @@ profile.port         = ${PORT}
 profile.cipher       = OpenVPNCipher.$(echo ${CIPHER}|tr '-' '_')
 
 # auto-generated lamda OpenVPN profile, CN=${CLIENT}
+profile.tls_encryption = OpenVPNEncryption.${TLS_CRYPT^^}
+profile.tls_key_direction = OpenVPNKeyDirection.${CLIENT_KEY_DIRECTION}
+profile.tls_key = """
+${TA}
+"""
+
 profile.ca = """
 ${CA}
 """
@@ -61,20 +110,21 @@ profile.key = """
 ${KEY}
 """
 
-# ----- properties.local -----
 """
-# copy openvpn.* below and paste it
-# to /data/local/tmp/properties.local to let
-# OpenVPN auto start when lamda started
 # auto-generated lamda OpenVPN prop, CN=${CLIENT}
+# copy lines below to properties.local to let openvpn
+# auto connect when lamda started
 openvpn.proto=${PROTO}
 openvpn.cipher=${CIPHER}
 openvpn.global=false
 openvpn.host=${WANIP}
 openvpn.port=${PORT}
-openvpn.ca=$(base64 -w 0 <<<"${CA}")
-openvpn.cert=$(base64 -w 0 <<<"${CERT}")
-openvpn.key=$(base64 -w 0 <<<"${KEY}")
+openvpn.ca=$(echo -n "${CA}" | base64 -w 0)
+openvpn.cert=$(echo -n "${CERT}" | base64 -w 0)
+openvpn.key=$(echo -n "${KEY}" | base64 -w 0)
+openvpn.tls_encryption=${TLS_ENCRYPTION}
+openvpn.tls_key_direction=${CLIENT_KEY_DIRECTION_n}
+openvpn.tls_key=$(echo -n "${TA}" | base64 -w 0)
 openvpn.enable=true
 """
 EOL

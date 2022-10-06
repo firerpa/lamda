@@ -1,25 +1,38 @@
+<div align="center">
+<pre>
+.____                       ________      _____    
+|    |    _____     _____   \______ \    /  _  \   
+|    |    \__  \   /     \   |    |  \  /  /_\  \  
+|    |___  / __ \_|  Y Y  \  |    |   \/    |    \ 
+|_______ \(____  /|__|_|  / /_______  /\____|__  / 
+        \/     \/       \/          \/         \/  
+</pre>
+</div>
+
+
 这是一个用于安卓逆向及自动化的辅助框架，它以编程化的接口大幅减少你的手动操作，你将不再需要关心琐碎的问题。通过它，你可以获得：
 
 * 零依赖，只需 root 即可
 * 支持安卓 6.0 (M, API 23) - 13 (T, API 33)
 * 极其简单的调用，封装了大量常用接口，你只需要会写 Python
 * 只要有网即可连接任意地方运行了 lamda 的设备
-* 完全脱离 USB 数据线/USB HUB 等实体连接
+* 完全网络化，脱离 USB 数据线/USB HUB 等实体连接
 * 不会给现有运行环境增加任何可被检测的特征
 * 大大降低门槛以及闲杂琐事上的时间成本
 * 7*24 小时的稳定性
 * 支持标准游戏/AVD模拟器及真机、云手机，全架构
 * 可完美内置于安卓系统
+* 无线连接内置 root 权限的 WIFI ADB
 * 支持 OpenVPN 可实现全局/非全局的 VPN
 * 支持 http/socks5 代理，可实现设置系统级别/单个应用级别的代理
 * 支持 UDP 协议代理（socks5 UDP 模式）
 * 支持 OpenVPN 与代理共存
 * 可通过接口轻松设置中间人证书，配合 http/socks5 代理实现中间人流量分析
-* 通过 frida 暴露内部 Java/JNI 接口（类 [virjar/sekiro](https://github.com/virjar/sekiro) 但基于 frida，可暴露于公网）
+* 通过 frida 暴露内部 Java/JNI 接口（类 [virjar/sekiro](https://github.com/virjar/sekiro) 但基于 frida）
 * UI自动化，通过接口实现自动化操作
 * 设备状态/资源消耗读取
 * 大文件上传下载
-* WEB 文件上传
+* WEB 端文件上传下载
 * 唤起应用的 Activity
 * 前后台运行 shell 命令，授予撤销应用权限等
 * 系统配置/属性读取修改
@@ -51,11 +64,13 @@
 
 ![远程桌面动图演示](image/lamda.gif)
 
-## 拖拽上传文件
+## 拖拽上传/目录索引
 
-可直接在远程桌面拖拽上传文件，最大支持 128MB 的文件上传，文件将始终被上传到 `/data/local/tmp` 目录下。
+可直接在远程桌面拖拽上传文件，最大支持 256MB 的文件上传，文件将始终被上传到 `/data/local/tmp` 目录下。
 
-![拖拽上传文件动图演示](image/upload.gif)
+![拖拽上传动图演示](image/upload.gif)
+
+![目录索引动图演示](image/listing.gif)
 
 如果你希望继续看下去，请先确保：手边有一台已经 root 且运行内存 **>= 3GB**，可用存储空间 **>= 1GB** 的安卓设备或者安卓模拟器（推荐使用最新版**夜神**，**雷电**，**逍遥**模拟器，或者 AVD [Android Studio Virtual Device]）。**不完全支持** 网易 Mumu，**不支持**腾讯手游助手，蓝叠以及任何安卓内虚拟如 VMOS，等），对于真机，推荐运行最接近原生系统的设备如谷歌系、一加、安卓开发板等，或系统仅经过轻度改造的设备。目前**可能不能**在蓝绿厂/华为/小米类高度改造的安卓系统上正常运行，如果你只有此类品牌设备，如果经过尝试无法正常运行，建议使用模拟器。
 
@@ -346,11 +361,19 @@ reboot
 
 > 在网页端控制手机。
 
+### 远程桌面
+
 在浏览器中打开 `http://192.168.0.2:65000` 可进入 web 远程桌面，你可以在此操作设备以及通过该界面的root模拟终端执行命令。
 不支持多人访问，不保证兼容所有浏览器，建议使用 Chrome。
 
-你可以在此页面直接**拖动文件到左侧终端**上来上传文件到设备，不支持同时拖动多个或者文件夹，单个文件最大不得超过 128MB，
-文件将始终上传到 `/data/local/tmp`。
+### 文件上传
+
+你可以在此页面直接**拖动文件到左侧终端**上来上传文件到设备，不支持同时拖动多个或者文件夹，单个文件最大不得超过 256MB，
+文件将始终上传到 `/data/local/tmp` 目录下。
+
+### 文件下载/目录索引
+
+lamda 允许你通过浏览器浏览设备上的目录及下载文件，只需要在浏览器打开链接 `http://192.168.0.2:65000/fs/` 即可（注意最后面的 `/`）。
 
 注：如果启动服务端时指定了证书，打开页面时会要求输入密码，你可以在证书最后一行找到这个32位的密码。
 
@@ -649,6 +672,8 @@ print (res.status_code, res.json()["result"])
 有时候你可能遇到这种情况：你的手机在家里而你不在家该怎么使用呢。
 开始前，你可能需要先准备一台公网服务器。为了安全考虑，这里使用的是最保守的配置，最后会说明如何做到完整介绍的功能。
 
+tools 文件夹内提供了一个 docker 镜像，如果你熟悉 docker，请转到 tools 查看。
+
 本服务使用了较为成熟的端口转发程序 [fatedier/frp](https://github.com/fatedier/frp)，关于如何配置服务端，请在此项目中自行探索。注意：请勿将转发后的端口绑定到公网地址，请确保你的公网服务器关闭了所有不必要的端口。
 这里给你一个最简单安全的配置，可以直接使用如下命令启动服务端（请自行修改密码及端口）
 
@@ -828,26 +853,48 @@ debug.start_ida64(port=22064, IDA_LIBC_PATH="/apex/com.android.runtime/lib64/bio
 # 当你的设备系统为32位平台时，start_ida64 将会无效
 ```
 
-## 开启 WIFI ADB
+## 无线连接内置 root 权限的 WIFI ADB
 
-> 慎用，此功能可能不稳定且可能随时移除
+此 ADB 非全功能 adb，仅支持 shell,pull,push,forward,reverse 等常用功能
+通过此功能你将**无需开启开发者模式**即可连接最高权限的 adb。
+
+> 注：jdwp 调试相关功能具有唯一性，与系统内置存在冲突所以此 adb **目前**不支持。
 
 ```python
-debug = d.stub("Debug")
-
-# 启动设备 adb
-# 此接口会同时将你当前主机的 adb 公钥安装到移动设备，也就是说不会再弹出ADB授权弹窗。
-debug.start_android_debug_bridge()
-# 启动后，你可以直接通过
-# adb connect 192.168.0.2:65000 连接到设备
-# 此时你可以执行任意 adb 命令。
-# 你可以通过网络直接执行任意 adb forward/shell/pull/push 命令
-# 类似于 WIFI ADB 的功能。
+# lamda 内置的 adb 服务完全独立于系统本身提供的 adb 服务
+# 所以在使用之前需要先手动调用以下接口将你的 adb 公钥安装至设备上
+# 否则直接连接将会显示未授权（系统设置开发者模式中授权的秘钥与内置 adb 并不通用）
 #
+# tools 目录下的 adb_pubkey.py 可以帮助你使用命令安装，请查看其 README
+#
+# 这个秘钥文件位于你电脑上的 ~/.android 或者 C:\\Users\xxxx\.android，文件名为 adbkey.pub
+# 如果不存在这个文件但是存在文件 adbkey，请切换到该目录并执行命令
+# adb pubkey adbkey >adbkey.pub 来生成 adbkey.pub
+#
+# 随后使用 python 代码来拼接这个生成的 adbkey.pub 路径
+import os
+keypath = os.path.join("~", ".android", "adbkey.pub")
+abs_keypath = os.path.expanduser(keypath)
+print (abs_keypath)
+#
+# 然后安装这个 adbkey.pub 到 lamda
+d.install_adb_pubkey(abs_keypath)
+# 这样你就可以连接内置 adb 了
+# 通过命令 adb connect 192.168.0.2:65000 连接到设备
+# 你完全可以将其理解为 WIFI ADB
+#
+# 或者如果你需要从 lamda 内置 adb 移除这个公钥
+d.uninstall_adb_pubkey(abs_keypath)
+#
+#
+# ** 下面几步都是不必要做的，只是为了介绍存在这些接口 **
+#
+# 启动设备上的 adb 服务 (默认状态下是随 lamda 启动的，只做演示无需调用)
+d.start_android_debug_bridge()
 # 停止 adb 服务
-debug.stop_android_debug_bridge()
+d.stop_android_debug_bridge()
 # 检查是否启动
-debug.is_android_debug_bridge_running()
+d.is_android_debug_bridge_running()
 ```
 
 ## 文件操作

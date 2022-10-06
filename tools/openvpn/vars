@@ -111,7 +111,8 @@ set_var EASYRSA_KEY_SIZE	2048
 
 # In how many days should the root CA key expire?
 
-set_var EASYRSA_CA_EXPIRE	36500
+# 50 years
+set_var EASYRSA_CA_EXPIRE	18250
 
 # In how many days should certificates expire?
 
@@ -124,7 +125,7 @@ set_var EASYRSA_CRL_DAYS	3650
 
 # How many days before its expiration date a certificate is allowed to be
 # renewed?
-#set_var EASYRSA_CERT_RENEW	30
+set_var EASYRSA_CERT_RENEW	30
 
 # Random serial numbers by default, set to no for the old incremental serial numbers
 #
