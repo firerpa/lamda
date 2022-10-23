@@ -31,6 +31,21 @@ enum OpenVPNProto {
                 UDP             = 1;
 }
 
+enum OpenVPNAuth {
+                SHA1            = 0;
+                SHA224          = 1;
+                SHA256          = 2;
+                SHA384          = 3;
+                SHA512          = 4;
+                RIPEMD160       = 5;
+                RSA_SHA1        = 6;
+                RSA_SHA224      = 7;
+                RSA_SHA256      = 8;
+                RSA_SHA384      = 9;
+                RSA_SHA512      = 10;
+                RSA_RIPEMD160   = 11;
+}
+
 enum OpenVPNCipher {
                 AES_128_GCM      = 0;
                 AES_256_GCM      = 1;
@@ -66,4 +81,5 @@ message OpenVPNConfigRequest {
     OpenVPNEncryption tls_encryption = 9;
     OpenVPNKeyDirection tls_key_direction = 10;
     string tls_key              = 11;
+    OpenVPNAuth     auth        = 12;
 }

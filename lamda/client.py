@@ -52,6 +52,7 @@ __all__ = [
                 "Keys",
                 "KeyCode",
                 "KeyCodes",
+                "OpenVPNAuth",
                 "OpenVPNEncryption",
                 "OpenVPNKeyDirection",
                 "OpenVPNCipher",
@@ -153,6 +154,7 @@ Keys = protos.Key # make an alias
 KeyCode = protos.KeyCode
 KeyCodes = protos.KeyCode # make an alias
 
+OpenVPNAuth = protos.OpenVPNAuth
 OpenVPNEncryption = protos.OpenVPNEncryption
 OpenVPNKeyDirection = protos.OpenVPNKeyDirection
 OpenVPNCipher = protos.OpenVPNCipher
