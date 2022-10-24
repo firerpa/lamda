@@ -70,11 +70,19 @@
 
 ![拖拽上传动图演示](image/upload.gif)
 
-# 目录索引
+## 目录索引
 
-你可以在浏览器浏览设备上的文件，同时你也可以点击文件名来下载所需的文件，对于安卓系统数据库 (sqlite)，可以点击文件名后方的小箭头来在线浏览。
+你可以在浏览器浏览设备上的文件，同时你也可以点击文件名来下载所需的文件。
 
 ![目录索引动图演示](image/listing.gif)
+
+## 在线浏览 Android .db 数据库
+
+对于安卓系统数据库 (sqlite)，可以点击文件名后方的小箭头来在线浏览。
+无需再将应用产生的数据库文件下载到本地再使用其他软件打开进行分析，全程在线即可完成。
+
+![数据库在线浏览](image/dbview.gif)
+
 
 如果你希望继续看下去，请先确保：手边有一台已经 root 且运行内存 **>= 3GB**，可用存储空间 **>= 1GB** 的安卓设备或者安卓模拟器（推荐使用最新版**夜神**，**雷电**，**逍遥**模拟器，或者 AVD [Android Studio Virtual Device]）。**不完全支持** 网易 Mumu，**不支持**腾讯手游助手，蓝叠以及任何安卓内虚拟如 VMOS，等），对于真机，推荐运行最接近原生系统的设备如谷歌系、一加、安卓开发板等，或系统仅经过轻度改造的设备。目前**可能不能**在蓝绿厂/华为/小米类高度改造的安卓系统上正常运行，如果你只有此类品牌设备，如果经过尝试无法正常运行，建议使用模拟器。
 
@@ -509,7 +517,7 @@ import os
 HOME = os.path.expanduser("~")
 cert_path = os.path.join(HOME, ".mitmproxy", "mitmproxy-ca-cert.pem")
 
-# 注意这里可能会出现 Read-only system partition，如果出现异常，请检查你是否已完成
+# 注意这里如果出现 Read-only system partition，如果出现异常，请检查你是否已完成
 # 上面的 remount 操作（不论是否报错，请在本文档搜索 remount）
 # 如果已完成仍然出现，请检查是否使用的最新版 root 软件 (magisk, supersu)
 # 如果仍然没问题，那可能是设备的 system 分区被锁死只读挂载
@@ -536,6 +544,8 @@ d.uninstall_ca_certificate(cert_path)
 > 这些配置包括但不限于 PAC 代理，http 代理配置等。为了省却你安装服务的麻烦，
 > lamda 提供了一个开箱即用的 OpenVPN docker 镜像，它有脚本可以生成下面这个配置，请继续往下看。
 
+非常建议使用 tools 里的 OpenVPN docker 安装及生成如下连接配置。
+
 ```python
 profile = OpenVPNProfile()
 
@@ -546,7 +556,15 @@ profile.proto        = OpenVPNProto.UDP
 profile.host         = "OpenVPN 服务器地址"
 profile.port         = OpenVPN 服务器端口
 # 服务器端通道加密方法
-profile.cipher       = OpenVPNCipher.AES_256_CBC
+profile.cipher       = OpenVPNCipher.AES_256_GCM
+
+profile.tls_encryption = OpenVPNEncryption.TLS_CRYPT
+profile.tls_key_direction = OpenVPNKeyDirection.KEY_DIRECTION_NONE
+profile.tls_key = """
+-----BEGIN OpenVPN Static key V1-----
+tls key / tls auth
+-----END OpenVPN Static key V1-----
+"""
 
 profile.ca = """
 -----BEGIN CERTIFICATE-----
@@ -580,7 +598,7 @@ lamda 在 tools/ 中提供了一个开箱即用的 OpenVPN docker，请转到 to
 
 > 非逆向工作无需阅读此节
 
-注意，启动本框架前后，**请勿**再次自行启动任何 frida-server，框架已内置，你只需要通过下列代码使用即可。
+注意，启动本框架前后，**请勿**再次自行启动任何 frida-server，否则有可能会导致系统崩溃。你只需要通过下列代码使用内置 frida 即可。
 
 1. 通过代码连接
 
@@ -602,7 +620,7 @@ device.enumerate_processes()
 2. 通过命令行方式使用
 
 对于所有 frida 官方命令行工具，你只需要加上参数 `-H 192.168.0.2:65000` 即可，
-对于第三方的例如 `objection`，则是添加参数 `-N -h 192.168.0.2 -p 65000`，其他未提及的第三方工具请自行查看其使用方法。这些第三方工具可能并不会完全遵循 frida，如果你需要使用这些第三方工具，请确保服务端启动时**没有使用** `--certificate` 参数（加密传输）。
+对于第三方的例如 `objection`，则是添加参数 `-N -h 192.168.0.2 -p 65000`，其他未提及的第三方工具请自行查看其使用方法。这些第三方工具可能并不会完全遵循原生 frida 工具的命令行用法，如果你需要使用这些第三方工具，可能需要服务端启动时**没有使用** `--certificate` 参数（加密传输），因为它们可能并没有可以传递证书的参数。
 
 ```bash
 frida -H 192.168.0.2:65000 -f com.android.settings
@@ -651,7 +669,7 @@ frida -H 192.168.0.2:65000 -f com.android.settings --certificate /path/to/lamda.
 python3 fridarpc.py -f test-fridarpc.js -a com.android.settings -d 192.168.0.2
 ```
 
-现在已经将接口暴露出来了，只需要请求 `http://192.168.0.2:65000/fridarpc/myRpcName/getMyString?args=["A","B"]` 即可得到脚本内方法的返回结果，链接也可以用浏览器打开，接口同时支持 POST 以及 GET，参数列表也可以同时使用多个参数，空列表代表无参数，注意这里的 args 参数字符串最长**不能超过** `32KB`。
+现在已经将接口暴露出来了，只需要请求 `http://192.168.0.2:65000/fridarpc/myRpcName/getMyString?args=["A","B"]` 即可得到脚本内方法的返回结果，链接也可以用浏览器打开，接口同时支持 POST 以及 GET，参数列表也可以同时使用多个参数，空列表代表无参数，注意这里的 args 参数序列化后的字符串最长**不能超过** `32KB`。
 
 链接中的两个字符串参数 "A", "B" 即为注入的脚本中的方法 `getMyString(paramA, paramB)` 的位置参数。
 
@@ -679,9 +697,9 @@ print (res.status_code, res.json()["result"])
 有时候你可能遇到这种情况：你的手机在家里而你不在家该怎么使用呢。
 开始前，你可能需要先准备一台公网服务器。为了安全考虑，这里使用的是最保守的配置，最后会说明如何做到完整介绍的功能。
 
-因为有了公网服务器，lamda 有很多方法可以做到这个要求，使用 OpenVPN 来实现更加优雅。当然最方便的还是使用 frp。
+因为有了公网服务器，lamda 有很多方法可以做到这个要求，使用 **OpenVPN** 来实现更加优雅。当然最方便的还是使用 frp。
 
-tools 文件夹内都提供了相关服务的 docker 镜像，请转到 tools 查看。
+tools 文件夹内都提供了相关服务的 docker 镜像并且这些镜像可以一键命令生成下面的配置信息，可以转到 tools 查看使用方法。
 
 本服务使用了较为成熟的端口转发程序 [fatedier/frp](https://github.com/fatedier/frp)，关于如何配置服务端，请在此项目中自行探索。注意：请勿将转发后的端口绑定到公网地址，请确保你的公网服务器关闭了所有不必要的端口。
 这里给你一个最简单安全的配置，可以直接使用如下命令启动服务端（请自行修改密码及端口）
@@ -1037,7 +1055,7 @@ app.is_installed()
 # 卸载应用
 app.uninstall()
 
-# 查询启动该应用的 Activity
+# 查询该应用的启动 Activity
 app.query_launch_activity()
 
 # 启用应用

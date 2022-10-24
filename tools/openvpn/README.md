@@ -81,8 +81,6 @@ server 172.27.27.0 255.255.255.0
 # VPN 服务端口
 port 1190
 
-# 改了 VPN 的网段也需要同时修改这里
-push "route 172.27.27.0 255.255.255.0"
 # 或者如果你需要服务器上某个网络接口可以被VPN客户端访问
 # 你也可以增加一条路由，但是注意此时你也只能访问到当前主机在此网段的IP
 # 如果需要客户端对此网段的完全访问，你还需进行额外设置
@@ -125,12 +123,12 @@ docker run -it --rm --privileged --net host -v ~/lamda-openvpn-server:/etc/openv
 
 现在，启动 OpenVPN 服务
 
-> 在前台运行，可以直接看到客户端登连接信息
+> 在前台运行，可以直接看到客户端连接日志，用于排查错误
 ```bash
 docker run -it --rm --name openvpn-server --privileged --net host -v ~/lamda-openvpn-server:/etc/openvpn rev1si0n/openvpn run
 ```
 
-> 在后台运行，确认无误后建议这样启动服务端
+> 在后台运行，确认无误后建议使用此方法启动
 ```bash
 docker run -d --rm --name openvpn-server --privileged --net host -v ~/lamda-openvpn-server:/etc/openvpn rev1si0n/openvpn run
 ```
