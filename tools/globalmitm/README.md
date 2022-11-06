@@ -25,6 +25,8 @@ ss://aes-256-gcm:password@IP地址:9090
 docker run --rm -it --net host -e SS=ss://aes-256-gcm:password@IP地址:9090 rev1si0n/mitm 192.168.x.x
 ```
 
+如果显示 `Cannot resolve DNS through...`，请确保你的 SS 启用了 `-u` 选项。
+
 > 普通模式
 
 ```bash

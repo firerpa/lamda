@@ -1552,8 +1552,9 @@ class Device(object):
             creds = grpc.ssl_channel_credentials(cer)
             chann = grpc.secure_channel(self.server, creds,
                     options=(("grpc.ssl_target_name_override",
-                              self._ssl_common_name(cer)),
-                    ))
+                                self._ssl_common_name(cer)),
+                             ("grpc.enable_http_proxy",
+                                False)))
         else:
             chann = grpc.insecure_channel(self.server)
         interceptors = [ClientSessionMetadataInterceptor(),

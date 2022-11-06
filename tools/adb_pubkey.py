@@ -8,7 +8,9 @@ from lamda.client import *
 cmd, host = sys.argv[1:]
 
 certfile = os.environ.get("CERTIFICATE", None)
-d = Device(host, certificate=certfile)
+port = int(os.environ.get("LAMDAPORT", 65000))
+
+d = Device(host, port=port, certificate=certfile)
 
 shutil.which("adb") or exit("no adb")
 

@@ -16,9 +16,6 @@ openssl rsa     -passin pass:$PSW -in ${CN}.key -out ${CN}.key
 openssl x509 -in ${CN}.crt -text -noout                           >${CN}.pem
 cat ${CN}.{crt,key}                                              >>${CN}.pem
 openssl rsa -in ${CN}.key -outform der 2>/dev/null | openssl md5 | awk '{print $NF}' >>${CN}.pem
-openssl rsa -in ${CN}.pem -outform pem                            >${CN}.id_rsa
-chmod 600 ${CN}.pem ${CN}.id_rsa
 
 echo certificate: $(pwd)/${CN}.pem
-echo id_rsa: $(pwd)/${CN}.id_rsa
 rm ${CN}.{csr,crt,key}

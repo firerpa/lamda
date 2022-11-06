@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 import struct
 from socket import *
 
@@ -11,6 +12,8 @@ BcastHeader = protos.BcastHeader
 BcastDiscoverInfo = protos.BcastDiscoverInfo
 BcastResponse = protos.BcastResponse
 BcastRequest = protos.BcastRequest
+
+port = int(os.environ.get("LAMDAPORT", 65000))
 
 
 def BcastCallMethod(method):
@@ -34,7 +37,7 @@ def BcastCallMethod(method):
 sock = socket(AF_INET, SOCK_DGRAM)
 sock.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
 message = BcastCallMethod("DISCOVER")
-sock.sendto(message, ("255.255.255.255", 65000))
+sock.sendto(message, ("255.255.255.255", port))
 sock.settimeout(3.0)
 
 while True:

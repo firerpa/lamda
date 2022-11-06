@@ -10,7 +10,7 @@ RUN sed -i "s/deb.debian.org/${SOURCESMIRROR}/g" /etc/apt/sources.list
 RUN sed -i "s|security.debian.org/debian-security|${SOURCESMIRROR}/debian-security|g" /etc/apt/sources.list
 
 RUN apt-get update && apt-get -y upgrade
-RUN apt install -y git adb wget privoxy python3 python3-pip
+RUN apt install -y git adb wget privoxy dnsutils python3 python3-pip
 
 COPY entry /usr/bin/mitm
 RUN chmod 755 /usr/bin/mitm

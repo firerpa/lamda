@@ -84,7 +84,10 @@
 ![数据库在线浏览](image/dbview.gif)
 
 
-如果你希望继续看下去，请先确保：手边有一台已经 root 且运行内存 **>= 3GB**，可用存储空间 **>= 1GB** 的安卓设备或者安卓模拟器（推荐使用最新版**夜神**，**雷电**，**逍遥**模拟器，或者 AVD [Android Studio Virtual Device]）。**不完全支持** 网易 Mumu，**不支持**腾讯手游助手，蓝叠以及任何安卓内虚拟如 VMOS，等），对于真机，推荐运行最接近原生系统的设备如谷歌系、一加、安卓开发板等，或系统仅经过轻度改造的设备。目前**可能不能**在蓝绿厂/华为/小米类高度改造的安卓系统上正常运行，如果你只有此类品牌设备，如果经过尝试无法正常运行，建议使用模拟器。
+如果你希望继续看下去，请先确保：手边有一台已经 root 且运行内存 **>= 3GB**，可用存储空间 **>= 1GB** 的安卓设备或者安卓模拟器（推荐使用最新版**夜神**，**雷电**，**逍遥**模拟器，或者 AVD [Android Studio Virtual Device]）。**不完全支持** 网易 Mumu，**不支持**腾讯手游助手、蓝叠以及任何安卓内虚拟如 VMOS、部分 Docker 类型的云手机、等），对于真机，推荐运行最接近原生系统的设备如谷歌系、一加、安卓开发板等，或系统仅经过轻度改造的设备。目前**可能不能**在蓝绿厂(OPPO/VIVO)/华为/小米类高度改造的安卓系统上正常运行，如果你只有此类品牌设备，经过尝试后无法正常运行，建议改用模拟器。
+
+对于**云手机**，目前已知一些提供商的情况为：X马云手机基本都可以正常使用，X多云手机安卓9.0版本可以正常使用，
+不支持X手指、X电、X云兔、X子星（这些云手机很多都是Docker/套中套类型或者限制较多），其余未经测试。
 
 **文档中部分内容太杂可能劝退一些人，为什么文档写了这么多奇怪无关的东西，因为这个文档连大部分你可能遇到的相关问题都写了进来。**
 
@@ -94,9 +97,9 @@
 
 为了下载使用由 rev1si0n (账号 github.com/rev1si0n)（以下简称“本人”）个人开发的软件 lamda ，您应当阅读并遵守《用户使用协议》（以下简称“本协议”）。请您务必审慎阅读、充分理解各条款内容，特别是免除或者限制责任的条款，并选择接受或不接受；除非您已阅读并接受本协议所有条款，否则您将无权下载、安装或使用本软件及相关服务。您的下载、安装、使用、获取账号、登录等行为即视为您已阅读并同意受到上述协议的约束；若您需要获得本服务，您（以下称"用户"）应当同意本协议的全部条款并按照页面上的提示完成全部申请使用程序。您可以在本文档的相同目录找到 [DISCLAIMER.TXT](DISCLAIMER.TXT)，或者点此 [免责声明](DISCLAIMER.TXT) 查阅。
 
-lamda 是一个免费软件 (freeware)，暂时仅客户端以及协议是开源的，但个人承诺它没有任何对您违规或多余的行为，互相尊重，使用请遵守以上条款。合作请联系 [ihaven0emmail#gmail.com](mailto:ihaven0emmail@gmail.com)。
-
 ## 前言
+
+lamda 是个人开发的免费软件 (freeware)，目前仅客户端及协议是开源的，但个人承诺它没有任何对您违规或多余的行为，如果仍有担心，您可以**立即离开**或者选择**付费**寻求心理安慰。互相尊重，使用请遵守使用条款。合作交流请在 [ISSUE](https://github.com/rev1si0n/lamda/issues/new) 中留下联系方式。
 
 文档目前只是介绍了基本使用，请配合下方示例手动输入语句辅助理解。如果你使用的是 Windows，附带的任何示例代码/命令可能在你的系统上不会正常工作(但是不包括客户端库)，建议在 Linux 或者 Mac 系统上操作文档及样例中的代码。
 
@@ -312,10 +315,12 @@ tar -xzf arm64-v8a.tar.gz
 ```bash
 # 你现在应该在 adb shell 内，切换到目录
 cd /data/local/tmp
+#
 # 启动服务端
 # 注意，arm64-v8a 这个目录根据平台不同名称也不同
 # 如果你使用的是 x86 版本，那么这个目录名则是 x86/，你需要对命令做相应修改
 sh arm64-v8a/bin/launch.sh
+#
 # 如果你想要启用加密传输
 # 请先使用 tools/ 中的 cert.sh 来生成 lamda.pem 证书
 # 将其push到设备例如 /data/local/tmp/lamda.pem
@@ -324,6 +329,20 @@ sh arm64-v8a/bin/launch.sh
 sh arm64-v8a/bin/launch.sh --certificate=/data/local/tmp/lamda.pem
 # 这将加密任何通过 lamda 客户端产生的通信流量
 # 但不包括 webui 例如通过浏览器远程桌面的功能
+#
+# 如果你需要 lamda 监听到特定端口而不是 65000
+# 如果修改，请确保所有设备均以相同端口启动
+# 否则设备发现等功能可能无法以你预想的状态工作
+sh arm64-v8a/bin/launch.sh --port=8123
+# 不建议绑定 1024 以下的端口
+```
+
+建议在 `/data/local/tmp` 创建如下脚本用来启动 lamda，例如命名为 `start.sh`，以后启动都使用 start.sh 而不是手动敲长命令。
+
+```bash
+#!/system/bin/sh
+ABI=$(getprop ro.product.cpu.abi)
+sh /data/local/tmp/${ABI}/bin/launch.sh #--port=65000 --certificate=/data/local/tmp/lamda.pem
 ```
 
 静待退出，随即关闭终端，至此服务启动完成。
@@ -892,7 +911,8 @@ debug.start_ida64(port=22064, IDA_LIBC_PATH="/apex/com.android.runtime/lib64/bio
 # 所以在使用之前需要先手动调用以下接口将你的 adb 公钥安装至设备上
 # 否则直接连接将会显示未授权（系统设置开发者模式中授权的秘钥与内置 adb 并不通用）
 #
-# tools 目录下的 adb_pubkey.py 可以帮助你使用命令安装，请查看其 README
+# tools 目录下的 adb_pubkey.py 封装了下面接口的安装过程
+# 你可以使用该脚本一键授权，允许本机连接，请查看其 README，以下代码仅做参考说明
 #
 # 这个秘钥文件位于你电脑上的 ~/.android 或者 C:\\Users\xxxx\.android，文件名为 adbkey.pub
 # 如果不存在这个文件但是存在文件 adbkey，请切换到该目录并执行命令
@@ -1003,7 +1023,7 @@ d.start_activity(action="com.android.settings.TRUSTED_CREDENTIALS")
 
 > 授予/撤销 APP 权限
 
-注意，你应在APP未启动时进行权限设置，在APP请求时调用并不会产生帮你点击允许的效果。
+注意，你应在APP未启动时进行权限设置，在APP请求权限时调用并不会产生帮你点击允许的效果。
 
 ```python
 app = d.application("com.my.app")
@@ -1055,7 +1075,7 @@ app.is_installed()
 # 卸载应用
 app.uninstall()
 
-# 查询该应用的启动 Activity
+# 查询该应用的启动 Activity（入口活动）
 app.query_launch_activity()
 
 # 启用应用

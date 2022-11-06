@@ -6,12 +6,14 @@ if __name__ == "__main__":
     from lamda.client import *
 
     cert = os.environ.get("CERTIFICATE", None)
+    port = int(os.environ.get("LAMDAPORT", 65000))
+
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", type=str, dest="device",
                             help="service ip address", required=True)
     parser.add_argument("-a", type=str, dest="package",
                             help="target application Id", required=True)
-    parser.add_argument("-p", type=str, dest="port", default=65000,
+    parser.add_argument("-p", type=str, dest="port", default=port,
                             help="service port")
     parser.add_argument("-f", type=argparse.FileType("r"), dest="script",
                             help="frida script", required=True)

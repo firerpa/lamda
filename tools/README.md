@@ -1,22 +1,53 @@
-这些工具正常情况下只能工作于 linux/mac 系统之上，如果你使用的是 Windows，以`.sh`结尾的脚本应该无法正常工作。
+这些工具正常情况下只能工作于 linux/mac 系统之上，为个人常用功能的封装，并未特意考虑兼容 Windows 但是这不代表 lamda 不支持。如果你使用的是 Windows，以`.sh`结尾的脚本应该无法正常工作。
 
-> 使用之前，请确保已安装 adb 以及启动设备上的 lamda 服务端。
-> 需要注意，一次只能连接一个设备到当前电脑。所以脚本均不支持同时插入的多个USB ADB设备。
+> 使用之前，请确保已经启动设备上的 lamda 服务端。
 
 ## 前置条件
-安装所需的依赖包
+
+部分功能需要安装 adb，如果要用到，请确保已安装 adb 且不要太过老旧。
+
+**需要注意**：所有使用到 adb 的脚本均 只支持一台手机通过 USB (adb) 连接电脑，请确保 `adb devices` 中只有一个设备。
+
 ```bash
-pip3 install -r requirements.txt
+# 如果没有安装，请 自行搜索 如何安装，这里提供的只是基础建议
+# Windows
+https://developer.android.com/studio/releases/platform-tools
+# Mac
+brew install android-platform-tools
+#brew cask install android-platform-tools
+# Debian/Ubuntu
+apt install adb
 ```
 
-为了确保部分通过本地USB操作的功能正常进行，请在开始前连接USB线并开启授权**开发者调试**功能，随后执行
+克隆代码到本地
+
 ```bash
-adb forward tcp:65000 tcp:65000
+git clone https://github.com/rev1si0n/lamda.git
+# 如果不会使用或未安装 git，下载此文件到本地并解压
+# https://github.com/rev1si0n/lamda/archive/refs/heads/master.zip
+```
+
+进入 tools 目录并安装所需的依赖包
+```bash
+# 切换到 tools/ 目录并执行
+pip3 install -r requirements.txt
 ```
 
 如果你在服务端启用了通信加密(certificate)，你需要在使用前设置环境变量 `CERTIFICATE`
 ```bash
+# 对于 linux / Mac
 export CERTIFICATE=/path/to/lamda.pem
+# 对于 Windows（路径不能包含空格）
+set CERTIFICATE=C:\Users\path\to\lamda.pem
+```
+
+如果你修改了 lamda 的默认端口 65000，也需要在使用前设置环境变量
+
+```bash
+# 对于 linux / Mac
+export LAMDAPORT=8123
+# 对于 Windows（路径不能包含空格）
+set LAMDAPORT=8123
 ```
 
 192.168.1.2 为示例IP，请自行获取设备的实际IP地址。
@@ -41,7 +72,6 @@ bash cert.sh device1.example.com
 如果操作系统不方便使用此工具，当前目录下已经为你准备好了一个默认的 SSL 证书
 
 ```bash
-test.id_rsa # 用于连接 SSH 的对应 ID_RSA
 test.pem    # 用于加密客户端与服务端通信的证书
 ```
 
@@ -49,16 +79,19 @@ test.pem    # 用于加密客户端与服务端通信的证书
 
 用来生成用于传输加密的证书，等效于 `cert.sh` 只不过这个脚本同时可以运行于 Windows，用法等同于 cert.sh。
 
-> 注：你有可能需要手动安装依赖库 `pip install pyOpenSSL`
+> 注：你有可能需要手动安装 pyOpenSSL 依赖库 `pip install pyOpenSSL`
 
 ## startmitm.py
 
-启动中间人，这将会完全自动的在设备上开启全局的中间人，你就可以截获应用的 http/s 流量，当然，也包括 DNS 请求。
+启动中间人，这将会全自动的在设备上开启全局的中间人，你就可以截获应用的 http/s 流量，当然，也可以包括 DNS 请求（全局）。
 
 首先确保当前电脑与设备在同一个网段，192.168.1.2 为运行了 lamda 的手机设备。
 其次，确保你已在命令行验证 mitmproxy 已安装成功（在命令行输入 `mitmdump` 进行验证）。
-如果你是首次使用 mitmproxy，请在执行脚本前手动执行一次命令 `mitmdump` 并退出来完成
-mitmproxy 的初始化操作。
+
+当然，电脑与设备不在同一网段或者是远程设备，你也可以轻松 mitm，请继续看下去。
+
+> 注意：mitmweb 并不适合长时间多请求，其截获的请求均存储于内存之中。所以在长时间使用的情况下你的内存会被吃光。
+> 对于长时间的中间人操作，请改用 mitmdump，请自行了解使用方法。
 
 执行
 ```bash
@@ -68,29 +101,61 @@ python3 -u startmitm.py 192.168.1.2
 
 如果需要截获特定应用的流量而不是全局
 ```bash
+# 这里的 com.some.package 是应用的 ID
 python3 -u startmitm.py 192.168.1.2:com.some.package
 ```
 即可。
 
 如果需要传递其他参数到 mitmproxy，例如 -s，则执行
 ```bash
+# 这样你就可以通过编写 http_flow_hook.py 实时修改请求或者响应
 python3 -u startmitm.py 192.168.1.2 -s http_flow_hook.py
 ```
-任何 192.168.1.2 之后的参数将传递给 mitmproxy
 
-即使手机与当前电脑不在同一网段，你仍然可以使用在本机截获流量，但是需要先完成**前置条件**。
+关于如何编写 `http_flow_hook.py` 脚本，请参考 [docs.mitmproxy.org/stable/addons-examples](https://docs.mitmproxy.org/stable/addons-examples/)
+
+> 任何 192.168.1.2 之后的参数将传递给 mitmproxy 本身
+
+即使手机与当前电脑不在同一网段，你仍然可以使用在本机截获流量，但是**需要确保当前设备已通过USB接入**电脑且已ADB授权。
 ```bash
 python3 -u startmitm.py localhost
 ```
+
+如果手机不在身边，也和你的电脑不在同一网段，但是你可以访问 lamda 的端口，
+**这种情况通常为**：你使用了内置 frp 服务转发了 lamda 到远程服务器，
+或者你自行通过某种方式仅转发了 lamda 的 65000 端口到某个地方，这种情况下你和 lamda 之间
+**仅有这一个端口**可以直接交流，其他端口是无法访问的。这种情况下，手机无法直接访问到本机的任何端口，需要通过以下方式来完成。（注意 OpenVPN 并不属于这个情况）
+
+这时，需要通过稍微繁琐的组合方式来进行，下面介绍如何操作。
+
+首先，使用 `adb_pubkey.py` 或者自行调用接口将自身的 adb 公钥安装到设备上（请在本文档搜索），
+随后，确保当前电脑没有任何 USB ADB 设备连接（`adb devices` 显示无设备）。
+
+现在执行以下命令
+
+```bash
+adb kill-server
+# 如果你使用了内置 frp 或者自行使用了 ssh 转发，
+# 这里的 x.x.x.x 通常为 127.0.0.1，请依据事实修改
+# 而这里的 65000 也非固定，依据你实际设置的目的转发端口做修改
+adb connect x.x.x.x:65000
+```
+
+最后，按照和上文 通过USB 一样的方法操作
+```bash
+# localhost 代表使用 adb 设备
+python3 -u startmitm.py localhost
+```
+
 即可。
 
-注意：你可能需要完全结束APP并重新打开使其生效。
+注意：你可能需要完全结束APP并重新打开才会显示流量数据。
 
 按下一次 `CONTROL` + `C` 退出脚本。
 
 ### DNS 中间人
 
-截获 DNS 请求需要确保 mitmproxy 的版本 >= 8.1.0，且需要以**管理员**或者**root**身份运行脚本。
+截获 DNS 请求需要确保 mitmproxy 的版本 >= 8.1.0（且 Python>=3.9)，且需要以**管理员**或者**root**身份运行脚本。
 ```bash
 python3 -u startmitm.py 192.168.1.2 --set dns_server=true
 ```
@@ -167,7 +232,7 @@ bash scp.sh test/ 192.168.1.2:/sdcard
 
 ## discover.py
 
-列出本地网络中所有在线的设备（部分网络情况下可能一些设备没有列出，请多次尝试）
+列出**本地网络**中所有在线的设备（部分网络情况下可能一些设备没有列出，请多次尝试）
 
 ```bash
 python3 discover.py
@@ -214,14 +279,23 @@ print (data["result"])
 bash emu-install 192.168.1.2
 ```
 
-## globalmitm/
 
-用于分析需要透过 ss 实现需要代理才能连接的国外APP的流量，请转至其目录查看使用方法。
+## 各种服务脚本 (Docker)
 
-## openvpn/
+> 所有镜像均为 x86 平台，在 ARM 处理器的 Linux/Mac 上使用你可能要自行做出修改并重新生成。
 
-开箱即用的 OpenVPN docker，请转至其目录查看使用方法。
+### openvpn
 
-## socks5/
+开箱即用的 OpenVPN 服务
 
-开箱即用的 socks5 代理服务，请转至其目录查看使用方法。
+### globalmitm
+
+用于分析需要透过 ss 实现需要代理才能连接的国外APP的流量
+
+### frps
+
+开箱即用的 frp 端口转发
+
+### socks5
+
+开箱即用的 socks5 代理服务

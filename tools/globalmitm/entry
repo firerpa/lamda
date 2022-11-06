@@ -11,6 +11,10 @@ SOCKS5=$(((RANDOM % 10000) + 10000))
 HTTP=$(((RANDOM % 10000) + 10000))
 WEB=${WEBPORT:-1234}
 
+die () {
+        echo $@; exit 1
+}
+
 if [ ! -z "${SS}" ]; then
 cat <<EOL >/etc/privoxy/config
 confdir /etc/privoxy
@@ -42,6 +46,9 @@ privoxy --no-daemon /etc/privoxy/config &
 PIDS="$PIDS $!"
 
 trap "kill -9 ${PIDS} 2>/dev/null" SIGINT SIGTERM
+dig +time=3 google.com @127.0.0.1 -p ${DNS} >/dev/null || die "
+Cannot resolve DNS through ${SS}
+"
 startmitm.py ${IP} --set dns_server=true \
                --set dns_mode=reverse:127.0.0.1:${DNS} \
                --mode upstream:http://127.0.0.1:${HTTP} \
