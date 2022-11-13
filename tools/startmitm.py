@@ -5,12 +5,18 @@ import sys
 import time
 import signal
 import subprocess
+import argparse
 import uuid
 
 from socket import *
 from random import randint
-from packaging.version import parse as ver
+
+from mitmproxy.certs import CertStore
+from mitmproxy.options import CONF_DIR, CONF_BASENAME, KEY_SIZE
 from mitmproxy.version import VERSION
+
+from packaging.version import parse as ver
+
 from lamda import __version__
 from lamda.client import *
 
@@ -29,12 +35,9 @@ def cleanup(*args, **kwargs):
     d.stop_gproxy()
 
 
-def initialize_mitmproxy():
-    proc = subprocess.Popen("mitmdump")
-    log ("first run mitmproxy, "\
-                         "will take a few seconds")
-    time.sleep(10)
-    proc.terminate()
+def add_server(command, spec):
+    spec and command.append("--mode")
+    spec and command.append(spec)
 
 
 def log(*args):
@@ -88,14 +91,23 @@ print (r"%60s" %                            ("lamda#v%s" % (__version__)))
 pkgName = None
 argv = sys.argv
 host = argv[1]
+argp = argparse.ArgumentParser()
+
+def dnsopt(dns):
+    return "reverse:dns://{}@53".format(dns)
+argp.add_argument("-m", "--mode", default="regular")
+argp.add_argument("-d", "--dns", type=dnsopt, nargs="?",
+                                    const="1.1.1.1")
+args, extras = argp.parse_known_args(argv[2:])
+
 if ":" in host:
     host, pkgName = host.split(":")
-if "dns_server=true" in argv and ver(VERSION)<ver("8.1.0"):
-    log ("dns mitm needs mitmproxy>=8.1.0")
+if args.dns and ver(VERSION) < ver("9.0.0"):
+    log ("dns mitm needs mitmproxy>=9.0.0")
     sys.exit (1)
 
 login = "mitm"
-passwd = uuid.uuid4().hex[::4]
+psw = uuid.uuid4().hex[::4]
 cert = os.environ.get("CERTIFICATE")
 proxy = int(os.environ.get("PROXYPORT",
                     randint(28080, 58080)))
@@ -107,7 +119,7 @@ usb = server in ("127.0.0.1", "::1")
 
 if cert:
     log ("ssl:", cert)
-if usb and "dns_server=true" in argv:
+if usb and args.dns:
     log ("dns mitm not available with usb")
 if usb and (forward(lamda, lamda).wait() != 0 or \
             reverse(proxy, proxy).wait() != 0):
@@ -119,19 +131,17 @@ d = Device(host, port=lamda,
                  certificate=cert)
 
 # 拼接证书文件路径
-HOME = os.path.expanduser("~")
-ca = os.path.join(HOME, ".mitmproxy",
-                        "mitmproxy-ca-cert.pem")
+DIR = os.path.expanduser(CONF_DIR)
+CertStore.from_store(DIR, CONF_BASENAME, KEY_SIZE)
+ca = os.path.join(DIR, "mitmproxy-ca-cert.pem")
 
-if not os.path.isfile(ca):
-    initialize_mitmproxy()
 log ("install cacert: %s" % ca)
 d.install_ca_certificate(ca)
 
 # 初始化 proxy 配置
 profile = GproxyProfile()
 profile.type = GproxyType.HTTP_CONNECT
-if not usb and "dns_server=true" in argv:
+if not usb and args.dns:
     profile.nameserver = server
 profile.drop_udp = True
 
@@ -139,38 +149,35 @@ profile.host = server
 profile.port = proxy
 
 profile.login = login
-profile.password = passwd
+profile.password = psw
 log ("set proxy: %s:%s@%s:%s/%s" % (
-                            login, passwd,
+                            login, psw,
                             server, proxy,
                             pkgName or "all"))
 if pkgName is not None:
     profile.application.set(d.application(pkgName))
 d.start_gproxy(profile)
 
-servercmd = []
-servercmd.append("mitmweb")
-# 默认监听的是 127.0.0.1，改为全局
-servercmd.append("--set")
-servercmd.append("dns_listen_host=0.0.0.0")
-servercmd.append("--set")
-servercmd.append("dns_listen_port=53")
-servercmd.append("--ssl-insecure")
+command = []
+command.append("mitmweb")
+# 设置 MITMPROXY 代理模式
+add_server(command, args.mode)
+add_server(command, args.dns)
+command.append("--ssl-insecure")
 # 代理认证，防止误绑定到公网被扫描
-servercmd.append("--proxyauth")
-servercmd.append("{}:{}".format(login, passwd))
+command.append("--proxyauth")
+command.append("{}:{}".format(login, psw))
 # 随机 web-port
-servercmd.append("--web-port")
-servercmd.append(str(randint(18080, 58080)))
-# 关闭 rawtcp
-servercmd.append("--no-rawtcp")
-servercmd.append("--listen-port")
-servercmd.append(str(proxy))
+command.append("--web-port")
+command.append(str(randint(18080, 58080)))
+command.append("--no-rawtcp")
+command.append("--listen-port")
+command.append(str(proxy))
 # 追加额外传递的参数
-servercmd.extend(argv[2:])
+command.extend(extras)
 
-log (" ".join(servercmd))
-proc = subprocess.Popen(servercmd, shell=False)
+log (" ".join(command))
+proc = subprocess.Popen(command, shell=False)
 
 signal.signal(signal.SIGINT, cleanup)
 signal.signal(signal.SIGTERM, cleanup)
@@ -181,4 +188,4 @@ retcode = proc.wait()
 
 # 确保 cleanup 被调用
 os.kill(os.getpid(), signal.SIGTERM)
-sys.exit (0)
+sys.exit (retcode)

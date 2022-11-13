@@ -1,12 +1,12 @@
 这些工具正常情况下只能工作于 linux/mac 系统之上，为个人常用功能的封装，并未特意考虑兼容 Windows 但是这不代表 lamda 不支持。如果你使用的是 Windows，以`.sh`结尾的脚本应该无法正常工作。
 
-> 使用之前，请确保已经启动设备上的 lamda 服务端。
-
 ## 前置条件
 
-部分功能需要安装 adb，如果要用到，请确保已安装 adb 且不要太过老旧。
+开始之前，请确保已经启动设备上的 lamda 服务端。
 
-**需要注意**：所有使用到 adb 的脚本均 只支持一台手机通过 USB (adb) 连接电脑，请确保 `adb devices` 中只有一个设备。
+**注意**：部分命令文档可能具有时效性随时更新，为了避免版本问题，继续前请务必先在手机上安装最新版本的 lamda 以及其 Python 库和依赖库。所有使用到 adb 的脚本均 只支持一台手机通过 USB (adb) 连接电脑，请确保 `adb devices` 中只有一个设备。
+
+部分功能需要安装 adb，如果要用到，请确保已安装 adb 且不要太过老旧。
 
 ```bash
 # 如果没有安装，请 自行搜索 如何安装，这里提供的只是基础建议
@@ -84,6 +84,8 @@ test.pem    # 用于加密客户端与服务端通信的证书
 ## startmitm.py
 
 启动中间人，这将会全自动的在设备上开启全局的中间人，你就可以截获应用的 http/s 流量，当然，也可以包括 DNS 请求（全局）。
+它可以自动应用及撤销中间人，退出脚本后设备及网络也将恢复它原来的样子。
+
 
 首先确保当前电脑与设备在同一个网段，192.168.1.2 为运行了 lamda 的手机设备。
 其次，确保你已在命令行验证 mitmproxy 已安装成功（在命令行输入 `mitmdump` 进行验证）。
@@ -153,19 +155,41 @@ python3 -u startmitm.py localhost
 
 按下一次 `CONTROL` + `C` 退出脚本。
 
+### 转发到上游代理
+
+startmitm 本身也会启动 mitmproxy 作为代理服务，默认情况下流量都是从本机发出的，如果你需要流量通过一个上游代理代理发出而不是本机，可以使用如下方式指定上游代理，**仅支持** **HTTP** 作为上游代理。
+
+> DNS 流量不会经过上游代理
+
+```bash
+python3 -u startmitm.py 192.168.1.2 --mode upstream:http://example.com:8080
+# 省略掉 http:// 开头也是可以的
+python3 -u startmitm.py 192.168.1.2 --mode upstream:example.com:8080
+```
+
+如果上游代理需要登录认证
+
+```bash
+python3 -u startmitm.py 192.168.1.2 --mode upstream:example.com:8080 --upstream-auth USER:PASSWORD
+```
+
+这些选项是与 mitmproxy 兼容的。
+
 ### DNS 中间人
 
-截获 DNS 请求需要确保 mitmproxy 的版本 >= 8.1.0（且 Python>=3.9)，且需要以**管理员**或者**root**身份运行脚本。
+截获 DNS 请求需要确保 mitmproxy 的版本 >= 9.0.0（且 Python>=3.9)，且需要以**管理员**或者**root**身份运行脚本。
+部分系统上会存在自带DNS服务，在使用该功能前请自行确保没有其他服务使用了 53 端口。
+
+> 这里的 `114.114.114.114` 为上游 DNS，默认为 `1.1.1.1`，你也可以将其指向自建的 DNS 服务。
+
 ```bash
-python3 -u startmitm.py 192.168.1.2 --set dns_server=true
+python3 -u startmitm.py 192.168.1.2 --dns 114.114.114.114
 ```
-即可。
 
-> 注意：由于实现原因，DNS中间人不支持使用 `startmitm.py localhost` 方式
+> 如果 dns 是自建的并且不是标准端口这样做
 
-这些DNS请求默认会从本机发出，你也可以将这些 DNS 请求转发到指定的上游DNS服务器例如 `1.1.1.1`。
 ```bash
-python3 -u startmitm.py 192.168.1.2 --set dns_server=true --set dns_mode=reverse:1.1.1.1
+python3 -u startmitm.py 192.168.1.2 --dns 123.123.123.123:5353
 ```
 
 hook 脚本的方法名称定义有一些变化，正常 http 请求为 `response()`，截获 DNS 时需要使用 `dns_response()`。
@@ -182,7 +206,7 @@ def dns_response(flow):
 
 ## adb_pubkey.py
 
-用于安装本机的 adb pubkey 到 lamda 的脚本，否则 adb 连接将会显示未授权
+用于安装本机的 adb pubkey 到 lamda 的脚本，否则 adb 连接将会显示未授权。
 
 ```bash
 # 安装 adb pubkey

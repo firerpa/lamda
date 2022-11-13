@@ -500,6 +500,15 @@ message SelectorScrollRequest {
         uint32 step               = 5;
 }
 
+message SelectorPinchRequest {
+        oneof _selector {
+                Selector selector = 1;
+                string   object   = 2;
+        }
+        uint32 percent            = 3;
+        uint32 step               = 4;
+}
+
 message ClickPointRequest {
         Point point     = 1;
 }

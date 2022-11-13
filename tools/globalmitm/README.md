@@ -53,3 +53,10 @@ docker run -it --rm -p 8118:8118 -p 1234:1234 -e LANIP=192.168.0.2 rev1si0n/mitm
 ```
 
 现在使用浏览器打开 `http://本机局域网IP:1234` 即可。
+
+### 如何构建镜像
+
+```bash
+# cd 到 tools 目录
+docker build -t rev1si0n/mitm -f globalmitm/Dockerfile .
+```

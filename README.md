@@ -197,6 +197,20 @@ pip3 install -U 'lamda[frida]'
 # 否则后期使用可能会出现难以察觉的异常
 ```
 
+安装完成后，请执行命令 `python3 -m lamda.client` 检查是否安装正确。如果出现如下异常报错信息
+
+* `AttributeError 'NoneType' object has no..`
+* `TypeError: Couldn't build proto file..`
+
+通常是因为依赖问题导致，有可能因为安装的 mitmproxy 或者其他依赖 gRPC 的包产生冲突。请尝试使用如下方法重新安装
+```bash
+# 1. 尝试重新安装 lamda
+pip3 install -U --force-reinstall lamda
+```
+
+如果仍然不行，请尝试创建 virtualenv 来使用。
+
+
 ### 服务端安装及启动
 
 安装前，请先选择合适的架构，可以通过 adb shell 命令 `getprop ro.product.cpu.abi` 来获取当前的系统架构。

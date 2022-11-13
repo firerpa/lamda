@@ -34,7 +34,7 @@ from . types import AttributeDict, BytesIO
 from . exceptions import UnHandledException
 from . import exceptions
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger("lamda")
 FORMAT = "%(asctime)s %(process)d %(levelname)7s@%(module)s:%(funcName)s - %(message)s"
 logging.basicConfig(format=FORMAT)
 
@@ -71,6 +71,7 @@ __all__ = [
                 "Bound",
                 "load_proto",
                 "Device",
+                "logger",
 ]
 
 def getXY(p):
@@ -415,6 +416,22 @@ class ObjectUiAutomatorOpStubWrapper:
                                           direction=direction,
                                           step=step)
         r = self.stub.selectorSwipe(req)
+        return r.value
+    def pinch_in(self, percent, step=16):
+        """
+        双指捏紧（缩小）
+        """
+        req = protos.SelectorPinchRequest(selector=self.selector,
+                                         percent=percent, step=step)
+        r = self.stub.selectorPinchIn(req)
+        return r.value
+    def pinch_out(self, percent, step=16):
+        """
+        双指放开（放大）
+        """
+        req = protos.SelectorPinchRequest(selector=self.selector,
+                                         percent=percent, step=step)
+        r = self.stub.selectorPinchOut(req)
         return r.value
     def _fling_forward(self, is_vertical=True):
         req = protos.SelectorFlingRequest(selector=self.selector,

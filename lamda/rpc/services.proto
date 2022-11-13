@@ -168,6 +168,9 @@ service UiAutomator {
     rpc selectorScrollBackward(SelectorScrollRequest) returns (Boolean) {}
     rpc selectorScrollForward(SelectorScrollRequest) returns (Boolean) {}
 
+    rpc selectorPinchOut(SelectorPinchRequest) returns (Boolean) {}
+    rpc selectorPinchIn(SelectorPinchRequest) returns (Boolean) {}
+
     rpc setWatcherLoopEnabled(Boolean) returns (Boolean) {}
     rpc getWatcherLoopEnabled(google.protobuf.Empty) returns (Boolean) {}
     rpc getWatcherTriggeredCount(String) returns (Integer) {}

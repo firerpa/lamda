@@ -23,7 +23,6 @@ logdir /tmp
 actionsfile user.action
 filterfile user.filter
 
-debug     1
 hostname zeus
 listen-address 0.0.0.0:${HTTP}
 
@@ -37,10 +36,9 @@ enforce-blocks 0
 EOL
 
 PIDS=
-go-shadowsocks2 -c ${SS} -verbose \
+go-shadowsocks2 -c ${SS} \
                -socks 127.0.0.1:${SOCKS5} -u \
-               -udptun 127.0.0.1:${DNS}=8.8.8.8:53 \
-               -tcptun 127.0.0.1:${DNS}=8.8.8.8:53 &
+               -udptun 127.0.0.1:${DNS}=1.1.1.1:53 &
 PIDS="$PIDS $!"
 privoxy --no-daemon /etc/privoxy/config &
 PIDS="$PIDS $!"
@@ -49,15 +47,16 @@ trap "kill -9 ${PIDS} 2>/dev/null" SIGINT SIGTERM
 dig +time=3 google.com @127.0.0.1 -p ${DNS} >/dev/null || die "
 Cannot resolve DNS through ${SS}
 "
-startmitm.py ${IP} --set dns_server=true \
-               --set dns_mode=reverse:127.0.0.1:${DNS} \
+startmitm.py ${IP} \
+               --dns 127.0.0.1:${DNS} \
                --mode upstream:http://127.0.0.1:${HTTP} \
                --set block_global=false \
                --web-host=0.0.0.0 \
                --web-port=${WEB} \
                ${@: 2:999}
 else
-startmitm.py ${IP} --set block_global=false \
+startmitm.py ${IP} \
+               --set block_global=false \
                --web-host=0.0.0.0 \
                --web-port=${WEB} \
                ${@: 2:999}
