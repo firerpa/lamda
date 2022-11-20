@@ -1605,10 +1605,9 @@ class Device(object):
         setattr(self, module, stub)
     def stub(self, module):
         self._initialize_service_stub(module)
-        wrapper = globals()["{}StubWrapper".format(module)]
         name = "{}_classInstance".format(module)
+        wrapper = globals()["{}StubWrapper".format(module)]
         wraped = getattr(self, name, wrapper(getattr(self, module)))
-        # DoN't aSk ME why i dO this SHiT
         setattr(self, name, wraped)
         return wraped
     # 快速调用: File

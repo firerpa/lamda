@@ -86,6 +86,7 @@ test.pem    # 用于加密客户端与服务端通信的证书
 启动中间人，这将会全自动的在设备上开启全局的中间人，你就可以截获应用的 http/s 流量，当然，也可以包括 DNS 请求（全局）。
 它可以自动应用及撤销中间人，退出脚本后设备及网络也将恢复它原来的样子。
 
+> 如果你需要对国际APP进行中间人，请转到 globalmitm
 
 首先确保当前电脑与设备在同一个网段，192.168.1.2 为运行了 lamda 的手机设备。
 其次，确保你已在命令行验证 mitmproxy 已安装成功（在命令行输入 `mitmdump` 进行验证）。
@@ -109,24 +110,25 @@ python3 -u startmitm.py 192.168.1.2:com.some.package
 即可。
 
 如果需要传递其他参数到 mitmproxy，例如 -s，则执行
+
+> 关于如何编写 `http_flow_hook.py` 脚本，请参考 [docs.mitmproxy.org/stable/addons-examples](https://docs.mitmproxy.org/stable/addons-examples/) 以及 [mitmproxy/examples/contrib](https://github.com/mitmproxy/mitmproxy/tree/9.0.0/examples/contrib)
+
 ```bash
 # 这样你就可以通过编写 http_flow_hook.py 实时修改请求或者响应
 python3 -u startmitm.py 192.168.1.2 -s http_flow_hook.py
 ```
+即可。
 
-关于如何编写 `http_flow_hook.py` 脚本，请参考 [docs.mitmproxy.org/stable/addons-examples](https://docs.mitmproxy.org/stable/addons-examples/)
+手机与当前电脑不在同一网络下，但是你可以物理接触设备，你仍然可以进行中间人，但是**需要确保当前设备已通过USB接入**电脑且已ADB授权。
 
-> 任何 192.168.1.2 之后的参数将传递给 mitmproxy 本身
-
-即使手机与当前电脑不在同一网段，你仍然可以使用在本机截获流量，但是**需要确保当前设备已通过USB接入**电脑且已ADB授权。
 ```bash
 python3 -u startmitm.py localhost
 ```
+即可。
 
-如果手机不在身边，也和你的电脑不在同一网段，但是你可以访问 lamda 的端口，
-**这种情况通常为**：你使用了内置 frp 服务转发了 lamda 到远程服务器，
-或者你自行通过某种方式仅转发了 lamda 的 65000 端口到某个地方，这种情况下你和 lamda 之间
-**仅有这一个端口**可以直接交流，其他端口是无法访问的。这种情况下，手机无法直接访问到本机的任何端口，需要通过以下方式来完成。（注意 OpenVPN 并不属于这个情况）
+手机与当前电脑不在同一网络下，也无法物理接触设备，但是只要你可以访问 lamda 的端口，你也可以进行中间人。
+**这种情况通常为**：你使用了内置 frp 服务转发了 lamda 到远程服务器，或者你自行通过某种方式转发了 lamda 的 65000 端口到某个地方（例如 SSH、路由器端口转发等-**注意安全性问题**），这种情况下你和 lamda 之间
+**仅有这一个端口**可以直接交流，其他端口是无法访问的。这种情况下，手机无法访问到本机的任何端口，本机也只能访问到手机的 lamda 端口，这样需要通过以下方式来进行。（注意 OpenVPN 网络互通，并不属于这个情况）
 
 这时，需要通过稍微繁琐的组合方式来进行，下面介绍如何操作。
 
@@ -157,7 +159,7 @@ python3 -u startmitm.py localhost
 
 ### 转发到上游代理
 
-startmitm 本身也会启动 mitmproxy 作为代理服务，默认情况下流量都是从本机发出的，如果你需要流量通过一个上游代理代理发出而不是本机，可以使用如下方式指定上游代理，**仅支持** **HTTP** 作为上游代理。
+startmitm 本身也会启动 mitmproxy 作为代理服务，默认情况下流量都是 mitmproxy 从本机网卡发出的，如果你需要流量通过一个上游代理发出而不是本机，可以使用如下方式指定上游代理，**仅支持** **HTTP** 作为上游代理。
 
 > DNS 流量不会经过上游代理
 
@@ -175,21 +177,26 @@ python3 -u startmitm.py 192.168.1.2 --mode upstream:example.com:8080 --upstream-
 
 这些选项是与 mitmproxy 兼容的。
 
-### DNS 中间人
+### DNS 中间人 (DNS+HTTP/S)
 
 截获 DNS 请求需要确保 mitmproxy 的版本 >= 9.0.0（且 Python>=3.9)，且需要以**管理员**或者**root**身份运行脚本。
-部分系统上会存在自带DNS服务，在使用该功能前请自行确保没有其他服务使用了 53 端口。
+部分系统上会存在自带的 DNS 服务，在使用该功能前请务必确保没有其他服务使用了 53 端口。
 
-> 这里的 `114.114.114.114` 为上游 DNS，默认为 `1.1.1.1`，你也可以将其指向自建的 DNS 服务。
+> DNS 中间人，默认上游 DNS 服务器为 1.1.1.1
+```bash
+python3 -u startmitm.py 192.168.1.2 --dns
+```
+
+> 指定上游 DNS 为 114.114.114.114
 
 ```bash
 python3 -u startmitm.py 192.168.1.2 --dns 114.114.114.114
 ```
 
-> 如果 dns 是自建的并且不是标准端口这样做
+> 如果上游 DNS 使用了非标准端口（例如 5353）
 
 ```bash
-python3 -u startmitm.py 192.168.1.2 --dns 123.123.123.123:5353
+python3 -u startmitm.py 192.168.1.2 --dns 192.168.0.100:5353
 ```
 
 hook 脚本的方法名称定义有一些变化，正常 http 请求为 `response()`，截获 DNS 时需要使用 `dns_response()`。
@@ -314,7 +321,7 @@ bash emu-install 192.168.1.2
 
 ### globalmitm
 
-用于分析需要透过 ss 实现需要代理才能连接的国外APP的流量
+用于分析需要透过代理才能连接的国外APP的流量
 
 ### frps
 

@@ -1,64 +1,52 @@
 #!/bin/bash
+set -e
 export GRPC_DNS_RESOLVER=native
 export PROXYPORT=${PROXYPORT:-8118}
-IP=${1:-}
-                if [ -z "${IP}" ]; then
-exit 1
-                fi
-
-DNS=$(((RANDOM % 10000) + 10000))
-SOCKS5=$(((RANDOM % 10000) + 10000))
-HTTP=$(((RANDOM % 10000) + 10000))
-WEB=${WEBPORT:-1234}
 
 die () {
         echo $@; exit 1
 }
 
-if [ ! -z "${SS}" ]; then
-cat <<EOL >/etc/privoxy/config
-confdir /etc/privoxy
-logdir /tmp
+IP=${1:-}
+                if [ -z "${IP}" ]; then
+die "no device provided"
+                fi
 
-actionsfile user.action
-filterfile user.filter
+DNS=${DNS:-8.8.8.8}
+PDNS=$(((RANDOM % 10000) + 10000))
 
-hostname zeus
-listen-address 0.0.0.0:${HTTP}
-
-forward-socks5 / 127.0.0.1:${SOCKS5} .
-
-toggle 0
-enable-remote-toggle  0
-enable-remote-http-toggle  0
-enable-edit-actions 0
-enforce-blocks 0
-EOL
-
+if [ ! -z "${SOCKS5}" ] || [ ! -z "${HTTP}" ]; then
 PIDS=
-go-shadowsocks2 -c ${SS} \
-               -socks 127.0.0.1:${SOCKS5} -u \
-               -udptun 127.0.0.1:${DNS}=1.1.1.1:53 &
+
+if [ ! -z "${SOCKS5}" ]; then
+PHTTP=$(((RANDOM % 10000) + 10000))
+UPSTREAM=http://127.0.0.1:${PHTTP}
+gost -L=${UPSTREAM} -F=socks5://${SOCKS5} >/dev/null 2>&1 &
 PIDS="$PIDS $!"
-privoxy --no-daemon /etc/privoxy/config &
+DNS2SOCKS ${SOCKS5} ${DNS} 127.0.0.1:${PDNS} /q &
 PIDS="$PIDS $!"
 
-trap "kill -9 ${PIDS} 2>/dev/null" SIGINT SIGTERM
-dig +time=3 google.com @127.0.0.1 -p ${DNS} >/dev/null || die "
-Cannot resolve DNS through ${SS}
-"
-startmitm.py ${IP} \
-               --dns 127.0.0.1:${DNS} \
-               --mode upstream:http://127.0.0.1:${HTTP} \
-               --set block_global=false \
-               --web-host=0.0.0.0 \
-               --web-port=${WEB} \
-               ${@: 2:999}
+elif [ ! -z "${HTTP}" ]; then
+UPSTREAM=http://${HTTP}
+DNS2SOCKS ${HTTP} ${DNS} 127.0.0.1:${PDNS} /t /q &
+PIDS="$PIDS $!"
+
 else
-startmitm.py ${IP} \
-               --set block_global=false \
-               --web-host=0.0.0.0 \
-               --web-port=${WEB} \
-               ${@: 2:999}
+        die
 fi
-exit 0
+
+trap "kill -9 ${PIDS} 2>/dev/null" SIGINT
+if ! dig +time=3 google.com @127.0.0.1 -p ${PDNS}; then
+die "PROXY NOT USABLE"
+fi
+
+set -- "$@" --dns 127.0.0.1:${PDNS}
+set -- "$@" --mode upstream:${UPSTREAM}
+fi
+
+# common arguments
+set -- "$@" --web-host=0.0.0.0
+set -- "$@" --web-port=${WEBPORT:-1234}
+set -- "$@" --set block_global=false
+
+startmitm.py $@
