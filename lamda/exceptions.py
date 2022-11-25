@@ -4,6 +4,8 @@
 # See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
 class CompatibilityException(Exception):
     """ Exception """
+class DeadSystemException(Exception):
+    """ Exception """
 class DeviceUnavailable(Exception):
     """ Exception """
 class IllegalArgumentException(Exception):

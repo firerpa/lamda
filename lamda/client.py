@@ -3,6 +3,7 @@
 # Distributed under MIT license.
 # See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
 import os
+import io
 import re
 import sys
 import time
@@ -281,7 +282,7 @@ class GrpcRemoteExceptionInterceptor(ClientInterceptor):
             raise self.remote_exception(exception)
 
 
-class ObjectUiAutomatorOpStubWrapper:
+class ObjectUiAutomatorOpStub:
     def __init__(self, stub, selector):
         """
         UiAutomator 子接口，用来模拟出实例的意味
@@ -302,6 +303,8 @@ class ObjectUiAutomatorOpStubWrapper:
                                                    quality=quality)
         r = self.stub.selectorTakeScreenshot(req)
         return BytesIO(r.value)
+    def screenshot(self, quality=100):
+        return self.take_screenshot(quality=quality)
     def get_text(self):
         """
         获取选择器选中输入控件中的文本
@@ -563,9 +566,9 @@ class ObjectUiAutomatorOpStubWrapper:
         return self._scroll_to_end(max_swipes, step, is_vertical=False)
 
 
-class UiAutomatorStubWrapper(BaseServiceStub):
+class UiAutomatorStub(BaseServiceStub):
     def __init__(self, *args, **kwargs):
-        super(UiAutomatorStubWrapper, self).__init__(*args, **kwargs)
+        super(UiAutomatorStub, self).__init__(*args, **kwargs)
         self.watchers = defaultdict(dict)
     def device_info(self):
         """
@@ -783,6 +786,8 @@ class UiAutomatorStubWrapper(BaseServiceStub):
                                            bound=bound)
         r = self.stub.takeScreenshot(req)
         return BytesIO(r.value)
+    def screenshot(self, quality, bound=None):
+        return self.take_screenshot(quality, bound=bound)
     def dump_window_hierarchy(self):
         """
         获取屏幕界面布局 XML 文档
@@ -796,10 +801,10 @@ class UiAutomatorStubWrapper(BaseServiceStub):
         r = self.stub.waitForIdle(protos.Integer(value=timeout))
         return r.value
     def __call__(self, **kwargs):
-        return ObjectUiAutomatorOpStubWrapper(self.stub, kwargs)
+        return ObjectUiAutomatorOpStub(self.stub, kwargs)
 
 
-class ObjectApplicationOpStubWrapper:
+class ObjectApplicationOpStub:
     def __init__(self, stub, applicationId):
         """
         Application 子接口，用来模拟出实例的意味
@@ -941,7 +946,7 @@ class ObjectApplicationOpStubWrapper:
         return r.value
 
 
-class ApplicationStubWrapper(BaseServiceStub):
+class ApplicationStub(BaseServiceStub):
     def current_application(self):
         """
         获取当前处于前台的应用的信息
@@ -973,10 +978,10 @@ class ApplicationStubWrapper(BaseServiceStub):
         r = self.stub.startActivity(req)
         return r.value
     def __call__(self, applicationId):
-        return ObjectApplicationOpStubWrapper(self.stub, applicationId)
+        return ObjectApplicationOpStub(self.stub, applicationId)
 
 
-class UtilStubWrapper(BaseServiceStub):
+class UtilStub(BaseServiceStub):
     def _get_file_content(self, certfile):
         with open(certfile, "rb") as fd:
             return fd.read()
@@ -1064,7 +1069,7 @@ class UtilStubWrapper(BaseServiceStub):
         return r.value
 
 
-class DebugStubWrapper(BaseServiceStub):
+class DebugStub(BaseServiceStub):
     def _read_pubkey(self, pubkey):
         with open(pubkey, "rb") as fd:
             return fd.read()
@@ -1150,7 +1155,7 @@ class DebugStubWrapper(BaseServiceStub):
         return r.value
 
 
-class SettingsStubWrapper(BaseServiceStub):
+class SettingsStub(BaseServiceStub):
     def _put(self, group, name, value):
         req = protos.SettingsRequest(group=group, name=name,
                                             value=value)
@@ -1192,7 +1197,7 @@ class SettingsStubWrapper(BaseServiceStub):
         return self._put(Group.GROUP_SECURE, name, value)
 
 
-class ShellStubWrapper(BaseServiceStub):
+class ShellStub(BaseServiceStub):
     def execute_script(self, script, alias=None):
         """
         前台执行一段脚本（支持标准的多行脚本）
@@ -1223,7 +1228,7 @@ class ShellStubWrapper(BaseServiceStub):
         return r.value
 
 
-class StatusStubWrapper(BaseServiceStub):
+class StatusStub(BaseServiceStub):
     def get_boot_time(self):
         """
         获取设备启动时间 Unix 时间戳
@@ -1282,7 +1287,7 @@ class StatusStubWrapper(BaseServiceStub):
         return r
 
 
-class ProxyStubWrapper(BaseServiceStub):
+class ProxyStub(BaseServiceStub):
     def is_openvpn_running(self):
         """
         检查 OPENVPN 是否正在运行
@@ -1323,7 +1328,7 @@ class ProxyStubWrapper(BaseServiceStub):
         return r.value
 
 
-class SelinuxPolicyStubWrapper(BaseServiceStub):
+class SelinuxPolicyStub(BaseServiceStub):
     def policy_set_allow(self, source, target, tclass, action):
         """
         selinux allow
@@ -1382,47 +1387,36 @@ class SelinuxPolicyStubWrapper(BaseServiceStub):
         return r.value
 
 
-class FileStubWrapper(BaseServiceStub):
-    def _file_stream_read(self, fpath, chunksize):
-        with open(fpath, "rb") as fd:
-            for chunk in iter(lambda: fd.read(chunksize), bytes()):
-                yield chunk
-    def _file_streaming_send(self, fpath, dest, chunksize):
+class FileStub(BaseServiceStub):
+    def _fd_stream_read(self, fd, chunksize):
+        for chunk in iter(lambda: fd.read(chunksize), bytes()):
+            yield chunk
+    def _fd_streaming_send(self, fd, dest, chunksize):
         yield protos.FileRequest(path=dest)
-        for chunk in self._file_stream_read(fpath, chunksize):
+        for chunk in self._fd_stream_read(fd, chunksize):
             yield protos.FileRequest(payload=chunk)
-    def _file_streaming_recv(self, fpath, iterator):
-        with open(fpath, "wb") as fd:
-            for chunk in iterator:
-                fd.write(chunk.payload)
-    def download_file(self, fpath, dest):
-        """
-        下载设备上的文件到本地, dest: 下载到本地的路径
-        """
-        if os.path.isdir(dest):
-            dest = joinpath(dest, basename(fpath))
-        st = self.file_stat(fpath)
+    def _fd_streaming_recv(self, fd, iterator):
+        for chunk in iterator:
+            fd.write(chunk.payload)
+    def download_fd(self, fpath, fd):
         req = protos.FileRequest(path=fpath)
         iterator = self.stub.downloadFile(req)
-        self._file_streaming_recv(dest, iterator)
-        mode = st.st_mode & 0o777
-        os.chmod(dest, mode)
+        self._fd_streaming_recv(fd, iterator)
+        st = self.file_stat(fpath)
         return st
-    def upload_file(self, fpath, dest):
-        """
-        上传本地文件到设备中, dest: 上传在设备的路径
-        """
-        chunksize = 1024*1024
-        if not os.path.isfile(fpath):
-            raise OSError("%s is not a file" % fpath)
-        if not os.access(fpath, os.R_OK):
-            raise OSError("%s is not readable" % fpath)
-        streaming = self._file_streaming_send(fpath, dest,
+    def upload_fd(self, fd, dest):
+        chunksize = 1024*1024*1
+        streaming = self._fd_streaming_send(fd, dest,
                                               chunksize)
         self.stub.uploadFile(streaming)
-        mode = os.stat(fpath).st_mode & 0o777
-        st = self.file_chmod(dest, mode)
+        st = self.file_stat(dest)
         return st
+    def download_file(self, fpath, dest):
+        with io.open(dest, mode="wb") as fd:
+            return self.download_fd(fpath, fd)
+    def upload_file(self, fpath, dest):
+        with io.open(fpath, mode="rb") as fd:
+            return self.upload_fd(fd, dest)
     def delete_file(self, fpath):
         """
         删除设备上的文件
@@ -1446,7 +1440,7 @@ class FileStubWrapper(BaseServiceStub):
         return r
 
 
-class LockStubWrapper(BaseServiceStub):
+class LockStub(BaseServiceStub):
     def acquire_lock(self, leaseTime=60):
         """
         获取用于控制设备的锁，成功返回 true，被占用则会引发异常提示
@@ -1469,7 +1463,7 @@ class LockStubWrapper(BaseServiceStub):
         return r.value
 
 
-class WifiStubWrapper(BaseServiceStub):
+class WifiStub(BaseServiceStub):
     def status(self):
         """
         获取当前已连接 WIFI 的信息
@@ -1592,25 +1586,23 @@ class Device(object):
     def __str__(self):
         return "Device@{}".format(self.server)
     __repr__ = __str__
-    def _get_proto_stub(self, module):
-        stub = getattr(services, "{0}Stub".format(module))
-        return stub
     def _ssl_common_name(self, cer):
         _, _, der = pem.unarmor(cer)
         subject = x509.Certificate.load(der).subject
         return subject.native["common_name"]
-    def _initialize_service_stub(self, module):
-        stub = self._get_proto_stub(module)
-        stub = getattr(self, module, stub(self.chann))
-        setattr(self, module, stub)
+    def _get_service_stub(self, module):
+        stub = getattr(services, "{0}Stub".format(module))
+        return stub(self.chann)
     def stub(self, module):
-        self._initialize_service_stub(module)
-        name = "{}_classInstance".format(module)
-        wrapper = globals()["{}StubWrapper".format(module)]
-        wraped = getattr(self, name, wrapper(getattr(self, module)))
-        setattr(self, name, wraped)
-        return wraped
+        modu = sys.modules[__name__]
+        stub = self._get_service_stub(module)
+        wrap = getattr(modu, "{0}Stub".format(module))
+        return wrap(stub)
     # 快速调用: File
+    def download_fd(self, fpath, fd):
+        return self.stub("File").download_fd(fpath, fd)
+    def upload_fd(self, fd, dest):
+        return self.stub("File").upload_fd(fd, dest)
     def download_file(self, fpath, dest):
         return self.stub("File").download_file(fpath, dest)
     def upload_file(self, fpath, dest):
@@ -1681,6 +1673,15 @@ class Device(object):
         return self.stub("Proxy").stop_openvpn()
     def stop_gproxy(self):
         return self.stub("Proxy").stop_gproxy()
+    # 快速调用: Shell
+    def execute_script(self, script, alias=None):
+        return self.stub("Shell").execute_script(script, alias=alias)
+    def execute_background_script(self, script, alias=None):
+        return self.stub("Shell").execute_background_script(script, alias=alias)
+    def is_background_script_finished(self, tid):
+        return self.stub("Shell").is_background_script_finished(tid)
+    def kill_background_script(self, tid):
+        return self.stub("Shell").kill_background_script(tid)
     # 快速调用: UiAutomator
     def click(self, point):
         return self.stub("UiAutomator").click(point)
@@ -1716,6 +1717,8 @@ class Device(object):
         return self.stub("UiAutomator").press_keycode(code)
     def take_screenshot(self, quality=100, bound=None):
         return self.stub("UiAutomator").take_screenshot(quality, bound=bound)
+    def screenshot(self, quality=100, bound=None):
+        return self.stub("UiAutomator").screenshot(quality, bound=bound)
     def dump_window_hierarchy(self):
         return self.stub("UiAutomator").dump_window_hierarchy()
     def wait_for_idle(self, timeout):
@@ -1766,6 +1769,11 @@ class Device(object):
         return self.stub("Lock").refresh_lock(leaseTime)
     def _release_lock(self):
         return self.stub("Lock").release_lock()
+    def __enter__(self):
+        self._acquire_lock(leaseTime=sys.maxsize)
+        return self
+    def __exit__(self, type, value, traceback):
+        self._release_lock()
 
 
 if __name__ == "__main__":

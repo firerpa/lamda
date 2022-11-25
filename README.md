@@ -97,6 +97,8 @@
 
 为了下载使用由 rev1si0n (账号 github.com/rev1si0n)（以下简称“本人”）个人开发的软件 lamda ，您应当阅读并遵守《用户使用协议》（以下简称“本协议”）。请您务必审慎阅读、充分理解各条款内容，特别是免除或者限制责任的条款，并选择接受或不接受；除非您已阅读并接受本协议所有条款，否则您将无权下载、安装或使用本软件及相关服务。您的下载、安装、使用、获取账号、登录等行为即视为您已阅读并同意受到上述协议的约束；若您需要获得本服务，您（以下称"用户"）应当同意本协议的全部条款并按照页面上的提示完成全部申请使用程序。您可以在本文档的相同目录找到 [DISCLAIMER.TXT](DISCLAIMER.TXT)，或者点此 [免责声明](DISCLAIMER.TXT) 查阅。
 
+lamda 本身不会侵入其他应用，仅提供自身及第三方程序的能力给用户自行选择，所有操作均为用户的主观行为。
+
 ## 前言
 
 lamda 是个人开发的免费软件 (freeware)，目前仅客户端及协议是开源的，但个人承诺它没有任何对您违规或多余的行为，如果仍有担心，您可以**立即离开**或者选择**付费**寻求心理安慰。互相尊重，使用请遵守使用条款。合作交流请在 [ISSUE](https://github.com/rev1si0n/lamda/issues/new) 中留下联系方式。
@@ -142,7 +144,7 @@ lamda 是个人开发的免费软件 (freeware)，目前仅客户端及协议是
 如果你在安卓设备上启动 lamda 后，设备多次出现无故重启或者出现应用崩溃的情况，
 请在启动 lamda **之前**，在当前 shell 执行命令
 ```bash
-export lamda_crash_system=1
+export crashed=1
 ```
 这种情况多数是由 frida 导致的，这将禁用掉 frida 一些功能，也意味着你将无法正常使用内置的 frida。
 但是将保证你可以使用大部分其他的内置接口。
@@ -857,9 +859,8 @@ status.get_mem_info()
 > 在设备后台，前台执行 shell 脚本/命令
 
 ```python
-shell = d.stub("Shell")
-# 执行前台脚本（执行时间短的脚本）
-cmd = shell.execute_script("pwd")
+# 执行前台脚本（执行时间短（0-10秒内）的脚本）
+cmd = d.execute_script("whoami")
 print (cmd.exitstatus)
 print (cmd.stdout)
 print (cmd.stderr)
@@ -867,11 +868,11 @@ print (cmd.stderr)
 # 执行后台脚本（执行时间长的脚本）
 # 对于后台脚本，因考虑可能用户写出死循环脚本无限输出导致内存占满等问题
 # 暂时无法获知其执行结果
-ID = shell.execute_background_script("sleep 100; exit 0;")
+ID = d.execute_background_script("sleep 100; exit 0;")
 # 检查后台脚本是否结束
-shell.is_background_script_finished(ID)
+d.is_background_script_finished(ID)
 # 强制结束后台脚本
-shell.kill_background_script(ID)
+d.kill_background_script(ID)
 ```
 
 ## 使系统可调试
@@ -965,12 +966,28 @@ d.is_android_debug_bridge_running()
 
 ```python
 # 下载文件到本地
-d.download_file("/data/local/tmp/设备上的文件.txt", "写入到的本地文件.txt")
+d.download_file("/verity_key", "写入到的本地文件")
+
+# 下载文件到 内存/已打开的文件
+from io import BytesIO
+fd = BytesIO()
+d.download_fd("/verity_key", fd)
+print (fd.getvalue())
+
+# 注意必须使用 w+b 模式打开被写入文件
+fd = open("写入到的本地文件", "wb")
+d.download_fd("/verity_key", fd)
 
 # 上传文件到设备
-# 会自动修改远程的文件权限信息为本地文件权限信息
-# 即本地文件权限为 0755，那么上传到设备上的文件也为此权限
 d.upload_file("本地文件路径.txt", "/data/local/tmp/上传到设备上的文件.txt")
+
+# 从 内存/已打开的文件 上传文件
+from io import BytesIO
+d.upload_fd(BytesIO(b"fileContent"), "/data/local/tmp/上传到设备上的文件.txt")
+
+# 注意必须使用 rb 模式打开文件
+fd = open("myfile.txt", "rb")
+d.upload_fd(fd, "/data/local/tmp/上传到设备上的文件.txt")
 
 # 删除设备上的文件
 d.delete_file("/data/local/tmp/文件.txt")

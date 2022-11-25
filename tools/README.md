@@ -86,7 +86,13 @@ test.pem    # 用于加密客户端与服务端通信的证书
 启动中间人，这将会全自动的在设备上开启全局的中间人，你就可以截获应用的 http/s 流量，当然，也可以包括 DNS 请求（全局）。
 它可以自动应用及撤销中间人，退出脚本后设备及网络也将恢复它原来的样子。
 
-> 如果你需要对国际APP进行中间人，请转到 globalmitm
+> 提示：有时在 Windows 上装这些东西是很烦的事情，
+> 所以我们同时提供了一个 **startmitm.exe**，这是一个打包了的 **Windows 命令行程序**，它的参数与 startmitm.py 相同。
+> 这样你可以不用安装 Python 及其相关环境。你可以在每个版本的 release 中找到它。如果没有，可以翻看稍旧的 release。
+> 对于 Linux/Mac 用户，如果你想生成/使用这种独立可执行程序，请自行使用 `startmitm-standalone.cmd` 打包
+> （需要安装 pyinstaller）。
+
+> 如果你需要对国际APP进行中间人，请转到 **globalmitm**
 
 首先确保当前电脑与设备在同一个网段，192.168.1.2 为运行了 lamda 的手机设备。
 其次，确保你已在命令行验证 mitmproxy 已安装成功（在命令行输入 `mitmdump` 进行验证）。
@@ -98,6 +104,7 @@ test.pem    # 用于加密客户端与服务端通信的证书
 
 执行
 ```bash
+# 注意，设备IP 必须在参数第一位
 python3 -u startmitm.py 192.168.1.2
 ```
 即可。
@@ -108,6 +115,12 @@ python3 -u startmitm.py 192.168.1.2
 python3 -u startmitm.py 192.168.1.2:com.some.package
 ```
 即可。
+
+如果你想使用特定的DNS，或者一些情况下，你可能出现DNS解析错误/无法解析的情况（可能出现于一些原生的系统），可以这样做
+
+```bash
+python3 -u startmitm.py 192.168.1.2 --nameserver 114.114.114.114
+```
 
 如果需要传递其他参数到 mitmproxy，例如 -s，则执行
 
@@ -181,6 +194,8 @@ python3 -u startmitm.py 192.168.1.2 --mode upstream:example.com:8080 --upstream-
 
 截获 DNS 请求需要确保 mitmproxy 的版本 >= 9.0.0（且 Python>=3.9)，且需要以**管理员**或者**root**身份运行脚本。
 部分系统上会存在自带的 DNS 服务，在使用该功能前请务必确保没有其他服务使用了 53 端口。
+
+此选项与上方 `--nameserver` 意义不同，此选项专指 dns 中间人配置
 
 > DNS 中间人，默认上游 DNS 服务器为 1.1.1.1
 ```bash

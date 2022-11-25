@@ -85,20 +85,23 @@ print (r"  \___ \  |  |  / __ \|  | \/|  |   |  Y Y  \  ||  | |  Y Y  \ ")
 print (r" /____  > |__| (____  /__|   |__|   |__|_|  /__||__| |__|_|  / ")
 print (r"      \/            \/                    \/               \/  ")
 print (r"                 Android HTTP Traffic Capture                  ")
-print (r"%60s" %                            ("lamda#v%s" % (__version__)))
+print (r"%60s" %                ("lamda#v%s BY rev1si0n" % (__version__)))
 
 
 pkgName = None
-argv = sys.argv
-host = argv[1]
 argp = argparse.ArgumentParser()
 
 def dnsopt(dns):
     return "reverse:dns://{}@53".format(dns)
+argp.add_argument("device", nargs=1)
 argp.add_argument("-m", "--mode", default="regular")
-argp.add_argument("-d", "--dns", type=dnsopt, nargs="?",
+dns = argp.add_mutually_exclusive_group(required=False)
+dns.add_argument("-d", "--dns", type=dnsopt, nargs="?",
                                     const="1.1.1.1")
-args, extras = argp.parse_known_args(argv[2:])
+dns.add_argument("-n", "--nameserver", type=str,
+                                    default="")
+args, extras = argp.parse_known_args()
+host = args.device[0]
 
 if ":" in host:
     host, pkgName = host.split(":")
@@ -120,7 +123,8 @@ usb = server in ("127.0.0.1", "::1")
 if cert:
     log ("ssl:", cert)
 if usb and args.dns:
-    log ("dns mitm not available with usb")
+    log ("dns mitm not available over usb")
+    sys.exit (1)
 if usb and (forward(lamda, lamda).wait() != 0 or \
             reverse(proxy, proxy).wait() != 0):
     log ("forward failed")
@@ -141,6 +145,7 @@ d.install_ca_certificate(ca)
 # 初始化 proxy 配置
 profile = GproxyProfile()
 profile.type = GproxyType.HTTP_CONNECT
+profile.nameserver = args.nameserver
 if not usb and args.dns:
     profile.nameserver = server
 profile.drop_udp = True

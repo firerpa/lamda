@@ -1,0 +1,1 @@
+pyinstaller --icon startmitm.ico -F startmitm.py --collect-binaries lamda --collect-binaries mitmproxy --collect-binaries grpc_tools --collect-binaries grpc --collect-binaries google --collect-data lamda --collect-data mitmproxy --collect-data grpc_tools --collect-data grpc --collect-data google
