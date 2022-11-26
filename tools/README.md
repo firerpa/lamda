@@ -87,9 +87,9 @@ test.pem    # 用于加密客户端与服务端通信的证书
 它可以自动应用及撤销中间人，退出脚本后设备及网络也将恢复它原来的样子。
 
 > 提示：有时在 Windows 上装这些东西是很烦的事情，
-> 所以我们同时提供了一个 **startmitm.exe**，这是一个打包了的 **Windows 命令行程序**，它的参数与 startmitm.py 相同。
-> 这样你可以不用安装 Python 及其相关环境。你可以在每个版本的 release 中找到它。如果没有，可以翻看稍旧的 release。
-> 对于 Linux/Mac 用户，如果你想生成/使用这种独立可执行程序，请自行使用 `startmitm-standalone.cmd` 打包
+> 所以专门为 Windows 提供了一个 **startmitm-standalone.zip**，包含了两个**Windows 命令行程序**，将其解压到相同目录即可。
+> 它的参数与 startmitm.py 相同。这样你可以不用安装 Python 及其相关环境。你可以在每个版本的 release 中找到它。如果没有，可以翻看稍旧的 release。
+> 对于 Linux/Mac 用户，如果你想生成/使用这种独立可执行程序，请自行使用 `pyinstaller startmitm-standalone.spec` 命令打包
 > （需要安装 pyinstaller）。
 
 > 如果你需要对国际APP进行中间人，请转到 **globalmitm**
