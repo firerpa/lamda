@@ -195,7 +195,7 @@ python3 -u startmitm.py 192.168.1.2 --mode upstream:example.com:8080 --upstream-
 截获 DNS 请求需要确保 mitmproxy 的版本 >= 9.0.0（且 Python>=3.9)，且需要以**管理员**或者**root**身份运行脚本。
 部分系统上会存在自带的 DNS 服务，在使用该功能前请务必确保没有其他服务使用了 53 端口。
 
-此选项与上方 `--nameserver` 意义不同，此选项专指 dns 中间人配置
+此选项与上方 `--nameserver` 意义不同，`--dns` 选项专指 dns 中间人
 
 > DNS 中间人，默认上游 DNS 服务器为 1.1.1.1
 ```bash

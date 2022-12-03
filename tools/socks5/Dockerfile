@@ -12,9 +12,7 @@ RUN apk add bash make g++ git
 RUN mkdir -p /tmp/workdir
 WORKDIR /tmp/workdir
 
-RUN wget https://www.inet.no/dante/files/dante-1.4.3.tar.gz
-RUN tar -xzf dante-1.4.3.tar.gz
-
+RUN wget https://www.inet.no/dante/files/dante-1.4.3.tar.gz -O - | tar -xz
 WORKDIR /tmp/workdir/dante-1.4.3
 
 ENV ac_cv_func_sched_setscheduler=no

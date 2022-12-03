@@ -6,6 +6,7 @@ import os
 import io
 import re
 import sys
+import copy
 import time
 import uuid
 import json
@@ -295,6 +296,23 @@ class ObjectUiAutomatorOpStub:
                         for k, v in self._selector.items()])
         return "Object: {}".format(selector)
     __repr__ = __str__
+    def _child_sibling(self, name, **selector):
+        s = copy.deepcopy(self._selector)
+        s.setdefault("childOrSibling", [])
+        s.setdefault("childOrSiblingSelector", [])
+        s["childOrSiblingSelector"].append(selector)
+        s["childOrSibling"].append(name)
+        return self.__class__(self.stub, s)
+    def child(self, **selector):
+        """
+        匹配选择器里面的子节点
+        """
+        return self._child_sibling("child", **selector)
+    def sibling(self, **selector):
+        """
+        匹配选择器的同级节点
+        """
+        return self._child_sibling("sibling", **selector)
     def take_screenshot(self, quality=100):
         """
         对选择器选中元素进行截图

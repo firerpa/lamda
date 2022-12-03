@@ -32,6 +32,8 @@ class SecurityException(Exception):
     """ Exception """
 class ServiceUnavailable(Exception):
     """ Exception """
+class StaleObjectException(Exception):
+    """ Exception """
 class StartupActivityNotFound(Exception):
     """ Exception """
 class UiAutomatorException(Exception):

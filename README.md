@@ -1211,7 +1211,7 @@ d.press_keycode(KeyCodes.KEYCODE_CALL)
 
 ```python
 quality = 60 # 截图质量，默认为全画质
-d.take_screenshot(quality).save("screenshot.png")
+d.screenshot(quality).save("screenshot.png")
 # 截取屏幕上特定区域的图像
 # Bound 的参数 top,left 等定义：
 
@@ -1222,7 +1222,7 @@ d.take_screenshot(quality).save("screenshot.png")
 
 # 正常情况下 top 永远小于 bottom，left 永远小于 right
 bound = Bound(top=50, bottom=80, left=50, right=80)
-d.take_screenshot(quality, bound=bound).save("partial.png")
+d.screenshot(quality, bound=bound).save("partial.png")
 ```
 
 > 点击屏幕上的一个点
@@ -1378,10 +1378,26 @@ element.wait_until_gone(10*1000)
 
 # 获取该元素的截图（不是全屏，只是该元素）
 # quality 为截图质量 1-100
-element.take_screenshot(quality=60)
+element.screenshot(quality=60)
 
 # 将此 APP 拖动归类到 购物 文件夹（依据实际情况修改）
 element.drag_to(Selector(text="购物"))
+
+#########
+# 查找同级或者子级元素
+#########
+# 有时候会有一些重复元素或者无明显特征的元素，很难去定位
+# 这时你可以通过查找子级/同级元素的方法来缩小查找范围
+# 子级元素，举例为：一个聊天登录框，里面的输入框即为登录框的子级元素
+# 同级元素，举例为：聊天输入框里面的用户名和密码框为同级原始（正常情况下）
+form = d(resourceId="login_form")
+form.child(index=1)
+# 这将获取到 login_form 下 index 为 0 的元素
+form.child(index=1).sibling()
+# 你也这样来找与 login_form 同级的找回密码按钮
+#（其实已经可以通过字符串判断了，就不需要这样做了，这里只是演示）
+form.sibling(textContains="找回密码")
+# 它们本身就是一个element，你可以对其做任何 element 的操作
 
 
 ############################
