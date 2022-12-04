@@ -1,3 +1,6 @@
+3.0.50
+* 支持 child, sibling 选择器
+
 3.0.48
 -----------------------
 * 免安装的 windows startmitm 命令
