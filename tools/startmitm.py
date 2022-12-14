@@ -3,15 +3,16 @@
 import os
 import sys
 import time
-import signal
 import subprocess
 import argparse
 import uuid
 
 from socket import *
 from random import randint
+from multiprocessing import Process
 
 from mitmproxy.certs import CertStore
+from mitmproxy.tools.main import mitmweb as web
 from mitmproxy.options import CONF_DIR, CONF_BASENAME, KEY_SIZE
 from mitmproxy.version import VERSION
 
@@ -27,12 +28,11 @@ def cleanup(*args, **kwargs):
     if cleaning is True:
         return
     cleaning = True
-    log ("terminate server")
-    proc.kill()
     log ("uninstall certificate")
     d.uninstall_ca_certificate(ca)
     log ("disable proxy")
     d.stop_gproxy()
+    os._exit (0)
 
 
 def add_server(command, spec):
@@ -114,6 +114,7 @@ psw = uuid.uuid4().hex[::4]
 cert = os.environ.get("CERTIFICATE")
 proxy = int(os.environ.get("PROXYPORT",
                     randint(28080, 58080)))
+webport = randint(28080, 58080)
 lamda = int(os.environ.get("LAMDAPORT",
                     65000))
 
@@ -164,7 +165,6 @@ if pkgName is not None:
 d.start_gproxy(profile)
 
 command = []
-command.append("mitmweb")
 # 设置 MITMPROXY 代理模式
 add_server(command, args.mode)
 add_server(command, args.dns)
@@ -174,7 +174,7 @@ command.append("--proxyauth")
 command.append("{}:{}".format(login, psw))
 # 随机 web-port
 command.append("--web-port")
-command.append(str(randint(18080, 58080)))
+command.append(str(webport))
 command.append("--no-rawtcp")
 command.append("--listen-port")
 command.append(str(proxy))
@@ -182,15 +182,10 @@ command.append(str(proxy))
 command.extend(extras)
 
 log (" ".join(command))
-proc = subprocess.Popen(command, shell=False)
 
-signal.signal(signal.SIGINT, cleanup)
-signal.signal(signal.SIGTERM, cleanup)
-
+sys.exit = cleanup
 log ("press CONTROL + C to stop")
-log ("server pid %s" % proc.pid)
-retcode = proc.wait()
-
-# 确保 cleanup 被调用
-os.kill(os.getpid(), signal.SIGTERM)
-sys.exit (retcode)
+proc = Process(target=web, name="mitmweb",
+               args=(command,), daemon=True)
+proc.run()
+sys.exit(0)

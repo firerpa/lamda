@@ -87,9 +87,9 @@ test.pem    # 用于加密客户端与服务端通信的证书
 它可以自动应用及撤销中间人，退出脚本后设备及网络也将恢复它原来的样子。
 
 > 提示：有时在 Windows 上装这些东西是很烦的事情，
-> 所以专门为 Windows 提供了一个 **startmitm-standalone.zip**，包含了两个**Windows 命令行程序**，将其解压到相同目录即可。
-> 它的参数与 startmitm.py 相同。这样你可以不用安装 Python 及其相关环境。你可以在每个版本的 release 中找到它。如果没有，可以翻看稍旧的 release。
-> 对于 Linux/Mac 用户，如果你想生成/使用这种独立可执行程序，请自行使用 `pyinstaller startmitm-standalone.spec` 命令打包
+> 所以专门为 Windows 提供了 **startmitm.exe**，这是一个**Windows 命令行程序**，将其下载并放入系统 PATH 或者当前目录，在命令行执行即可。
+> 它的参数与 startmitm.py 相同。这样你可以不用安装 Python 及任何相关环境，但是你也只能进行基本的中间人操作。你可以在每个版本的 release 中找到它。如果没有，可以翻看稍旧的 release。
+> 对于 Linux/Mac 用户，如果你想生成/使用这种独立可执行程序，请自行使用 `pyinstaller startmitm.spec` 命令打包
 > （需要安装 pyinstaller）。
 
 > 如果你需要对国际APP进行中间人，请转到 **globalmitm**
@@ -99,7 +99,7 @@ test.pem    # 用于加密客户端与服务端通信的证书
 
 当然，电脑与设备不在同一网段或者是远程设备，你也可以轻松 mitm，请继续看下去。
 
-> 注意：mitmweb 并不适合长时间多请求，其截获的请求均存储于内存之中。所以在长时间使用的情况下你的内存会被吃光。
+> 注意：mitmweb 并不适合长时间多请求，其截获的请求均存储于内存之中。所以在长时间使用的情况下你的内存会被吃光（你可以不定期点击 mitmweb 界面的左上角 File->Clear All 来释放）。
 > 对于长时间的中间人操作，请改用 mitmdump，请自行了解使用方法。
 
 执行
@@ -109,12 +109,20 @@ python3 -u startmitm.py 192.168.1.2
 ```
 即可。
 
+如果你想和局域网的小伙伴一起分析
+
+```bash
+python3 -u startmitm.py 192.168.1.2 --web-port 7890 --web-host 0.0.0.0
+# 然后，让你的小伙伴用浏览器打开 http://你的IP地址:7890 即可
+```
+
 如果需要截获特定应用的流量而不是全局
 ```bash
 # 这里的 com.some.package 是应用的 ID
 python3 -u startmitm.py 192.168.1.2:com.some.package
 ```
 即可。
+
 
 如果你想使用特定的DNS，或者一些情况下，你可能出现DNS解析错误/无法解析的情况（可能出现于一些原生的系统），可以这样做
 
@@ -202,7 +210,7 @@ python3 -u startmitm.py 192.168.1.2 --mode upstream:example.com:8080 --upstream-
 python3 -u startmitm.py 192.168.1.2 --dns
 ```
 
-> 指定上游 DNS 为 114.114.114.114
+> 指定上游 DNS 为 114.114.114.114（如果在中国大陆，建议使用如下命令指定DNS）
 
 ```bash
 python3 -u startmitm.py 192.168.1.2 --dns 114.114.114.114

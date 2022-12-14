@@ -41,6 +41,7 @@
 * 内置 crontab 定时任务
 * 内置 Python3.9 及部分常用模块
 * WIFI 远程桌面（web）
+* 界面布局检视
 
 同时，tools/ 目录下还包含了一些常用的脚本以及开箱即用的服务。
 
@@ -51,6 +52,13 @@
 通过 tools/ 目录下的 `globalmitm`，`startmitm.py` 实现，使用方法请看其同目录 README。
 
 ![中间人流量分析动图演示](image/mitm.gif)
+
+## 界面布局检视
+
+可在远程桌面即时检视安卓应用的界面布局用以编写自动化代码，在远程桌面按下 `CTRL + I` 即可进入模式，
+按下 `CTRL + R` 刷新布局，再次按下 `CTRL + I` 退出。
+
+![界面布局检视](image/inspect.gif)
 
 ## 通过代码自动化
 
@@ -676,7 +684,7 @@ frida -H 192.168.0.2:65000 -f com.android.settings --certificate /path/to/lamda.
 注意这与你在 linux 使用 crontab 并不相同，在 linux 正常使用 `crontab -e` 命令
 来编辑任务，但是框架并未提供此命令，你需要直接编辑文件来写入规则（道理是相同的，都是编辑文件而已）
 
-现在，请打开 web 控制台或者连接设备的 ssh，执行命令 `cd` 来切换到家目录。
+现在，请打开 web 控制台或者连接设备的 ssh/adb shell，执行命令 `cd` 来切换到家目录。
 此时家目录中有个名为 crontab 的文件夹。执行命令 `busybox vi crontab/jobs`，你将进入编辑文件，在英文输入模式下按下字母 `i`，随后写下相关规则，并按下 `ESC`，`SHIFT` + `:`，输入 `wq` 并按下回车来保存。你可以在这个 jobs 文件中写入多行，同样，你也可以在这个文件夹下创建其他名字的规则文件。
 
 如果你还是不懂怎么编辑，请在电脑编辑完成后使用adb转移到此目录。
@@ -759,7 +767,7 @@ fwd.protocol=tcp
 fwd.enable=true
 ```
 
-进入设备的 ssh 命令行（也可通过 web 远程桌面拖拉上传文件），执行
+进入设备的 ssh 或者内置 adb 命令行（也可通过 web 远程桌面拖拉上传文件），执行
 
 ```bash
 cd # 先切换到家目录
@@ -1284,20 +1292,9 @@ d.wait_for_idle(5*1000)
 
 > Selector
 
-界面选择器，类似于网页，安卓的界面也可以通过选择器进行元素的选择。
-在开始了解前，请先安装第三方的 [alibaba/web-editor](https://github.com/alibaba/web-editor)，你可以通过
-```bash
-pip3 install weditor
-```
-直接安装。
-
-随后，在命令行输入 `weditor` 启动，你会自动跳转到相关页面，在顶部连接设备区域输入 `设备IP:65000` 并点击 CONNECT 进行连接。
-注意，暂仅支持其UI审查功能，请不要使用右侧代码运行/实时等功能。
-
-连接到设备后，点击 `Dump Hierarchy` 来获取当前界面布局，你可以将其想象成打开了开发者工具并得到DOM布局。
-
-这样，你可以在左侧页面屏幕上选择你感兴趣的元素，在页面中部 `Selected Element` 区域将会显示其属性。
-你可以将其中的大部分属性作为 Selector 的参数。
+界面布局检视，首先你需要打开设备的 web 远程桌面。随后，鼠标点击左侧屏幕确保焦点落在投屏上（否则焦点可能会被右侧的终端捕获），
+然后按下快捷键 `CTRL+I`(启动布局检视)，此时你将不能再滑动左侧屏幕，你可以点击屏幕上的虚线框来查看对应元素的信息，你可以将其中的部分属性作为 Selector 的参数。
+再次按下 `CTRL+I` 将关闭布局检视，布局检视并不会随着页面的改变而刷新，它始终是你按下快捷键那一刻的屏幕布局，如果需要刷新布局请手动按下快捷键 `CTRL+R`。
 
 正常情况下，我们只会使用 `resourceId`, `clickable`, `text`, `description` 作为参数。
 如果元素存在正常的 resourceId，优先使用其作为 Selector，即：`Selector(resourceId="com.android.systemui:id/mobile_signal_single")`。
@@ -1305,6 +1302,8 @@ pip3 install weditor
 description 与 text 同理，但是 description 用的会比较少。
 
 当然，Selector 不止可以使用一个参数，你可以做其他组合，例如 `Selector(text="点击进入", clickable=True)`
+
+> 注意：很少直接用 Selector()，大部分情况下，使用 d() 来进行。
 
 所有常见的匹配参数：
 
@@ -1590,7 +1589,7 @@ d._release_lock()
 
 ## 如何使用内部终端
 
-这里的内部终端，指的是你通过 web 远程桌面或者 ssh 连接的终端，里面内置了一些命令以及Python模块，你可以
+这里的内部终端，指的是你通过 web 远程桌面或者 ssh/内置adb 连接的终端，里面内置了一些命令以及Python模块，你可以
 直接在里面执行一些操作或者运行一些 Python 代码。
 
 现在假设你已经打开了 web 远程桌面，你应该已经在页面上看到了一个 linux 终端。

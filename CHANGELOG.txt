@@ -1,3 +1,9 @@
+3.0.53
+* 修复宽字符请求头导致的崩溃
+* 合并 mitmweb 到 startmitm 进程
+* docker 镜像小修改
+* 支持布局检视
+
 3.0.50
 * 支持 child, sibling 选择器
 

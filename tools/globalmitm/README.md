@@ -69,3 +69,7 @@ docker run -it --rm -p 8118:8118 -p 1234:1234 -e LANIP=192.168.0.2 rev1si0n/mitm
 # cd 到 tools 目录
 docker build -t rev1si0n/mitm -f globalmitm/Dockerfile .
 ```
+
+### DNS2SOCKS
+
+https://sourceforge.net/projects/dns2socks

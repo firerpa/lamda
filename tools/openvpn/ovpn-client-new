@@ -1,3 +1,5 @@
 #!/bin/bash
-openvpn --genkey tls-crypt-v2-client "/etc/openvpn/tls-crypt-v2-client/$1" --tls-crypt-v2 /etc/openvpn/tls-crypt-v2-server.key
+TC_CLIENT=/etc/openvpn/tls-crypt-v2-client/$1
+TC_SERVER=/etc/openvpn/tls-crypt-v2-server.key
+openvpn --genkey tls-crypt-v2-client ${TC_CLIENT} --tls-crypt-v2 ${TC_SERVER}
 easyrsa build-client-full "$1" nopass

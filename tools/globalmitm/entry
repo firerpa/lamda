@@ -37,7 +37,7 @@ fi
 
 trap "kill -9 ${PIDS} 2>/dev/null" SIGINT
 if ! dig +time=3 google.com @127.0.0.1 -p ${PDNS}; then
-die "PROXY NOT USABLE"
+die "BAD PROXY (CANNOT RESOLVE THROUGH PROXY)"
 fi
 
 set -- "$@" --dns 127.0.0.1:${PDNS}
