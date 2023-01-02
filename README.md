@@ -10,8 +10,9 @@
 </div>
 
 
-这是一个用于安卓逆向及自动化的辅助框架，它以编程化的接口大幅减少你的手动操作，你将不再需要关心琐碎的问题。通过它，你可以获得：
+lamda 是一个用于逆向及自动化的辅助框架，它设计为减少安全分析以及应用测试人员的时间及琐碎问题，以编程化的接口替代大量手动操作。通过它，你可以：
 
+* 永远无需把手机放在桌边
 * 零依赖，只需 root 即可
 * 支持安卓 6.0 (M, API 23) - 13 (T, API 33)
 * 极其简单的调用，封装了大量常用接口，你只需要会写 Python
@@ -68,7 +69,7 @@
 
 ## 远程桌面连接
 
-即使手机不在身边也可以随时操作界面。
+即使手机不在身边也可以使用浏览器随时操作界面，并且内置了 Python 以及相关 frida 工具，它是你的另一个在线 shell。
 
 ![远程桌面动图演示](image/lamda.gif)
 
@@ -92,7 +93,7 @@
 ![数据库在线浏览](image/dbview.gif)
 
 
-如果你希望继续看下去，请先确保：手边有一台已经 root 且运行内存 **>= 3GB**，可用存储空间 **>= 1GB** 的安卓设备或者安卓模拟器（推荐使用最新版**夜神**，**雷电**，**逍遥**模拟器，或者 AVD [Android Studio Virtual Device]）。**不完全支持** 网易 Mumu，**不支持**腾讯手游助手、蓝叠以及任何安卓内虚拟如 VMOS、部分 Docker 类型的云手机、等），对于真机，推荐运行最接近原生系统的设备如谷歌系、一加、安卓开发板等，或系统仅经过轻度改造的设备。目前**可能不能**在蓝绿厂(OPPO/VIVO)/华为/小米类高度改造的安卓系统上正常运行，如果你只有此类品牌设备，经过尝试后无法正常运行，建议改用模拟器。
+如果你希望继续看下去，请先确保：手边有一台已经 root 且运行内存大于 2GB，可用存储空间大于 1GB 的安卓设备或者安卓模拟器（推荐使用最新版**夜神**，**雷电**模拟器，或者 AVD [Android Studio Virtual Device]）。**不完全支持** 网易 Mumu，**不支持**腾讯手游助手、蓝叠以及任何安卓内虚拟如 VMOS、部分 Docker 类型的云手机、等），对于真机，推荐运行最接近原生系统的设备如谷歌系、一加、安卓开发板等，或系统仅经过轻度改造的设备。如果你使用的是OPPO/VIVO/华为/小米的设备，经过尝试后无法正常运行，建议改用模拟器。
 
 对于**云手机**，目前已知一些提供商的情况为：X马云手机基本都可以正常使用，X多云手机安卓9.0版本可以正常使用，
 不支持X手指、X电、X云兔、X子星（这些云手机很多都是Docker/套中套类型或者限制较多），其余未经测试。
@@ -105,7 +106,7 @@
 
 为了下载使用由 rev1si0n (账号 github.com/rev1si0n)（以下简称“本人”）个人开发的软件 lamda ，您应当阅读并遵守《用户使用协议》（以下简称“本协议”）。请您务必审慎阅读、充分理解各条款内容，特别是免除或者限制责任的条款，并选择接受或不接受；除非您已阅读并接受本协议所有条款，否则您将无权下载、安装或使用本软件及相关服务。您的下载、安装、使用、获取账号、登录等行为即视为您已阅读并同意受到上述协议的约束；若您需要获得本服务，您（以下称"用户"）应当同意本协议的全部条款并按照页面上的提示完成全部申请使用程序。您可以在本文档的相同目录找到 [DISCLAIMER.TXT](DISCLAIMER.TXT)，或者点此 [免责声明](DISCLAIMER.TXT) 查阅。
 
-lamda 本身不会侵入其他应用，仅提供自身及第三方程序的能力给用户自行选择，所有操作均为用户的主观行为。
+lamda 不提供任何侵入、修改、抓取其他应用内存及网络数据的功能，主要收集了各种第三方程序给用户自行选择，方便安全分析人员使用，相关工具均为合法合规的APP分析、Mock 场景提供，你**不得**将其用于**任何**违法违规或未授权的行为。
 
 ## 前言
 
@@ -161,7 +162,7 @@ export crashed=1
 > 其他情况
 
 首次启动时，有一定几率会出现 web 远程桌面一直加载中超过五分钟或者接口一直处于 ServiceUnavailable 状态
-出现这种情况时，请重启设备并重新启动 lamda。
+出现这种情况时，请尝试重启设备并重新启动 lamda。
 
 ### 我不想听一句废话，只想快速看看怎么样
 
@@ -214,6 +215,7 @@ pip3 install -U 'lamda[frida]'
 * `TypeError: Couldn't build proto file..`
 
 通常是因为依赖问题导致，有可能因为安装的 mitmproxy 或者其他依赖 gRPC 的包产生冲突。请尝试使用如下方法重新安装
+
 ```bash
 # 1. 尝试重新安装 lamda
 pip3 install -U --force-reinstall lamda
@@ -255,43 +257,22 @@ abi not match       (使用了错误的 gz 包，例如在 x86_64 上运行了 x
 > 用它安装是最简便以及通用的，但仍无法保证各版本安卓的差异性导致可能的安装失败。所以，下面将会介绍两种安装方法，推荐第一种，第二种则是
 > 第一种完整的手动过程，你可以在第一种失败的情况下使用。
 
-下载完成后，将设备连接到当前电脑并确保已连接 ADB，现在开始完成**前置条件**：
-
-> 为了兼容各种设备的分区特性，在**每次设备启动后**，建议执行：
+如果使用的是 AVD (Android Studio Virtual Device)，可能还需要扩展默认存储空间的大小。
 
 ```bash
-adb root
-adb remount
-```
-真机应该会失败，无需关心是否报错。
-
-> 如果使用的是 AVD (Android Studio Virtual Device)，则按照以下方法启动。
-
-请使用如下命令启动虚拟设备（你可能会遇到找不到 emulator 命令的情况，
-请参阅此文档获知此命令的位置 [developer.android.com/studio/run/emulator-commandline](https://developer.android.com/studio/run/emulator-commandline?hl=zh-cn) 并将其加入 PATH 变量中，对于 Windows，它是 `emulator.exe`）
-
-```bash
-# Pixel_4_API_29 为虚拟机ID，可以使用 emulator -list-avds 列出
-# -partition-size 部分新建的 AVD 可用存储空间可能只有百兆，这里修改为 4G
-emulator -avd Pixel_4_API_29 -partition-size 4096 -writable-system -no-snapshot-load
+# Pixel_5_API_29 为虚拟机ID，可以使用命令 emulator -list-avds 列出
+# -partition-size 部分新建的 AVD 可用存储空间可能只有百兆，这里修改为 2G
+emulator -avd Pixel_5_API_29 -partition-size 2048 -no-snapshot-load
+# 随后每次启动虚拟机时都使用该命令
+#
+# 可能会遇到找不到 emulator 命令的情况，
+# 请参阅此文档获知此命令的位置 https://developer.android.com/studio/run/emulator-commandline?hl=zh-cn 并将其加入 PATH 变量中
+#
+# 如果你无法完成上面的命令，请手动点击 Android Studio 中的 Virtual Device Manager，新建一个虚拟机，随后找到对应虚拟机并点击后方的编辑按钮（一个笔的符号），
+# 点击 Show Advanced Settings，找到 Storage -> Internal Storage 并将其设置为至少 2GB。
 ```
 
-并在启动后执行
-
-```bash
-# 这些命令有可能报错，无视即可
-adb shell avbctl disable-verification
-adb disable-verity
-```
-
-随后重启设备（`adb reboot`，需要等待一会），启动后继续执行
-
-```bash
-adb root
-adb remount
-```
-
-> 开始安装
+你已经准备好了安装包 tar.gz 或者 install.sh，以及一台 root 了的设备，将设备连接到当前电脑并确保已授权 ADB，现在开始安装过程
 
 #### 方式 1
 
@@ -307,6 +288,8 @@ su
 cd  /data/local/tmp
 # 执行安装脚本并启动（这将解包并启动服务）
 sh arm64-v8a.tar.gz-install.sh
+# 删除安装包
+rm arm64-v8a.tar.gz-install.sh
 ```
 
 #### 方式 2
@@ -326,14 +309,14 @@ cd /data/local/tmp
 # 注意自带的 tar 命令可能因为不支持 z 选项导致解包失败，你可能需要使用 busybox tar 来解包
 # 如果系统不附带 busybox 命令，请自行从 https://busybox.net/downloads/binaries/1.20.0 下载合适架构的版本
 tar -xzf arm64-v8a.tar.gz
+# 删除安装包
+rm arm64-v8a.tar.gz
 ```
 
 > 启动服务
 
-注: 方式 1 安装后，会顺带启动服务，所以使用该方法**首次安装后**你无需执行下面的命令。
-
-注: **并不是每次启动都需要 push 并安装**，上面方式1,2描述的过程只需首次执行即可，但是
-下面的过程则需要每次设备重启后执行。
+对于方式 1 安装，安装后会顺带启动服务，所以使用该方法**安装后**你无需执行下面的命令，但是按照下面的操作再来一次也并没有问题。
+对于上面任意一种安装方法，你永远只需要在首次安装时操作，但是**启动服务**的过程则需要在每次 设备重启 或者 你手动关闭 lamda 后执行，因为 lamda 不会自己运行。
 
 进入 adb shell，并切换为 `su` root 身份，执行：
 
