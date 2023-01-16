@@ -22,6 +22,7 @@ from lamda import __version__
 from lamda.client import *
 
 
+serial = None
 cleaning = False
 def cleanup(*args, **kwargs):
     global cleaning
@@ -46,6 +47,8 @@ def log(*args):
 
 def adb(*args):
     command = ["adb"]
+    if serial is not None:
+        command.extend(["-s", serial])
     command.extend(args)
     log (" ".join(command))
     proc = subprocess.Popen(command)
@@ -95,12 +98,13 @@ def dnsopt(dns):
     return "reverse:dns://{}@53".format(dns)
 argp.add_argument("device", nargs=1)
 argp.add_argument("-m", "--mode", default="regular")
+argp.add_argument("--serial", type=str, default=None)
 dns = argp.add_mutually_exclusive_group(required=False)
-dns.add_argument("-d", "--dns", type=dnsopt, nargs="?",
+dns.add_argument("--dns", type=dnsopt, nargs="?",
                                     const="1.1.1.1")
-dns.add_argument("-n", "--nameserver", type=str,
-                                    default="")
+dns.add_argument("--nameserver", type=str, default="")
 args, extras = argp.parse_known_args()
+serial = args.serial
 host = args.device[0]
 
 if ":" in host:

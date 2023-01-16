@@ -4,9 +4,7 @@
 
 开始之前，请确保已经启动设备上的 lamda 服务端。
 
-**注意**：部分命令文档可能具有时效性随时更新，为了避免版本问题，继续前请务必先在手机上安装最新版本的 lamda 以及其 Python 库和依赖库。所有使用到 adb 的脚本均 只支持一台手机通过 USB (adb) 连接电脑，请确保 `adb devices` 中只有一个设备。
-
-部分功能需要安装 adb，如果要用到，请确保已安装 adb 且不要太过老旧。
+**注意**：部分命令文档可能具有时效性随时更新，为了避免版本问题，继续前请务必先在手机上安装最新版本的 lamda 以及其 Python 库和依赖库。部分功能需要使用 adb，请务必确保安装的 adb 是最新版本。
 
 ```bash
 # 如果没有安装，请 自行搜索 如何安装，这里提供的只是基础建议
@@ -81,6 +79,11 @@ test.pem    # 用于加密客户端与服务端通信的证书
 
 > 注：你有可能需要手动安装 pyOpenSSL 依赖库 `pip install pyOpenSSL`
 
+
+## id_rsa
+
+lamda 内置 ssh 使用的默认 ssh 私钥，此与 `ssh.sh`、`scp.sh` 中硬编码的私钥相同。
+
 ## startmitm.py
 
 启动中间人，这将会全自动的在设备上开启全局的中间人，你就可以截获应用的 http/s 流量，当然，也可以包括 DNS 请求（全局）。
@@ -127,6 +130,7 @@ python3 -u startmitm.py 192.168.1.2:com.some.package
 如果你想使用特定的DNS，或者一些情况下，你可能出现DNS解析错误/无法解析的情况（可能出现于一些原生的系统），可以这样做
 
 ```bash
+# 使用中国大陆 DNS
 python3 -u startmitm.py 192.168.1.2 --nameserver 114.114.114.114
 ```
 
@@ -140,21 +144,25 @@ python3 -u startmitm.py 192.168.1.2 -s http_flow_hook.py
 ```
 即可。
 
-手机与当前电脑不在同一网络下，但是你可以物理接触设备，你仍然可以进行中间人，但是**需要确保当前设备已通过USB接入**电脑且已ADB授权。
+手机与当前电脑不在同一网络下，但是你可以物理接触设备，你仍然可以进行中间人，但是**需要确保当前设备已通过USB 或者 `adb connect` 接入**电脑且已ADB授权。
 
 ```bash
+# localhost 代表使用 adb 设备
+# 当前仅连接了一台 adb 设备
 python3 -u startmitm.py localhost
+# 电脑连接了多台 adb 设备，你需要指定 adb serial
+# 这个 serial 请从命令 adb devices 的输出中寻找
+python3 -u startmitm.py localhost --serial bfde362
 ```
 即可。
 
 手机与当前电脑不在同一网络下，也无法物理接触设备，但是只要你可以访问 lamda 的端口，你也可以进行中间人。
 **这种情况通常为**：你使用了内置 frp 服务转发了 lamda 到远程服务器，或者你自行通过某种方式转发了 lamda 的 65000 端口到某个地方（例如 SSH、路由器端口转发等-**注意安全性问题**），这种情况下你和 lamda 之间
-**仅有这一个端口**可以直接交流，其他端口是无法访问的。这种情况下，手机无法访问到本机的任何端口，本机也只能访问到手机的 lamda 端口，这样需要通过以下方式来进行。（注意 OpenVPN 网络互通，并不属于这个情况）
+**仅有这一个端口**可以直接交流，其他端口是无法互相访问的。这种情况下，手机无法访问到本机的任何端口，本机也只能访问到手机的 lamda 端口（或者手机有公网IP，但本机在不互通的内网），这样需要通过以下方式来进行。（注意 OpenVPN 网络互通，并不属于这个情况）
 
 这时，需要通过稍微繁琐的组合方式来进行，下面介绍如何操作。
 
-首先，使用 `adb_pubkey.py` 或者自行调用接口将自身的 adb 公钥安装到设备上（请在本文档搜索），
-随后，确保当前电脑没有任何 USB ADB 设备连接（`adb devices` 显示无设备）。
+首先，使用 `adb_pubkey.py` 或者自行调用接口将自身的 adb 公钥安装到设备上（请在本文档搜索）。
 
 现在执行以下命令
 
@@ -169,7 +177,10 @@ adb connect x.x.x.x:65000
 最后，按照和上文 通过USB 一样的方法操作
 ```bash
 # localhost 代表使用 adb 设备
+# 当前仅连接了一台 adb 设备
 python3 -u startmitm.py localhost
+# 电脑连接了多台 adb 设备，你需要指定 adb serial
+python3 -u startmitm.py localhost --serial x.x.x.x:65000
 ```
 
 即可。
@@ -333,6 +344,9 @@ print (data["result"])
 bash emu-install 192.168.1.2
 ```
 
+## magisk
+
+lamda 的 magisk 模块构架
 
 ## 各种服务脚本 (Docker)
 

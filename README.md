@@ -10,25 +10,29 @@
 </div>
 
 
-lamda 是一个用于逆向及自动化的辅助框架，它设计为减少安全分析以及应用测试人员的时间及琐碎问题，以编程化的接口替代大量手动操作。通过它，你可以：
+lamda 是一个用于逆向及自动化的辅助框架，它设计为减少安全分析以及应用测试人员的时间及琐碎问题，以编程化的接口替代大量手动操作。为了让你大概了解它的用处：你是否会在手机上安装各类代理、插件或者点来点去的设置来完成你的工作？你是否要在异地操作远在千里之外的手机？你是否有编程控制手机的需求？如果有，那么对了，只需一个 lamda 即可解决这些问题，当然，lamda 可以做到的并不止这些。
+
+lamda 包含了很多的功能：
 
 * 永远无需把手机放在桌边
-* 零依赖，只需 root 即可
+* 零依赖，只需 **root** 即可
+* 商业级软件的质量
 * 支持安卓 6.0 (M, API 23) - 13 (T, API 33)
 * 极其简单的调用，封装了大量常用接口，你只需要会写 Python
 * 只要有网即可连接任意地方运行了 lamda 的设备
 * 完全网络化，脱离 USB 数据线/USB HUB 等实体连接
-* 不会给现有运行环境增加任何可被检测的特征
+* 不会给现有运行环境增加任何可被针对的特征
 * 大大降低门槛以及闲杂琐事上的时间成本
-* 7*24 小时的稳定性
-* 支持标准游戏/AVD模拟器及真机、云手机，全架构
-* 可完美内置于安卓系统
+* 7*24 小时的稳定性，自动恢复
+* 支持游戏/AVD模拟器及真机、云手机，全架构（ARM/X86），可内置于安卓系统
 * 无线连接内置 root 权限的 WIFI ADB
-* 支持 OpenVPN 可实现全局/非全局的 VPN
-* 支持 http/socks5 代理，可实现设置系统级别/单个应用级别的代理
+* 内置 OpenVPN 可实现全局/非全局的 VPN
+* 内置 http/socks5 代理，可实现设置系统级别/单个应用级别的代理
 * 支持 UDP 协议代理（socks5 UDP 模式）
 * 支持 OpenVPN 与代理共存
-* 可通过接口轻松设置中间人证书，配合 http/socks5 代理实现中间人流量分析
+* 支持 Magisk 开机自启动
+* 支持自定义启动配置
+* 通过接口轻松设置中间人证书，配合 http/socks5 代理实现中间人流量分析
 * 通过 frida 暴露内部 Java/JNI 接口（类 [virjar/sekiro](https://github.com/virjar/sekiro) 但基于 frida）
 * UI自动化，通过接口实现自动化操作
 * 设备状态/资源消耗读取
@@ -37,16 +41,16 @@ lamda 是一个用于逆向及自动化的辅助框架，它设计为减少安�
 * 唤起应用的 Activity
 * 前后台运行 shell 命令，授予撤销应用权限等
 * 系统配置/属性读取修改
-* 内置 frida, IDA 7.5 server 等工具
+* 内置 frida 15.x, IDA 7.5 server 等工具
 * 可使用 ssh 登录设备终端
 * 内置 crontab 定时任务
 * 内置 Python3.9 及部分常用模块
 * WIFI 远程桌面（web）
 * 界面布局检视
 
-同时，tools/ 目录下还包含了一些常用的脚本以及开箱即用的服务。
+同时，tools/ 目录下还包含了一些脚本以及开箱即用的服务，这些脚本是使用了 lamda 提供的接口封装的个人常用工具。
 
-## 超完备一键中间人流量分析
+## 一键中间人流量分析
 
 支持常规以及国际APP流量分析，DNS流量分析，得益于 [mitmproxy flow hook](https://docs.mitmproxy.org/stable/api/events.html)，你可以对任何请求做到最大限度的掌控，mitmproxy 功能足够丰富，你可以通过其 `Export` 选项导出特定请求的 `curl` 命令或者 `HTTPie` 命令，分析重放、拦截修改、功能组合足以替代你用过的任何此类商业/非商业软件。如果你仍不清楚 mitmproxy 是什么以及其具有的能力，请务必先查找相关文档，因为 lamda 将会使用 mitmproxy 为你展现应用请求。
 
@@ -85,7 +89,7 @@ lamda 是一个用于逆向及自动化的辅助框架，它设计为减少安�
 
 ![目录索引动图演示](image/listing.gif)
 
-## 在线浏览 Android .db 数据库
+## 在线浏览安卓 .db 数据库
 
 对于安卓系统数据库 (sqlite)，可以点击文件名后方的小箭头来在线浏览。
 无需再将应用产生的数据库文件下载到本地再使用其他软件打开进行分析，全程在线即可完成。
@@ -164,32 +168,7 @@ export crashed=1
 首次启动时，有一定几率会出现 web 远程桌面一直加载中超过五分钟或者接口一直处于 ServiceUnavailable 状态
 出现这种情况时，请尝试重启设备并重新启动 lamda。
 
-### 我不想听一句废话，只想快速看看怎么样
-
-这是没有一句废话的快速安装过程，如果你想看详细的废话，请继续看下一节。
-或者，如果你看不懂下一节的废话，请直接套用这几条命令。
-
-```bash
-# 直接复制粘贴到CMD/终端里按下回车
-pip3 install -U lamda -i https://mirrors.ustc.edu.cn/pypi/web/simple
-adb shell getprop ro.product.cpu.abi
-# 看输出什么，输出 arm64-v8a 就用
-# arm64-v8a.tar.gz-install.sh
-# 输出 x86 就用
-# x86.tar.gz-install.sh
-adb push arm64-v8a.tar.gz-install.sh /data/local/tmp
-adb shell
-su
-cd  /data/local/tmp
-sh arm64-v8a.tar.gz-install.sh
-# 无法保证所有机器都能正确执行此 install.sh
-# 部分设备会发生脚本被 Killed 的情况，如果未能正确启动
-# 请继续尝试下方手动安装方法
-#
-# 好了，现在看下面的 开始 章节
-```
-
-### 客户端安装
+### 安装客户端库
 
 > 通过PIP源直接安装
 
@@ -199,10 +178,10 @@ sh arm64-v8a.tar.gz-install.sh
 pip3 install -U lamda
 # 即可
 #
-# 如果你需要使用内置 frida，为确保版本兼容请使用下列方法安装
+# 如果你需要使用内置 frida，为确保版本兼容请使用下列方法安装，如果不需要，那么执行上面这条命令即可
 # 这并不是必选项，不需要请跳过（你可能需要加入 --force-reinstall 选项来确保安装成功）
 # 你可能需要外网访问才能安装 frida，否则有几率会卡住许久(~10分钟)或安装失败
-# 如果你不需要 frida，请不要使用下面这条命令安装
+# 即使你之前安装过 frida，你也应该重新执行下列命令除非你能确保版本完全匹配
 pip3 install -U 'lamda[frida]'
 # 请注意完成安装后，你需要同时使用 pip 更新任何使用了
 # frida 的第三方库例如 frida-tools objection 等（如果安装过的话）
@@ -211,13 +190,14 @@ pip3 install -U 'lamda[frida]'
 
 安装完成后，请执行命令 `python3 -m lamda.client` 检查是否安装正确。如果出现如下异常报错信息
 
-* `AttributeError 'NoneType' object has no..`
-* `TypeError: Couldn't build proto file..`
+```python
+* AttributeError 'NoneType' object has no..
+* TypeError: Couldn't build proto file..
+```
 
 通常是因为依赖问题导致，有可能因为安装的 mitmproxy 或者其他依赖 gRPC 的包产生冲突。请尝试使用如下方法重新安装
 
 ```bash
-# 1. 尝试重新安装 lamda
 pip3 install -U --force-reinstall lamda
 ```
 
@@ -230,14 +210,21 @@ pip3 install -U --force-reinstall lamda
 正常情况下，对于现时代的手机，可以直接选择 `arm64-v8a` 版本，而对于模拟器如雷电，你会在新建模拟器时选择32或64位版本的安卓系统，
 32位模拟器系统对应 `x86`，64位则对应 `x86_64`，正常情况下，雷电模拟器默认创建的为基于 `x86` 的安卓 7.0 系统。
 
-lamda 会定期检查更新，默认频道为 mainline，更新频率约 1+ 周一次，如果该频率会影响到你的使用，请在首次启动 lamda 之前执行以下命令创建更新配置，stable 的更新频率为 1-2 月。为了减小压力，建议定期从 github release 下载最新版本手动更新。
+lamda 会定期从 github 更新，默认频道更新频率约1月一次，如果该频率可能会影响到你的使用，在首次启动 lamda 之前执行以下命令创建更新配置，stable 的更新频率为 3-6 月。为了减小压力，建议定期手动从 github release 下载最新版本手动更新。
 
 ```bash
 # 进入 adb shell 执行
 echo "upgrade.channel=stable" >>/data/local/tmp/properties.local
 ```
 
-> launch 可能出现的错误及解决方法
+在开始前，有必要先介绍一下上面这个 properties.local 文件，
+properties.local 为 lamda 的启动配置文件，其中包含了 `a=b` 类型的字符串，
+通过编写此文件，你可以实现在 lamda 启动时自动连接到 OpenVPN、代理、端口转发等。
+lamda 在启动时，会从 `/data/usr`、`/data/local/tmp`、`${CFGDIR:-/data/local}` 查找该文件并载入。
+你可以在以上三个位置任意一个放置你的 properties.local 配置文件。
+关于如何编写配置，下面会有介绍。
+
+> launch.sh 可能出现的错误及解决方法
 
 ```bash
 # 显示 llllaamDaa started 则服务已经正常进入 daemon 模式，可以退出终端
@@ -249,15 +236,22 @@ unsupported sdk     (在不支持的安卓系统上运行，不是 6-13)
 abi not match       (使用了错误的 gz 包，例如在 x86_64 上运行了 x86 的包)
 ```
 
-现在，从 `release` 页面 [lamda/releases](https://github.com/rev1si0n/lamda/releases)
-下载对应架构的安装文件。假设你已经从上文得知你的手机/设备架构为 `arm64-v8a`，那么在此页面点击
-`arm64-v8a.tar.gz-install.sh` 以及 `arm64-v8a.tar.gz` 两个文件的链接来下载到本地。
+#### 通过 Magisk 安装（开机自启动）
 
-> `arm64-v8a.tar.gz-install.sh` 是整合了的安装脚本，它在自身打包了 `arm64-v8a.tar.gz` 以及用于解压此安装包的 `busybox`。
-> 用它安装是最简便以及通用的，但仍无法保证各版本安卓的差异性导致可能的安装失败。所以，下面将会介绍两种安装方法，推荐第一种，第二种则是
-> 第一种完整的手动过程，你可以在第一种失败的情况下使用。
+如果你的设备使用了 Magisk，那么你可以以最简单的方法完成安装，并且 lamda 可以**开机自启动**。需要确保 Magisk 版本 >= 20.4 且只支持在 **Magisk App** 中安装。同时，使用 Magisk 安装更便于统一化，你可以自定义配置，例如，你想要所有使用该 magisk 模块刷入后的 lamda 都启用接口认证（certificate），
+或者希望这些设备都在启动时自动连接代理，你只需要编写 properties.local 或者生成证书并重命名为 `lamda.pem`（请查看 tools/ 中的工具使用方法），
+随后使用**压缩软件**打开 `lamda-magisk-module.zip`，并将其（`lamda.pem` 或者 `properties.local`）拖入 `common` 文件夹即可实现启动时自动配置！
 
-如果使用的是 AVD (Android Studio Virtual Device)，可能还需要扩展默认存储空间的大小。
+现在，从 [lamda/releases](https://github.com/rev1si0n/lamda/releases) 页面下载 `lamda-magisk-module.zip`，并将其 push 到 `/sdcard`，打开 Magisk App，点击 模块->从本地安装，选择 lamda-magisk-module.zip 稍作等待即可。
+
+刷入成功后，请重启设备。重启后，lamda 应该会在开机时自启动。但是为了避免任何可能的崩溃问题，lamda 会在 30 秒后启动而不是立即启动，你将有足够的时间去禁用 lamda 模块（请在开机后2分钟再连接使用 lamda）。安装完成后，你无需再看下段手动安装的内容，跳过即可。
+
+#### 手动安装
+
+手动安装是通常做法，下面将会介绍两种方式，两种方式的区别是：部分老旧设备可能无法通过系统的 `tar` 命令来解压 tar.gz 后缀的文件，所以提供了 `*-install.sh` 用来作为补充，其内置了一个 busybox 用来解压。
+
+
+下面介绍将会假设你使用的是安卓真机，如果使用的是 AVD (Android Studio Virtual Device)，请先使用如下方式扩展默认存储空间的大小。
 
 ```bash
 # Pixel_5_API_29 为虚拟机ID，可以使用命令 emulator -list-avds 列出
@@ -272,9 +266,13 @@ emulator -avd Pixel_5_API_29 -partition-size 2048 -no-snapshot-load
 # 点击 Show Advanced Settings，找到 Storage -> Internal Storage 并将其设置为至少 2GB。
 ```
 
-你已经准备好了安装包 tar.gz 或者 install.sh，以及一台 root 了的设备，将设备连接到当前电脑并确保已授权 ADB，现在开始安装过程
+
+已知 getprop 获得的设备架构为 `arm64-v8a`，现在将设备连接到当前电脑并确保已授权 ADB、可以正常切换 root，下面开始安装过程。
 
 #### 方式 1
+
+从 `release` 页面 [lamda/releases](https://github.com/rev1si0n/lamda/releases)
+下载 `arm64-v8a.tar.gz-install.sh`。
 
 ```bash
 # /data/local/tmp 是标准服务安装路径，但并不是强制要求
@@ -293,6 +291,9 @@ rm arm64-v8a.tar.gz-install.sh
 ```
 
 #### 方式 2
+
+从 `release` 页面 [lamda/releases](https://github.com/rev1si0n/lamda/releases)
+下载 `arm64-v8a.tar.gz`。
 
 ```bash
 # /data/local/tmp 是标准服务安装路径，但并不是强制要求
@@ -349,8 +350,19 @@ sh arm64-v8a/bin/launch.sh --port=8123
 
 ```bash
 #!/system/bin/sh
+base=/data/local/tmp
 ABI=$(getprop ro.product.cpu.abi)
-sh /data/local/tmp/${ABI}/bin/launch.sh #--port=65000 --certificate=/data/local/tmp/lamda.pem
+launch="sh ${base}/${ABI}/bin/launch.sh"
+cert=${base}/lamda.pem
+port=65000
+
+# where to locate properties.local
+export CFGDIR=${base}
+if [ -f "${cert}" ]; then
+$launch --port=${port} --certificate=${cert}
+else
+$launch --port=${port}
+fi
 ```
 
 静待退出，随即关闭终端，至此服务启动完成。
@@ -522,6 +534,21 @@ d.stop_gproxy()
 
 lamda 在 tools/ 中提供了一个开箱即用同时支持 udp 的 socks5 代理服务 docker，请转到 tools/socks5 目录查看 README.md。
 
+> 如何在 lamda 启动时自动连接到代理
+
+复制下列配置并修改相关配置为你的代理信息
+
+```ini
+gproxy.enable=true
+gproxy.type=http-connect
+gproxy.host=123.333.333.333
+gproxy.port=8080
+gproxy.password=
+gproxy.login=
+```
+
+将其追加或者写入到 properties.local，重启 lamda 即可。
+
 ## 中间人流量分析（MITM）
 
 > 建议你使用或参考已经封装好的 tools/ 目录下的 startmitm.py, globalmitm 工具
@@ -621,11 +648,15 @@ d.stop_openvpn()
 
 lamda 在 tools/ 中提供了一个开箱即用的 OpenVPN docker，请转到 tools/openvpn 目录查看 README.md。
 
+> 如何在 lamda 启动时自动连接到 VPN
+
+你可以使用 tools/openvpn 提供的命令来生成 properties.local 配置，请不要自行编写。
+
 ## 如何连接内置 frida
 
 > 非逆向工作无需阅读此节
 
-注意，启动本框架前后，**请勿**再次自行启动任何 frida-server，否则有可能会导致系统崩溃。你只需要通过下列代码使用内置 frida 即可。
+启动本框架前后，**请勿**再次自行启动任何 frida-server，否则有可能会导致系统崩溃。你只需要通过下列代码使用内置 frida 即可。
 
 1. 通过代码连接
 
@@ -638,7 +669,7 @@ device.enumerate_processes()
 等效于
 
 ```python
-# 通常做法
+# 只是示例，请尽量使用上述方法连接
 manager = frida.get_device_manager()
 device = manager.add_remote_device("192.168.0.2:65000")
 device.enumerate_processes()
@@ -646,8 +677,7 @@ device.enumerate_processes()
 
 2. 通过命令行方式使用
 
-对于所有 frida 官方命令行工具，你只需要加上参数 `-H 192.168.0.2:65000` 即可，
-对于第三方的例如 `objection`，则是添加参数 `-N -h 192.168.0.2 -p 65000`，其他未提及的第三方工具请自行查看其使用方法。这些第三方工具可能并不会完全遵循原生 frida 工具的命令行用法，如果你需要使用这些第三方工具，可能需要服务端启动时**没有使用** `--certificate` 参数（加密传输），因为它们可能并没有可以传递证书的参数。
+对于所有 frida 官方命令行工具，你只需要加上参数 `-H 192.168.0.2:65000` 即可。
 
 ```bash
 frida -H 192.168.0.2:65000 -f com.android.settings
@@ -655,7 +685,34 @@ frida -H 192.168.0.2:65000 -f com.android.settings
 frida -H 192.168.0.2:65000 -f com.android.settings --certificate /path/to/lamda.pem
 ```
 
-即可。
+对于 objection 以及 r0capture 等，这些第三方工具可能并不会完全遵循原生 frida 工具的命令行用法，如果你需要使用这些第三方工具，需要确保 lamda 启动时**没有使用** `--certificate` 参数（加密传输），因为这些工具可能并没有可以传递证书的参数。
+
+```bash
+# objection 示例连接方法 (-N -h 192.168.0.2 -p 65000)
+objection -N -h 192.168.0.2 -p 65000 -g com.android.settings explore
+```
+
+```bash
+# r0capture 示例连接方法 (-H 192.168.0.2:65000)
+python3 r0capture.py -H 192.168.0.2:65000 -f com.some.package
+```
+
+```bash
+# jnitrace 示例连接方法 (-R 192.168.0.2:65000)
+jnitrace -R 192.168.0.2:65000 -l libc.so com.some.package
+```
+
+```bash
+# frida-dexdump 示例连接方法 (-H 192.168.0.2:65000)
+frida-dexdump -H 192.168.0.2:65000 -p PID
+```
+
+```bash
+# hooker 示例连接方法 (-H 192.168.0.2:65000)
+# 修改 .hooker_driver 文件的内容为 -H 192.168.0.2:65000 即可
+```
+
+其他未提及的第三方工具请自行查看其使用方法。
 
 ## 使用自带的 crontab (定时任务)
 
@@ -737,7 +794,7 @@ tools 文件夹内都提供了相关服务的 docker 镜像并且这些镜像可
 frps --token lamda --bind_addr 0.0.0.0 --bind_port 6009 --proxy_bind_addr 127.0.0.1 --allow_ports 10000-15000
 ```
 
-> 然后开始在手机上配置
+> 然后编写 properties.local
 
 复制下列配置并修改**服务器地址**为你的服务器公网IP
 
@@ -750,17 +807,9 @@ fwd.protocol=tcp
 fwd.enable=true
 ```
 
-进入设备的 ssh 或者内置 adb 命令行（也可通过 web 远程桌面拖拉上传文件），执行
+将其追加或者写入到 properties.local，重启 lamda 即可。
 
-```bash
-cd # 先切换到家目录
-nano properties.local
-# 这个文件也可以放到 /data/local/tmp 下
-```
-
-将修改的配置粘贴或自行输入，并保存，随后重启设备和 lamda 服务。
-
-> 如何使用（需要在公网服务器上使用）
+> 如何透过上面的转发使用 lamda（需要在部署 frps 的那台公网服务器上使用，因为我们绑定了转发的端口到 127.0.0.1）
 
 ```python
 from lamda.client import *
@@ -774,8 +823,7 @@ d = Device("127.0.0.1", port=12345)
 
 如果你需要一次设置多台机器且不在乎每台机器绑定的端口，
 你可以将上方配置中的 `fwd.rport` 值改为 0，这将导致你的设备被随机绑定到 `10000-15000` 的端口范围中，
-随后将其保存为文件 `properties.local` 到你的本机，首次启动或者启动 lamda 前，将其 adb push 到 `/data/local/tmp` 即可（如果已经 push 过就没必要再次 push 了，直接启动 lamda 即可）。
-你可以通过后期轮训来定位设备转发绑定的对应端口。
+你可以通过后期轮训端口范围来定位设备转发绑定的对应端口。
 
 > 我就是想在任意地方都能连接到设备
 

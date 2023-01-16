@@ -1,29 +1,36 @@
 #!/usr/bin/env python3
 #encoding=utf-8
 import os
-import sys
-import shutil
-from lamda.client import *
+import argparse
 
-cmd, host = sys.argv[1:]
+from os.path import isfile
+from lamda.client import *
 
 certfile = os.environ.get("CERTIFICATE", None)
 port = int(os.environ.get("LAMDAPORT", 65000))
 
-d = Device(host, port=port, certificate=certfile)
-
-shutil.which("adb") or exit("no adb")
-
-os.popen("adb start-server").read()
-
 android_path = os.path.join("~", ".android")
 abs_android_path = os.path.expanduser(android_path)
+f = "adbkey.pub"
+
+argp = argparse.ArgumentParser()
+
+argp.add_argument("action", nargs=1)
+argp.add_argument("device", nargs=1)
+
+args = argp.parse_args()
+
+d = Device(args.device[0], port=port,
+                certificate=certfile)
+cmd = args.action[0]
 
 os.chdir(abs_android_path)
 
+# try generate pubkey
 pubkey = os.popen("adb pubkey adbkey").read()
-open("adbkey.pub", "w").write(pubkey)
+open("adbkey.lamda", "w").write(pubkey)
 
-func = getattr(d, "%s_adb_pubkey" % cmd)
-r = func("adbkey.pub")
-print ("OK: %s" % r)
+f = ("adbkey.lamda", f)[isfile(f)]
+
+call = getattr(d, "%s_adb_pubkey" % cmd)
+exit(not call(f))

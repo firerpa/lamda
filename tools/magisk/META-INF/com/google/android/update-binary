@@ -1,0 +1,16 @@
+#!/sbin/sh
+source /data/adb/magisk/util_functions.sh
+
+if [ ${MAGISK_VER_CODE} -lt 20400 ]; then
+abort "Please install Magisk v20.4 +"
+exit 1
+fi
+
+if [ "${BOOTMODE}" != "true" ]; then
+abort "Must install from Magisk app"
+fi
+
+OUTFD=$2
+ZIPFILE=$3
+install_module
+exit 0
