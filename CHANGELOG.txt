@@ -1,3 +1,7 @@
+3.78
+* 修复 #21 @yu1chaofan
+* 更新 frida-server
+
 3.76
 * 默认内置 shell 使用 bash
 * 修复断网后远程桌面触摸无法使用的问题
