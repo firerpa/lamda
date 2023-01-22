@@ -1,3 +1,7 @@
+3.80
+* 修复 ssh 断连的问题
+* 减小包体积
+
 3.78
 * 修复 #21 @yu1chaofan
 * 更新 frida-server
