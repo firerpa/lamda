@@ -1,3 +1,8 @@
+3.83
+* 支持 WSA #24 @aimardcr
+* 修复 note7pro MIUI10 黑屏 @yu1chaofan
+* 次要更改
+
 3.80
 * 修复 ssh 断连的问题
 * 减小包体积

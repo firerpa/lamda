@@ -18,6 +18,7 @@ lamda 包含了很多的功能：
 * 较高的安全性，支持接口及登录认证
 * 商业级软件的质量
 * 支持安卓 6.0 (M, API 23) - 13 (T, API 33)
+* 支持 WSA (Windows Subsystem Android)
 * 封装了大量常用接口，只需要会写 Python
 * 只要有网即可连接任意地方运行了 lamda 的设备
 * 完全网络化，脱离 USB 数据线/USB HUB 等实体连接
@@ -157,6 +158,25 @@ lamda 设计在纯净 root 的设备上运行，最理想的环境是你仅仅�
 
 打开设置，找到无障碍（系统或更多设置中），关闭或卸载所有使用无障碍的应用（例如 talkback，autojs 等）。
 
+> 其他设置
+
+如果使用的是 WSA (Windows Subsystem Android)，请确保 WSA 版本不低于 2210.40000 并且已 root。随后打开 WSA 设置 -> Subsystem Resources -> 选择 Continuous，关闭 Advanced Networking。随后重启 WSA 子系统即可。
+
+如果使用的是 AVD (Android Studio Virtual Device)，请先使用如下方式扩展默认存储空间的大小。
+
+```bash
+# Pixel_5_API_29 为虚拟机ID，可以使用命令 emulator -list-avds 列出
+# -partition-size 部分新建的 AVD 可用存储空间可能只有百兆，这里修改为 2G
+emulator -avd Pixel_5_API_29 -partition-size 2048 -no-snapshot-load
+# 随后每次启动虚拟机时都使用该命令
+#
+# 可能会遇到找不到 emulator 命令的情况，
+# 请参阅此文档获知此命令的位置 https://developer.android.com/studio/run/emulator-commandline?hl=zh-cn 并将其加入 PATH 变量中
+#
+# 如果你无法完成上面的命令，请手动点击 Android Studio 中的 Virtual Device Manager，新建一个虚拟机，随后找到对应虚拟机并点击后方的编辑按钮（一个笔的符号），
+# 点击 Show Advanced Settings，找到 Storage -> Internal Storage 并将其设置为至少 2GB。
+```
+
 ### 安装客户端库
 
 > 通过PIP源安装
@@ -236,26 +256,7 @@ abi not match       (使用了错误的 gz 包，例如在 x86_64 上运行了 x
 
 #### 手动安装
 
-手动安装是通常做法，下面将会介绍两种方式，两种方式的区别是：部分老旧设备可能无法通过系统的 `tar` 命令来解压 tar.gz 后缀的文件，所以提供了 `*-install.sh` 用来作为补充，其内置了一个 busybox 用来解压。
-
-
-下面介绍将会假设你使用的是安卓真机，如果使用的是 AVD (Android Studio Virtual Device)，请先使用如下方式扩展默认存储空间的大小。
-
-```bash
-# Pixel_5_API_29 为虚拟机ID，可以使用命令 emulator -list-avds 列出
-# -partition-size 部分新建的 AVD 可用存储空间可能只有百兆，这里修改为 2G
-emulator -avd Pixel_5_API_29 -partition-size 2048 -no-snapshot-load
-# 随后每次启动虚拟机时都使用该命令
-#
-# 可能会遇到找不到 emulator 命令的情况，
-# 请参阅此文档获知此命令的位置 https://developer.android.com/studio/run/emulator-commandline?hl=zh-cn 并将其加入 PATH 变量中
-#
-# 如果你无法完成上面的命令，请手动点击 Android Studio 中的 Virtual Device Manager，新建一个虚拟机，随后找到对应虚拟机并点击后方的编辑按钮（一个笔的符号），
-# 点击 Show Advanced Settings，找到 Storage -> Internal Storage 并将其设置为至少 2GB。
-```
-
-
-已知 getprop 获得的设备架构为 `arm64-v8a`，现在将设备连接到当前电脑并确保已授权 ADB、可以正常切换 root，下面开始安装过程。
+手动安装是通常做法，下面将会介绍两种方式，两种方式的区别是：部分老旧设备可能无法通过系统的 `tar` 命令来解压 tar.gz 后缀的文件，所以提供了 `*-install.sh` 用来作为补充，其内置了一个 busybox 用来解压。已知 getprop 获得的设备架构为 `arm64-v8a`，现在将设备连接到当前电脑并确保已授权 ADB、可以正常切换 root。
 
 #### 方式 1
 
