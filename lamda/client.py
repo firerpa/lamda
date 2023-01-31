@@ -13,7 +13,6 @@ import json
 import platform
 import warnings
 import builtins
-import pathlib
 import logging
 import atexit
 import grpc
@@ -1812,11 +1811,6 @@ if __name__ == "__main__":
                                    help="ssl cert")
     args = parser.parse_args()
 
-    HIST = expanduser("~/.lamda-cli_history")
-    pathlib.Path(HIST).touch(exist_ok=True)
-
-    readline.read_history_file(HIST)
-    atexit.register(readline.write_history_file, HIST)
     readline.parse_and_bind("tab: complete")
 
     d = Device(args.device, port=args.port,

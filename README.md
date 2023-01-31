@@ -111,7 +111,7 @@ lamda 包含了很多的功能：
 
 为了下载使用由 rev1si0n (账号 github.com/rev1si0n)（以下简称“本人”）个人开发的软件 lamda ，您应当阅读并遵守《用户使用协议》（以下简称“本协议”）。请您务必审慎阅读、充分理解各条款内容，特别是免除或者限制责任的条款，并选择接受或不接受；除非您已阅读并接受本协议所有条款，否则您将无权下载、安装或使用本软件及相关服务。您的下载、安装、使用、获取账号、登录等行为即视为您已阅读并同意受到上述协议的约束；若您需要获得本服务，您（以下称"用户"）应当同意本协议的全部条款并按照页面上的提示完成全部申请使用程序。您可以在本文档的相同目录找到 [DISCLAIMER.TXT](DISCLAIMER.TXT)，或者点此 [免责声明](DISCLAIMER.TXT) 查阅。
 
-lamda 不提供任何侵入、修改、抓取其他应用内存及网络数据的功能，主要收集了各种第三方程序给用户自行选择，方便安全分析人员使用，相关工具均为合法合规的APP分析、Mock 场景提供，你**不得**将其用于**任何**违法违规或未授权的行为。
+请确认您已阅读并接受本协议所有条款，否则您将无权下载、安装或使用本软件及相关服务。
 
 ## 前言
 
@@ -439,6 +439,14 @@ python3 -m lamda.client -device 192.168.0.2
 ```
 
 > 下文中的 `d` 将始终假设为 `d = Device("192.168.0.2")` 实例。
+
+## 先来一个热身
+
+如下方法可以使你的手机发出一声蜂鸣，需要手机为非静音状态。
+
+```python
+d.beep()
+```
 
 ## 设置 http/socks5 代理
 
@@ -1626,52 +1634,7 @@ d._release_lock()
 * frida-apk        (frida-tools)
 * frida-create     (frida-tools)
 * frida-join       (frida-tools)
-* awk
-* base64
-* basename
-* cat
-* chmod
-* chown
-* cp
-* cpio
-* cut
-* date
-* dd
-* diff
-* dirname
-* echo
-* find
-* fuser
-* grep
-* kill
-* less
-* ln
-* ls
-* lsof
-* md5sum
-* mkdir
-* more
-* mount
-* mv
-* nice
-* nohup
-* pidof
-* pkill
-* ps
-* rm
-* sed
-* sleep
-* sort
-* stat
-* strings
-* tail
-* tar
-* tee
-* telnet
-* timeout
-* touch
-* umount
-* wc
+* 等基础 linux 命令
 
 同样，Python 也内置了一些可以用来使用的三方库
 
@@ -1685,12 +1648,9 @@ d._release_lock()
 * pyOpenSSL        (OpenSSL)
 * requests         (requests)
 * scapy            (流量分析)
-* ujson            (ujson)
 * frida            (frida)
-* urllib3          (urllib3)
 * xmltodict        (xml转dict)
 * msgpack_python   (msgpack)
-* jmespath         (jmespath)
 
 因为可能随着更新被移除，请不要使用不在上述列表的库。
 这里不会介绍如何使用这些命令或库。

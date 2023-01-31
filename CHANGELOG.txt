@@ -1,3 +1,9 @@
+3.90
+* 移除未使用的库，减小体积
+* 移除 client 中不兼容 MacOS 的命令行历史功能
+* 更新 DISCLAIMER.TXT
+* 更新部分依赖库版本
+
 3.83
 * 支持 WSA #24 @aimardcr
 * 修复 note7pro MIUI10 黑屏 @yu1chaofan
