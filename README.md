@@ -53,6 +53,8 @@ lamda 包含了很多的功能：
 
 ## 一键中间人流量分析
 
+[![Join the chat at https://gitter.im/lamda-dev/community](https://badges.gitter.im/lamda-dev/community.svg)](https://gitter.im/lamda-dev/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 支持常规以及国际APP流量分析，DNS流量分析，得益于 [mitmproxy flow hook](https://docs.mitmproxy.org/stable/api/events.html)，你可以对任何请求做到最大限度的掌控，mitmproxy 功能足够丰富，你可以通过其 `Export` 选项导出特定请求的 `curl` 命令或者 `HTTPie` 命令，分析重放、拦截修改、功能组合足以替代你用过的任何此类商业/非商业软件。如果你仍不清楚 mitmproxy 是什么以及其具有的能力，请务必先查找相关文档，因为 lamda 将会使用 mitmproxy 为你展现应用请求。
 
 通过 tools/ 目录下的 `globalmitm`，`startmitm.py` 实现，使用方法请看其同目录 README。
