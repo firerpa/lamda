@@ -111,6 +111,8 @@ lamda 包含了很多的功能：
 
 为了下载使用由 rev1si0n (账号 github.com/rev1si0n)（以下简称“本人”）个人开发的软件 lamda ，您应当阅读并遵守《用户使用协议》（以下简称“本协议”）。请您务必审慎阅读、充分理解各条款内容，特别是免除或者限制责任的条款，并选择接受或不接受；除非您已阅读并接受本协议所有条款，否则您将无权下载、安装或使用本软件及相关服务。您的下载、安装、使用、获取账号、登录等行为即视为您已阅读并同意受到上述协议的约束；若您需要获得本服务，您（以下称"用户"）应当同意本协议的全部条款并按照页面上的提示完成全部申请使用程序。您可以在本文档的相同目录找到 [DISCLAIMER.TXT](DISCLAIMER.TXT)，或者点此 [免责声明](DISCLAIMER.TXT) 查阅。
 
+由于并未完全开源，且考虑到面向的用户群体，除以上条款外，附加一条：**允许您对 lamda 本身进行以恶意代码分析为目的的逆向**。
+
 请确认您已阅读并接受本协议所有条款，否则您将无权下载、安装或使用本软件及相关服务。
 
 ## 前言
@@ -123,11 +125,12 @@ lamda 是个人开发的免费软件 (freeware)，目前仅客户端及协议是
 
 **特别注意**：**请勿在自用设备上运行，当有可能在公网或不信任的网络中使用时，务必确保在启动时指定了PEM证书**
 
-
 > 问题反馈及功能建议
 
 因为安卓被各种设备广泛使用，无法保证百分百的兼容性，可能会有运行异常等各种未知情况，出现的异常情况包括：无故重启，APP经常崩溃，触摸失效或无故乱动等等，冻屏等情况。如果经常遇到，建议暂时停止使用。
 点此 [报告问题/建议](https://github.com/rev1si0n/lamda/issues/new)，请详细描述并附上机型系统等信息。
+
+社区：https://gitter.im/lamda-dev/community
 
 ## 安装
 
@@ -838,7 +841,17 @@ d.setprop("ro.secure", "0")
 ```python
 settings = d.stub("Settings")
 
-# 示例：获取及修改屏幕亮度
+# 如果你对以下 screen_brightness 等字符串表示疑惑，请查看下列文档。有些常量
+# 在不同版本的安卓可能并不兼容，以及部分厂商会有自定义的变量，需要注意。
+
+# https://developer.android.com/reference/android/provider/Settings.System
+# https://developer.android.com/reference/android/provider/Settings.Secure
+# https://developer.android.com/reference/android/provider/Settings.Global
+
+# 你可以使用如下代码将系统屏幕的亮度设置为手动
+settings.put_system("screen_brightness_mode", "0")
+
+# 示例：获取并修改屏幕亮度为 5 (0-255)
 settings.get_system("screen_brightness")
 settings.put_system("screen_brightness", "5")
 
@@ -1085,16 +1098,19 @@ d.start_activity(action="com.android.settings.TRUSTED_CREDENTIALS")
 ```python
 app = d.application("com.my.app")
 
+#导入 PERMISSION_READ_PHONE_STATE 常量（版本>3.90）
+from lamda.const import *
+
 # 获取应用所有权限
 app.permissions()
 # 授予 READ_PHONE_STATE 权限
-app.grant("android.permission.READ_PHONE_STATE", mode=GrantType.GRANT_ALLOW)
+app.grant(PERMISSION_READ_PHONE_STATE, mode=GrantType.GRANT_ALLOW)
 # 拒绝 READ_PHONE_STATE 权限
-app.grant("android.permission.READ_PHONE_STATE", mode=GrantType.GRANT_DENY)
+app.grant(PERMISSION_READ_PHONE_STATE, mode=GrantType.GRANT_DENY)
 # 检查是否已授予权限
-app.is_permission_granted("android.permission.READ_PHONE_STATE")
+app.is_permission_granted(PERMISSION_READ_PHONE_STATE)
 # 撤销已授予的权限
-app.revoke("android.permission.READ_PHONE_STATE")
+app.revoke(PERMISSION_READ_PHONE_STATE)
 ```
 
 > 清除应用缓存，重置应用
