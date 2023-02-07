@@ -1,28 +1,19 @@
-<div align="center">
-<pre>
-.____                       ________      _____    
-|    |    _____     _____   \______ \    /  _  \   
-|    |    \__  \   /     \   |    |  \  /  /_\  \  
-|    |___  / __ \_|  Y Y  \  |    |   \/    |    \ 
-|_______ \(____  /|__|_|  / /_______  /\____|__  / 
-        \/     \/       \/          \/         \/  
-</pre>
-</div>
+<p align="center">
+<img src="image/logo.svg" alt="LAMDA" width="256">
+</p>
 
+<p align="center">Android reverse engineering & automation framework</p>
 
-lamda 是一个用于逆向及自动化的辅助框架，它设计为减少安全分析以及应用测试人员的时间及琐碎问题，以编程化的接口替代大量手动操作。为了让你大概了解它的用处：你是否会在手机上安装各类代理、插件或者点来点去的设置来完成你的工作？你是否要在异地操作远在千里之外的手机？你是否有编程控制手机的需求？如果有，那么对了，只需一个 lamda 即可解决这些问题，当然，lamda 可以做到的并不止这些。
-
-lamda 包含了很多的功能：
+lamda 是一个用于逆向及自动化的辅助框架，它设计为减少安全分析以及应用测试人员的时间及琐碎问题，以编程化的接口替代大量手动操作。为了让你大概了解它的用处：你是否会在手机上安装各类代理、插件或者点来点去的设置来完成你的工作？你是否要在异地操作远在千里之外的手机？你是否有编程控制手机的需求？你还在某些云手机厂商那里购买昂贵的**IP切换**、**远程ADB调试**、**RPA自动化**甚至连 **logcat 日志**都要付费的服务？如果有，那么对了，只需一个 lamda 即可解决这些问题。当然，lamda 可以做到的不止于此。
 
 * 零依赖，只需 **root** 即可
 * 较高的安全性，支持接口及登录认证
 * 商业级软件的质量
 * 支持安卓 6.0 (M, API 23) - 13 (T, API 33)
-* 支持 WSA (Windows Subsystem Android)
+* 支持 WSA (Windows Subsystem for Android™️)
 * 封装了大量常用接口，只需要会写 Python
 * 只要有网即可连接任意地方运行了 lamda 的设备
 * 完全网络化，脱离 USB 数据线/USB 集线器等实体连接
-* 不会给现有运行环境增加任何可被针对的特征
 * 大大降低门槛以及闲杂琐事上的时间成本
 * 7*24 小时的稳定性，自动恢复
 * 支持游戏/AVD模拟器及真机、云手机，全架构（ARM/X86）
@@ -33,7 +24,7 @@ lamda 包含了很多的功能：
 * 支持 OpenVPN 与代理共存
 * 支持 Magisk 开机自启动
 * 支持自定义启动配置
-* 通过接口轻松设置中间人证书，配合 http/socks5 代理实现中间人流量分析
+* 通过接口轻松设置根证书，配合 http/socks5 代理实现中间人流量分析
 * 通过 frida 暴露内部 Java/JNI 接口（类 [virjar/sekiro](https://github.com/virjar/sekiro) 但基于 frida）
 * UI自动化，通过接口实现自动化操作
 * 设备状态/资源消耗读取
@@ -98,20 +89,13 @@ lamda 包含了很多的功能：
 ![数据库在线浏览](image/dbview.gif)
 
 
-如果你希望继续看下去，请先确保：手边有一台已经 root 且运行内存大于 2GB，可用存储空间大于 1GB 的安卓设备或者安卓模拟器（推荐使用最新版**夜神**，**雷电**模拟器，或者 AVD [Android Studio Virtual Device]）。**不完全支持** 网易 Mumu，**不支持**腾讯手游助手、蓝叠以及任何安卓内虚拟如 VMOS、部分 Docker 类型的云手机、等），对于真机，推荐运行最接近原生系统的设备如谷歌系、一加、安卓开发板等，或系统仅经过轻度改造的设备。如果你使用的是OPPO/VIVO/华为/小米的设备，经过尝试后无法正常运行，建议改用模拟器。
+如果你希望继续看下去，请确保：有一台已经 root 且运行内存大于 2GB，可用存储空间大于 1GB 的安卓设备或者安卓模拟器（推荐使用最新版**夜神**，**雷电**模拟器，或者 AVD [Android Studio Virtual Device]）。**不完全支持** 网易 Mumu，**不支持**腾讯手游助手、蓝叠以及安卓内虚拟如 VMOS 等），对于真机，推荐运行最接近原生系统的设备如谷歌系、一加、安卓开发板等，或系统仅经过轻度改造的设备。如果你使用的是OPPO/VIVO/华为/小米的设备，经过尝试后无法正常运行，建议改用模拟器。
 
-对于**云手机**，目前已知一些提供商的情况为：X马云手机基本都可以正常使用，X多云手机安卓9.0版本可以正常使用，
-不支持X手指、X电、X云兔、X子星（这些云手机很多都是Docker/套中套类型或者限制较多），其余未经测试。
-
-**文档中部分内容太杂可能劝退一些人，为什么文档写了这么多奇怪无关的东西，因为这个文档连大部分你可能遇到的相关问题都写了进来。**
-
-> 建议速读浏览一遍，然后一字一句看下去，其中会包含有一些问题及提示。
+对于**云手机**，已知提供商的情况为：X多云手机安卓9.0版本可正常使用，不支持X手指、X电、X云兔、X子星、X马云（这些云手机很多都是Docker/套娃类或者做了限制）。
 
 ## 免责声明及条款
 
-为了下载使用由 rev1si0n (账号 github.com/rev1si0n)（以下简称“本人”）个人开发的软件 lamda ，您应当阅读并遵守《用户使用协议》（以下简称“本协议”）。请您务必审慎阅读、充分理解各条款内容，特别是免除或者限制责任的条款，并选择接受或不接受；除非您已阅读并接受本协议所有条款，否则您将无权下载、安装或使用本软件及相关服务。您的下载、安装、使用、获取账号、登录等行为即视为您已阅读并同意受到上述协议的约束；若您需要获得本服务，您（以下称"用户"）应当同意本协议的全部条款并按照页面上的提示完成全部申请使用程序。您可以在本文档的相同目录找到 [DISCLAIMER.TXT](DISCLAIMER.TXT)，或者点此 [免责声明](DISCLAIMER.TXT) 查阅。
-
-由于并未完全开源，考虑到面向的用户群体，除以上条款外：**授权您对 lamda 本身进行以恶意代码分析为目的的逆向**。
+为了下载使用由 rev1si0n (账号 github.com/rev1si0n)（以下简称“本人”）个人开发的软件 lamda ，您应当阅读并遵守《用户使用协议》（以下简称“本协议”）。请您务必审慎阅读、充分理解各条款内容，特别是免除或者限制责任的条款，并选择接受或不接受；除非您已阅读并接受本协议所有条款，否则您将无权下载、安装或使用本软件及相关服务。您的下载、安装、使用、获取账号、登录等行为即视为您已阅读并同意受到上述协议的约束；若您需要获得本服务，您（以下称"用户"）应当同意本协议的全部条款并按照页面上的提示完成全部申请使用程序。您可以在本文档的相同目录找到 [DISCLAIMER.TXT](DISCLAIMER.TXT)，或者点此 [免责声明](DISCLAIMER.TXT) 查阅。由于并未完全开源，除以上条款外：**授权您对 lamda 本身进行以恶意代码分析为目的的逆向**。
 
 请确认您已阅读并接受本协议所有条款，否则您将无权下载、安装或使用本软件及相关服务。
 
@@ -119,26 +103,35 @@ lamda 包含了很多的功能：
 
 lamda 是个人开发的免费软件 (freeware)，目前仅客户端及协议是开源的，但个人承诺它没有任何对您违规或多余的行为，如果仍有担心，您可以**立即离开**或者选择**付费**寻求心理安慰。互相尊重，使用请遵守使用条款。合作交流请在 [ISSUE](https://github.com/rev1si0n/lamda/issues/new) 中留下联系方式。
 
-文档目前只是介绍了基本使用，请配合下方示例手动输入语句辅助理解。如果你使用的是 Windows，附带的任何示例代码/命令可能在你的系统上不会正常工作(但是不包括客户端库)，建议在 Linux 或者 Mac 系统上操作文档及样例中的代码。
-
-部分功能需要配合 `tools/` 目录下的工具实现，这些工具如何使用请参照 [tools/README.md](tools/README.md)。
+建议在 Linux 或者 Mac 系统上操作文档及样例中的代码。部分功能需要配合 `tools/` 目录下的工具实现，如何使用请参照 [tools/README.md](tools/README.md)。
 
 **特别注意**：**请勿在自用设备上运行，当有可能在公网或不信任的网络中使用时，务必确保在启动时指定了PEM证书**
 
-> 问题反馈及功能建议
+> 问题反馈及建议
 
-因为安卓被各种设备广泛使用，无法保证百分百的兼容性，可能会有运行异常等各种未知情况，出现的异常情况包括：无故重启，APP经常崩溃，触摸失效或无故乱动等等，冻屏等情况。如果经常遇到，建议暂时停止使用。
+因为安卓被各种设备广泛使用，无法保证百分百的兼容性，可能会有运行异常等各种未知情况，出现的异常情况包括：无故重启，APP经常崩溃，触摸失效或无故乱动等等，冻屏等情况。如果经常遇到，建议停止使用。
 点此 [报告问题/建议](https://github.com/rev1si0n/lamda/issues/new)，请详细描述并附上机型系统等信息。
 
-社区：https://gitter.im/lamda-dev/community
+你也可以加入社区讨论：https://gitter.im/lamda-dev/community
 
-## 安装
+> 支持作者
+
+可以选择通过点击下方**推广链接**购买云服务，只建议您理性购买需要用到的设施。
+
+<a href="https://lamda.run/referral/aliyun"><img src="image/logo-aliyun.png" alt="阿里云" height="50"></a>
+<a href="https://lamda.run/referral/tencent"><img src="image/logo-tencent.svg" alt="腾讯云" height="50"></a>
+<a href="https://lamda.run/referral/vultr"><img src="image/logo-vultr.png" alt="VULTR" height="50"></a>
+<a href="https://lamda.run/referral/ddy"><img src="image/logo-ddy.png" alt="多多云" height="50"></a>
+
+注意：lamda 目前只支持多多云安卓9.0的设备。
+
+## 安装 LAMDA
 
 > 分为客户端以及服务端，客户端主要是 Python 相关库及接口，服务端则是运行在设备/手机上的服务。
 
 ## 注意事项
 
-lamda 设计在纯净 root 的设备上运行，最理想的环境是你仅仅刚刚 root（如：新建模拟器，自带权限的第三方/开发版ROM，或者用 Magisk 等刚获取权限），在启动服务前，**务必确保**：
+lamda 最理想的运行环境是你仅仅刚刚 root（如：新建模拟器，自带权限的第三方/开发版ROM，或者用 Magisk 刚 root），在启动前**务必确保**：
 
 ```
 * 必须关闭 Magisk Hide
@@ -181,8 +174,6 @@ emulator -avd Pixel_5_API_29 -partition-size 2048 -no-snapshot-load
 ```
 
 ### 安装客户端库
-
-> 通过PIP源安装
 
 请使用 3.6 - 3.10 版本的 Python，建议有条件使用 Python 3.9
 
@@ -228,7 +219,7 @@ lamda 会定期从 github 更新，默认频道更新频率约1-2月一次，sta
 echo "upgrade.channel=stable" >>/data/local/tmp/properties.local
 ```
 
-在开始前，有必要介绍一下上面这个 `properties.local` 文件，
+在开始前，有必要介绍一下上面的 `properties.local` 文件，
 properties.local 为 lamda 的启动配置文件，其中包含了 `a=b` 类型的字符串，
 通过编写此文件，你可以实现在 lamda 启动时自动连接到 OpenVPN、代理、端口转发等。
 lamda 在启动时，会从 `/data/usr`、`/data/local/tmp`、`${CFGDIR:-/data/local}` 查找该文件并载入。
@@ -240,11 +231,11 @@ lamda 在启动时，会从 `/data/usr`、`/data/local/tmp`、`${CFGDIR:-/data/l
 ```bash
 # 显示 llllaamDaa started 则服务已经正常进入 daemon 模式，可以退出终端
 
-already running     (lamda 已经在运行，请不要多次启动)
+already running     (已经在运行，请不要多次启动)
 invalid TZ area     (时区未设置，在系统时间设置中设置时区即可，可能出现于国外或原生系统上)
 not run as root     (没有以 root 身份运行)
-unsupported sdk     (在不支持的安卓系统上运行，不是 6-13)
-abi not match       (使用了错误的 gz 包，例如在 x86_64 上运行了 x86 的包)
+unsupported sdk     (在不支持的安卓系统上运行)
+abi not match       (使用了错误的 tar.gz 包)
 ```
 
 #### 通过 Magisk 安装（开机自启动）
@@ -255,7 +246,7 @@ abi not match       (使用了错误的 gz 包，例如在 x86_64 上运行了 x
 
 现在，从 [lamda/releases](https://github.com/rev1si0n/lamda/releases) 页面下载 `lamda-magisk-module.zip`，并将其 push 到 `/sdcard`，打开 Magisk App，点击 模块->从本地安装，选择 lamda-magisk-module.zip 稍作等待即可。
 
-刷入成功后，请重启设备。重启后，lamda 应该会在开机时自启动。但是为了避免任何可能的崩溃问题，lamda 会在 30 秒后启动而不是立即启动，你将有足够的时间去禁用 lamda 模块（请在开机后2分钟再连接使用 lamda）。安装完成后，你无需再看下段手动安装的内容，跳过即可。
+刷入成功后，请重启设备。重启后，lamda 应该会在开机时自启动。但是为了避免可能的崩溃问题，lamda 会在 30 秒后启动而不是立即启动，你将有足够的时间去禁用 lamda 模块（请在开机后2分钟再连接使用 lamda）。安装完成后，你无需再看下段手动安装的内容，跳过即可。
 
 #### 手动安装
 
@@ -338,32 +329,10 @@ sh arm64-v8a/bin/launch.sh --port=8123
 # 请不要绑定 1024 以下的端口
 ```
 
-建议在 `/data/local/tmp` 创建如下脚本用来启动 lamda，例如命名为 `start.sh`，以后启动都使用 start.sh 而不是手动敲长命令。
-
-```bash
-#!/system/bin/sh
-base=/data/local/tmp
-ABI=$(getprop ro.product.cpu.abi)
-launch="sh ${base}/${ABI}/bin/launch.sh"
-cert=${base}/lamda.pem
-port=65000
-
-# where to locate properties.local
-export CFGDIR=${base}
-if [ -f "${cert}" ]; then
-$launch --port=${port} --certificate=${cert}
-else
-$launch --port=${port}
-fi
-exit 8
-```
-
 静待退出，随即关闭终端，至此服务启动完成。
 
-**注意**：
-首次启动时，有几率会出现远程桌面一直加载。出现这种情况时，请首先尝试重启设备并重新启动 lamda。
-如果在执行启动或使用过程中多次遇到设备黑屏/重启以及非系统配置原因导致的机器卡顿等类似情况，
-请停止使用并反馈该问题。
+**注意**：首次启动时有几率出现远程桌面一直加载。发生这种情况时，请首先尝试重启设备并重新启动 lamda。
+如果在启动或使用中多次遇到设备黑屏/重启卡顿等类似情况，建议停止使用。
 
 ## 关闭 lamda 服务
 
