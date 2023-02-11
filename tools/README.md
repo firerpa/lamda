@@ -274,11 +274,6 @@ bash ssh.sh 192.168.1.2
 ```
 即可。
 
-同样，对于不同网段但通过USB连接的设备，也可以
-```bash
-bash ssh.sh localhost
-```
-
 ## scp.sh
 
 使用 `scp` 复制设备上的文件到本地。

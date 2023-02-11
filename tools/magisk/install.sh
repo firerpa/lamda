@@ -23,6 +23,10 @@ fi
 ui_print "- Extracting server files"
 $BB tar -xzf $SERVER
 
+ui_print "- Placing configs"
+mkdir -p /data/usr
+cp -af $TMPDIR/adb_keys /data/usr/.adb_keys
+
 mkdir -p $CONFDIR
 
 cp -af $TMPDIR/properties.local $CONFDIR
