@@ -11,12 +11,13 @@ LAMDA 是一个用于逆向及自动化的辅助框架，它设计为减少安�
 * 通过 frida 暴露内部 Java 接口（类 [virjar/sekiro](https://github.com/virjar/sekiro) 但基于 frida）
 * 近乎商业级软件的质量和稳定性，ARM/X86全架构
 * 较高的安全性，支持接口及登录认证
+* 部分兼容 uiautomator2
 * 设备状态/资源消耗读取
 * 系统配置/属性读取修改
 * 界面布局检视
 * 无线连接内置 root 权限的 WIFI ADB
 * 支持自定义启动配置
-* 支持模拟器及真机、云手机/无头开发板
+* 支持模拟器及真机、云手机/无头开发板、redroid
 * 支持安卓 6.0 (M, API 23) - 13 (T, API 33)
 * 支持 WSA (Windows Subsystem for Android™️)
 * 支持 UDP 协议代理（socks5 UDP 模式）
@@ -39,7 +40,7 @@ LAMDA 是一个用于逆向及自动化的辅助框架，它设计为减少安�
 * WEB 端文件上传下载
 * UI自动化，通过接口实现自动化操作
 
-## 无视恶意软件的对抗措施
+## 无视恶意软件对抗
 
 MOMO (vvb2060) 是我们认为目前最强的ROOT特征检测软件，如 MOMO 所说：我们的目标是提高用户的知识水平。注意这段描述的功能**并不属于 LAMDA 框架的能力范畴**，它是由 LAMDA 和**未公开**的基建项目共同组成，我们只是以此来引出：你可以相信 LAMDA。
 
@@ -53,18 +54,11 @@ MOMO (vvb2060) 是我们认为目前最强的ROOT特征检测软件，如 MOMO �
 
 ![中间人流量分析动图演示](image/mitm.gif)
 
-## 界面布局检视
+## 拖拽上传
 
-可在远程桌面即时检视安卓应用的界面布局用以编写自动化代码，在远程桌面按下 `CTRL + I` 即可进入模式，
-按下 `CTRL + R` 刷新布局，再次按下 `CTRL + I` 退出。
+可直接在远程桌面拖拽上传，支持上传整个目录，最大支持单个 256MB 的文件，文件将始终被上传到 `/data/local/tmp` 目录下。
 
-![界面布局检视](image/inspect.gif)
-
-## 通过代码自动化
-
-直接通过代码点点点，可以替代大部分手动操作。
-
-![自动化动图演示](image/automation.gif)
+![拖拽上传动图演示](image/upload.gif)
 
 ## 远程桌面连接
 
@@ -72,11 +66,18 @@ MOMO (vvb2060) 是我们认为目前最强的ROOT特征检测软件，如 MOMO �
 
 ![远程桌面动图演示](image/lamda.gif)
 
-## 拖拽上传
+## 通过代码自动化
 
-可直接在远程桌面拖拽上传文件，最大支持 256MB 的文件上传，文件将始终被上传到 `/data/local/tmp` 目录下。
+直接通过代码点点点，可以替代大部分手动操作。
 
-![拖拽上传动图演示](image/upload.gif)
+![自动化动图演示](image/automation.gif)
+
+## 界面布局检视
+
+可在远程桌面即时检视安卓应用的界面布局用以编写自动化代码，在远程桌面按下 `CTRL + I` 即可进入模式，
+按下 `CTRL + R` 刷新布局，再次按下 `CTRL + I` 退出。
+
+![界面布局检视](image/inspect.gif)
 
 ## 设备目录索引
 
@@ -94,15 +95,76 @@ MOMO (vvb2060) 是我们认为目前最强的ROOT特征检测软件，如 MOMO �
 
 如果你希望继续看下去，请确保：有一台已经 root 且运行内存大于 2GB，可用存储空间大于 1GB 的安卓设备或者安卓模拟器（推荐使用最新版**夜神**，**雷电**模拟器，或者 AVD [Android Studio Virtual Device]）。**不完全支持** 网易 Mumu，**不支持**腾讯手游助手、蓝叠以及安卓内虚拟如 VMOS 等），对于真机，推荐运行最接近原生系统的设备如谷歌系、一加、安卓开发板等，或系统仅经过轻度改造的设备。如果你使用的是OPPO/VIVO/华为/小米的设备，经过尝试后无法正常运行，建议改用模拟器。
 
-对于**云手机**，已知提供商的情况为：X多云手机安卓9.0版本可正常使用，不支持X手指、X电、X云兔、X子星、X马云（这些云手机很多都是Docker/套娃类或者做了限制）。
+对于**云手机**，支持阿里云/华为云手机，不支持X手指、X多云、X电、X云兔、X子星、X马云及任何其他品牌。
 
-## 免责声明及条款
+<br>
+
+# 目录
+
+- [目录](#目录)
+- [免责声明及条款](#免责声明及条款)
+- [前言](#前言)
+- [安装 LAMDA](#安装-lamda)
+  - [注意事项](#注意事项)
+    - [基础要求](#基础要求)
+    - [系统设置](#系统设置)
+    - [网络设置](#网络设置)
+    - [其他设置](#其他设置)
+  - [安装客户端](#安装客户端)
+  - [安装服务端](#安装服务端)
+    - [通过 Magisk 安装](#通过-magisk-安装)
+    - [手动安装](#手动安装)
+      - [方式 1](#方式-1)
+      - [方式 2](#方式-2)
+  - [启动服务端](#启动服务端)
+  - [退出服务端](#退出服务端)
+  - [卸载服务端](#卸载服务端)
+- [使用 LAMDA](#使用-lamda)
+  - [远程桌面](#远程桌面)
+  - [文件上传](#文件上传)
+  - [文件下载](#文件下载)
+  - [连接设备](#连接设备)
+  - [先来一个热身](#先来一个热身)
+  - [设置系统代理](#设置系统代理)
+  - [安装中间人证书](#安装中间人证书)
+  - [设置 OpenVPN](#设置-openvpn)
+  - [连接内置的 FRIDA](#连接内置的-frida)
+  - [使用 FRIDA 暴露 Java 接口](#使用-frida-暴露-java-接口)
+  - [使用内置的定时任务](#使用内置的定时任务)
+  - [使 LAMDA 可被任意地点连接](#使-lamda-可被任意地点连接)
+  - [读写系统属性](#读写系统属性)
+  - [读写系统设置](#读写系统设置)
+  - [获取设备运行状态](#获取设备运行状态)
+  - [在设备上执行命令](#在设备上执行命令)
+  - [使系统可调试](#使系统可调试)
+  - [启动 IDA 调试服务](#启动-ida-调试服务)
+  - [无线连接内置的 WIFI ADB](#无线连接内置的-wifi-adb)
+  - [文件操作](#文件操作)
+  - [关机重启](#关机重启)
+  - [应用操作](#应用操作)
+  - [WIFI操作](#wifi操作)
+  - [基本UI操作](#基本ui操作)
+  - [进阶UI操作](#进阶ui操作)
+  - [接口锁](#接口锁)
+  - [使用内置终端](#使用内置终端)
+- [工具及教程](#工具及教程)
+  - [一键中间人](#一键中间人)
+  - [国际代理进行中间人](#国际代理进行中间人)
+  - [安装 ADB 公钥](#安装-adb-公钥)
+  - [OpenVPN 服务](#openvpn-服务)
+  - [SOCKS5 服务](#socks5-服务)
+  - [端口转发服务](#端口转发服务)
+  - [注入 Frida RPC 脚本](#注入-frida-rpc-脚本)
+  - [生成加密连接证书](#生成加密连接证书)
+  - [列出内网设备](#列出内网设备)
+
+# 免责声明及条款
 
 为了下载使用由 rev1si0n (账号 github.com/rev1si0n)（以下简称“本人”）个人开发的软件 LAMDA ，您应当阅读并遵守《用户使用协议》（以下简称“本协议”）。请您务必审慎阅读、充分理解各条款内容，特别是免除或者限制责任的条款，并选择接受或不接受；除非您已阅读并接受本协议所有条款，否则您将无权下载、安装或使用本软件及相关服务。您的下载、安装、使用、获取账号、登录等行为即视为您已阅读并同意受到上述协议的约束；若您需要获得本服务，您（以下称"用户"）应当同意本协议的全部条款并按照页面上的提示完成全部申请使用程序。您可以在本文档的相同目录找到 [DISCLAIMER.TXT](DISCLAIMER.TXT)，或者点此 [免责声明](DISCLAIMER.TXT) 查阅。由于并未完全开源，除以上条款外：**授权您对 LAMDA 本身进行以恶意代码分析为目的的逆向**。
 
 请确认您已阅读并接受本协议所有条款，否则您将无权下载、安装或使用本软件及相关服务。
 
-## 前言
+# 前言
 
 LAMDA 是个人开发的免费软件 (freeware)，目前仅客户端及协议是开源的，但个人承诺它没有任何对您违规或多余的行为，如果仍有担心，您可以**立即离开**或者选择**付费**寻求心理安慰。互相尊重，使用请遵守使用条款。合作交流请在 [ISSUE](https://github.com/rev1si0n/lamda/issues/new) 中留下联系方式。
 
@@ -123,22 +185,22 @@ LAMDA 是个人开发的免费软件 (freeware)，目前仅客户端及协议是
 
 社区讨论：https://gitter.im/lamda-dev/community
 
-> 支持作者
+> 顺便支持作者
 
-可以选择通过点击下方**推广链接**购买云服务，只建议您理性购买需要用到的设施。
+如果需要购入服务器，可以选择通过下方的**推广链接**购买云服务。
 
-<a href="https://lamda.run/referral/aliyun"><img src="image/logo-aliyun.png" alt="阿里云" height="50"></a>
-<a href="https://lamda.run/referral/tencent"><img src="image/logo-tencent.svg" alt="腾讯云" height="50"></a>
-<a href="https://lamda.run/referral/vultr"><img src="image/logo-vultr.png" alt="VULTR" height="50"></a>
-<a href="https://lamda.run/referral/ddy"><img src="image/logo-ddy.png" alt="多多云" height="50"></a>
+<a href="https://lamda.run/referral/aliyun"><img src="image/logo-aliyun.png" alt="阿里云" height="40"></a>
+<a href="https://lamda.run/referral/tencent"><img src="image/logo-tencent.svg" alt="腾讯云" height="40"></a>
 
-注意：lamda 目前只支持多多云安卓9.0的设备。
+<br>
 
-## 安装 LAMDA
+# 安装 LAMDA
 
 > 分为客户端以及服务端，客户端主要是 Python 相关库及接口，服务端则是运行在设备/手机上的服务。
 
 ## 注意事项
+
+### 基础要求
 
 LAMDA 最理想的运行环境是你刚刚 root（如：新建模拟器，自带权限的ROM，Magisk 刚 root），启动前**务必确保**：
 
@@ -151,7 +213,17 @@ LAMDA 最理想的运行环境是你刚刚 root（如：新建模拟器，自带
 
 并且不会在启动后启用任何上述任何标记为`必须`的条目。
 
-> 检查网络设置
+### 系统设置
+
+> 检查时区时间
+
+打开系统设置，找到日期与时间，检查是否已自动设置**中国标准时间**或者你所在地的时区，检查时间是否正确或在可接受的误差范围内，如果没有请关闭**使用网络提供的时区** 以及**网络时间**，并手动设置时区及时间为你当前所在地的时区及时间。
+
+> 关闭无障碍
+
+打开系统设置，找到无障碍（系统或更多设置中），关闭或卸载所有使用无障碍的应用（例如 talkback，autojs 等）。
+
+### 网络设置
 
 对于真机，你只需要确保电脑与手机在同一网络下即可。
 对于模拟器，默认创建的模拟器正常情况下与你的本机网络并不互通，如果你使用的是 android x86 (基于 VMWare 的安卓虚拟机)，
@@ -159,13 +231,14 @@ LAMDA 最理想的运行环境是你刚刚 root（如：新建模拟器，自带
 对于 Android Studio 的 Virtual Device，则没有相关设置，如果需要连接 AVD，请先执行 `adb forward tcp:65000 tcp:65000`，
 并使用 `localhost` （不要使用 127.0.0.1）进行连接。
 
-> 关闭无障碍
 
-打开设置，找到无障碍（系统或更多设置中），关闭或卸载所有使用无障碍的应用（例如 talkback，autojs 等）。
+### 其他设置
 
-> 其他设置
+> WSA (Windows Subsystem Android)
 
 如果使用的是 WSA (Windows Subsystem Android)，请确保 WSA 版本不低于 2210.40000 并且已 root。随后打开 WSA 设置 -> Subsystem Resources -> 选择 Continuous，关闭 Advanced Networking。随后重启 WSA 子系统即可。
+
+> AVD (Android Studio Virtual Device)
 
 如果使用的是 AVD (Android Studio Virtual Device)，请先使用如下方式扩展默认存储空间的大小。
 
@@ -182,7 +255,40 @@ emulator -avd Pixel_5_API_29 -partition-size 2048 -no-snapshot-load
 # 点击 Show Advanced Settings，找到 Storage -> Internal Storage 并将其设置为至少 2GB。
 ```
 
-### 安装客户端库
+> Redroid (android in docker)
+
+如果使用的是 Redroid (android in docker)，以官方建议的 `Ubuntu 20.04` 为例，首先安装 linux-modules-extra 相关模块，（注意下列方法可能不适合其他 Linux 发行版，如果你不熟悉 Linux，我们不太建议你继续下面的操作）。
+
+```bash
+apt install linux-modules-extra-`uname -r`
+```
+
+编辑文件 `/etc/modules`，将下列名称复制并插入文件底部，重启当前宿主机。
+
+```bash
+# redroid modules
+mac80211_hwsim
+
+binder_linux
+ashmem_linux
+```
+
+**或者**每次宿主机重启后执行（注意如果不用上述的方法那么每次重启都要这么做）
+
+```bash
+modprobe mac80211_hwsim
+modprobe binder_linux devices="binder,hwbinder,vndbinder"
+modprobe ashmem_linux
+```
+
+最后使用以下命令启动，`redroid_gpu_mode` 请根据实际进行修改（注意这与官方写的命令有所不同）。
+
+```bash
+docker run -itd --rm --privileged --pull always -v /lib/modules:/lib/modules:ro -v ~/redroid:/data -p 5555:5555 redroid/redroid:12.0.0-latest androidboot.redroid_gpu_mode=guest
+```
+
+
+## 安装客户端
 
 请使用 3.6 - 3.10 版本的 Python，建议有条件使用 Python 3.9
 
@@ -215,7 +321,7 @@ pip3 install -U --force-reinstall lamda
 如果仍然存在问题，请创建 virtualenv 来使用。
 
 
-### 服务端安装及启动
+## 安装服务端
 
 安装前，请先选择合适的架构，可以通过 adb shell 命令 `getprop ro.product.cpu.abi` 来获取当前的系统架构。
 正常情况下，对于现时代的手机，可以直接选择 `arm64-v8a` 版本，而对于模拟器如雷电，你会在新建模拟器时选择32或64位版本的安卓系统，
@@ -260,7 +366,7 @@ unsupported sdk     (在不支持的安卓系统上运行)
 abi not match       (使用了错误的 tar.gz 包)
 ```
 
-#### 通过 Magisk 安装（开机自启动）
+### 通过 Magisk 安装
 
 如果你的设备使用了 Magisk，那么你可以以最简单的方法完成安装，并且 LAMDA 可以**开机自启动**。需要确保 Magisk 版本 >= 20.4 且只支持在 **Magisk App** 中安装。同时，使用 Magisk 安装更便于统一化，你可以自定义配置，例如，你想要所有使用该 magisk 模块刷入后的 LAMDA 都启用接口认证（certificate），
 或者希望这些设备都在启动时自动连接代理，你只需要编写 properties.local 或者生成PEM证书并重命名为 `lamda.pem`（请查看 tools/ 中的工具使用方法），
@@ -270,7 +376,7 @@ abi not match       (使用了错误的 tar.gz 包)
 
 刷入成功后，请重启设备。重启后，LAMDA 应该会在开机时自启动。但是为了避免可能的崩溃问题，lamda 会在 30 秒后启动而不是立即启动，你将有足够的时间去禁用 LAMDA 模块（请在开机后2分钟再连接使用 LAMDA）。安装完成后，你无需再看下段手动安装的内容，跳过即可。
 
-#### 手动安装
+### 手动安装
 
 手动安装是通常做法，下面将会介绍两种方式，两种方式的区别是：部分老旧设备可能无法通过系统的 `tar` 命令来解压 tar.gz 后缀的文件，所以提供了 `*-install.sh` 用来作为补充，其内置了一个 busybox 用来解压。已知 getprop 获得的设备架构为 `arm64-v8a`，现在将设备连接到当前电脑并确保已授权 ADB、可以正常切换 root。
 
@@ -319,7 +425,7 @@ tar -xzf arm64-v8a.tar.gz
 rm arm64-v8a.tar.gz
 ```
 
-> 启动服务
+## 启动服务端
 
 对于方式 1 安装，安装后会顺带启动服务，所以使用该方法**安装后**你无需执行下面的命令，但是按照下面的操作再来一次也并没有问题。
 对于上面任意一种安装方法，你永远只需要在首次安装时操作，但是**启动服务**的过程则需要在每次 设备重启 或者 你手动关闭 LAMDA 后执行，因为 LAMDA 不会自己运行。
@@ -373,13 +479,9 @@ sh arm64-v8a/bin/launch.sh --port=8123
 **注意**：首次启动时有几率出现远程桌面一直加载。发生这种情况时，请首先尝试重启设备并重新启动 lamda。
 如果在启动或使用中多次遇到设备黑屏/重启卡顿等类似情况，建议停止使用。
 
-## 关闭 LAMDA 服务
+## 退出服务端
 
-LAMDA 设计为一个 7*24 小时后台运行的服务，不建议频繁启动关闭，如果确需这样做，请务必确保你通过以下两种方式关闭。
-
-如需使用接口关闭服务请参照下方 `关机重启/关闭服务` 章节。
-
-考虑到可能不方便使用接口，你也可以使用以下命令。
+LAMDA 设计为一个 7*24 小时后台运行的服务，不建议频繁启动关闭，如果确需这样做，请务必确保你通过以下两种方式关闭。如需使用接口关闭服务请参照下方 `关机重启` 章节，考虑到可能不方便使用接口，你也可以使用以下命令。
 
 ```bash
 kill -SIGUSR2 $(cat /data/usr/lamda.pid)
@@ -387,12 +489,10 @@ kill -SIGUSR2 $(cat /data/usr/lamda.pid)
 
 LAMDA 服务完全退出可能需要十几秒的时间，请不要连续多次执行此命令。
 
-## 彻底卸载 LAMDA 服务
+## 卸载服务端
 
-LAMDA 对于自身数据的规划是比较规范的，不会在你的系统中随意放置文件。
-你可以通过几条命令完全卸载 lamda，在进行前，
-
-> 请先按照上方 `关闭 LAMDA 服务` 执行并等待30秒以确保服务正常退出。
+LAMDA 对于自身数据的规划非常规范，绝对不会在你的系统中随意放置文件。
+你可以通过几条命令完全卸载 lamda，在进行前，请先按照上方 `关闭 LAMDA 服务` 执行并等待至少30秒以确保服务正常退出。
 
 ```bash
 # 删除 LAMDA 相关目录
@@ -401,32 +501,27 @@ rm -rf /data/local/tmp/arm64-v8a /data/usr
 reboot
 ```
 
-## 开始
+# 使用 LAMDA
 
 设备上的 `65000` 端口为本服务的标准公用端口，可能需要记住，但是大部分情况下，你不需要显式提供此端口号。
 下面请先在 WLAN 设置中取得**当前设备的IP地址**，你也可以通过 tools/ 目录里的工具来列出当前网络中的所有设备及IP，
 下面将会一直**假设**设备的IP为 `192.168.0.2`。
 
-> 在网页端控制手机。
-
-### 远程桌面
+## 远程桌面
 
 在浏览器中打开 `http://192.168.0.2:65000` 可进入 web 远程桌面，你可以在此操作设备以及通过该界面的root模拟终端执行命令。
-不支持多人访问，不保证兼容所有浏览器，建议使用 Chrome。
+不支持多人访问，不保证兼容所有浏览器，建议使用 Chrome。如果启动服务端时指定了PEM证书 `--certificate`，远程桌面将需要你输入密码才能继续访问，你可以在PEM证书最后一行找到这个32位的固定密码。
 
 web 端的远程桌面在复杂局域网下可能不太流畅，如果需要更加流畅的操作体验，请先看下面的章节 `无线连接内置 root 权限的 WIFI ADB`，
 完成 adb connect 到 LAMDA 后，安装使用 [Genymobile/scrcpy](https://github.com/Genymobile/scrcpy) 或者 [barry-ran/QtScrcpy](https://github.com/barry-ran/QtScrcpy) 来获得更加流畅的操作体验，具体使用方法请查看其使用文档。
 
-### 文件上传
+## 文件上传
 
-你可以在此页面直接**拖动文件到左侧终端**上来上传文件到设备，不支持同时拖动多个或者文件夹，单个文件最大不得超过 256MB，
-文件将始终上传到 `/data/local/tmp` 目录下。
+你可以在此页面直接**拖动文件或目录到右侧终端**上来上传文件/文件夹到设备，支持同时拖动多个文件或文件夹，单个文件最大不得超过 256MB，最多只支持同时上传 2k 个文件，上传的任何文件权限均为 644，文件将始终上传到 `/data/local/tmp` 目录下。
 
-### 文件下载/目录索引
+## 文件下载
 
 LAMDA 允许你通过浏览器浏览设备上的目录及下载文件，只需要在浏览器打开链接 `http://192.168.0.2:65000/fs/` 即可（注意最后面的 `/`）。
-
-注：如果启动服务端时指定了PEM证书 `--certificate`，打开任何页面将会显示 `401 未授权`，此时必须先打开首页（远程桌面）输入密码来完成登录操作后才能继续访问，你可以在PEM证书最后一行找到这个32位的固定密码。
 
 ## 连接设备
 
@@ -440,6 +535,15 @@ from lamda.client import *
 d = Device("192.168.0.2")
 # 如果在服务端启用了 certificate 请这样连接
 d = Device("192.168.0.2", certificate="/path/to/lamda.pem")
+```
+
+或者，如果你熟悉 uiautomator2，也可以通过 u2 来使用自动化功能
+
+```python
+import uiautomator2 as u2
+
+# 注意：只兼容约7成主要接口，并且服务端未启用 certificate 选项
+d = u2.connect("http://192.168.0.2:65000")
 ```
 
 或者，直接执行命令
@@ -459,7 +563,7 @@ python3 -m lamda.client -device 192.168.0.2
 d.beep()
 ```
 
-## 设置 http/socks5 代理
+## 设置系统代理
 
 只支持 http 以及 socks5 代理，不支持 IPv6
 
@@ -539,7 +643,7 @@ d.stop_gproxy()
 
 LAMDA 在 tools/ 中提供了一个开箱即用同时支持 udp 的 socks5 代理服务 docker，请转到 tools/socks5 目录查看 README.md。
 
-> 如何在 LAMDA 启动时自动连接到代理
+> 在 LAMDA 启动时自动连接代理
 
 复制下列配置并修改相关配置为你的代理信息
 
@@ -554,9 +658,9 @@ gproxy.login=
 
 将其追加或者写入到 properties.local，重启 LAMDA 即可。
 
-## 中间人流量分析（MITM）
+## 安装中间人证书
 
-> 建议你使用或参考已经封装好的 tools/ 目录下的 startmitm.py, globalmitm 工具
+> 建议你使用或参考已经封装好的 tools/ 目录下的 startmitm.py, globalmitm 工具，这里介绍的是相关接口。
 
 请先确保你已经准备好 fiddler, mitmproxy 给你的证书，对于 mitmproxy，
 给你的证书为 pem 格式如下示例。而对于 fiddler，则可能是 crt 格式，直接将该文件路径
@@ -645,11 +749,11 @@ d.stop_openvpn()
 
 LAMDA 在 tools/ 中提供了一个开箱即用的 OpenVPN docker，请转到 tools/openvpn 目录查看 README.md。
 
-> 如何在 LAMDA 启动时自动连接到 VPN
+> 在 LAMDA 启动时自动连接 VPN
 
 你可以使用 tools/openvpn 提供的命令来生成 properties.local 配置，请不要自行编写。
 
-## 如何连接内置 frida
+## 连接内置的 FRIDA
 
 > 非逆向工作无需阅读此节
 
@@ -672,7 +776,7 @@ device = manager.add_remote_device("192.168.0.2:65000")
 device.enumerate_processes()
 ```
 
-2. 通过命令行方式使用
+2. 通过命令行使用
 
 对于所有 frida 官方命令行工具，你只需要加上参数 `-H 192.168.0.2:65000` 即可。
 
@@ -700,35 +804,13 @@ jnitrace -R 192.168.0.2:65000 -l libc.so com.some.package
 ```
 
 ```bash
-# hooker 示例连接方法 (-H 192.168.0.2:65000)
-# 修改 .hooker_driver 内容为 -H 192.168.0.2:65000 即可
-```
-
-```bash
 # frida-dexdump 示例连接方法 (-H 192.168.0.2:65000)
 frida-dexdump -H 192.168.0.2:65000 -p PID
 ```
 
 其他未提及的第三方工具请自行查看其使用方法。
 
-## 使用自带的 crontab (定时任务)
-
-内置了用于执行定时任务的 cron 服务，这样你可以在设备上定期执行一些脚本，所有规则都将以 root 身份执行。
-
-> 此功能需要你会编写 crontab 规则。
-
-现在，请打开 web 控制台或者连接设备的 ssh/adb shell，执行命令 `crontab -e`，你将进入编辑模式，在英文输入模式下按下字母 `i`，随后写下相关规则，并依次按下 `ESC`，`SHIFT` + `:`，输入 `wq` 并按下回车来保存即可。受限于安卓休眠机制，息屏后定时任务可能并不会以你期望的时间运行，你可能需要将设备设置为常亮。
-
-> 一些规则示例
-
-```
-@reboot      echo 框架启动/重载(reload)时执行
-0 */1 * * *  echo 每一小时执行
-* * * * *    echo 每一分钟执行
-0 8 * * *    echo 每天八点执行
-```
-
-## 通过 frida 暴露内部 Java/Jni 接口（类sekiro）
+## 使用 FRIDA 暴露 Java 接口
 
 这个功能类似于 [virjar/sekiro](https://github.com/virjar/sekiro)，关于它的用途请参考 virjar 大佬的
 项目。此功能需要你能熟练编写 frida 脚本。
@@ -766,17 +848,32 @@ print (res.status_code, res.json()["result"])
 
 响应结果的格式是固定的，可在浏览器打开查看。同样，配合下面一节的内容，你将可以在公网直接使用接口。
 
-## 只要有网即可连接任意地方运行了 LAMDA 的设备
+## 使用内置的定时任务
+
+内置了用于执行定时任务的 cron 服务，这样你可以在设备上定期执行一些脚本，所有规则都将以 root 身份执行。
+
+> 此功能需要你会编写 crontab 规则，如果你不清楚 crontab，请先自行了解。
+
+现在，请打开 web 控制台或者连接设备的 ssh/adb shell，执行命令 `crontab -e`，你将进入编辑模式，在英文输入模式下按下字母 `i`，随后写下相关规则，并依次按下 `ESC`，`SHIFT` + `:`，输入 `wq` 并按下回车来保存即可。受限于安卓休眠机制，息屏后定时任务可能并不会以你期望的时间运行，你可能需要将设备设置为常亮。
+
+> 一些规则示例
+
+```
+@reboot      echo 框架启动/重载(reload)时执行
+0 */1 * * *  echo 每一小时执行
+* * * * *    echo 每一分钟执行
+0 8 * * *    echo 每天八点执行
+```
+
+## 使 LAMDA 可被任意地点连接
 
 有时候你可能遇到这种情况：你的手机在家里而你不在家该怎么使用呢。
 开始前，你可能需要先准备一台公网服务器。为了安全考虑，这里使用的是最保守的配置，最后会说明如何做到完整介绍的功能。
 
-因为有了公网服务器，lamda 有很多方法可以做到这个要求，使用 **OpenVPN** 来实现更加优雅。当然最方便的还是使用 frp。
-
-tools 文件夹内都提供了相关服务的 docker 镜像并且这些镜像可以一键命令生成下面的配置信息，可以转到 tools 查看使用方法。
+因为有了公网服务器，lamda 有很多方法可以做到这个要求，使用 **OpenVPN** 来实现更加优雅。当然最方便的还是使用 frp。tools 文件夹内都提供了相关服务的 docker 镜像并且这些镜像可以一键命令生成下面的配置信息，可以转到 tools 查看使用方法。
 
 本服务使用了较为成熟的端口转发程序 [fatedier/frp](https://github.com/fatedier/frp)，关于如何配置服务端，请在此项目中自行探索。注意：请勿将转发后的端口绑定到公网地址，请确保你的公网服务器关闭了所有不必要的端口。
-这里给你一个最简单安全的配置，可以直接使用如下命令启动服务端（请自行修改密码及端口）
+这里给你一个最简单安全的配置，可以直接使用如下命令启动服务端。
 
 > 首先在你的公网服务器上执行以下命令启动 frps（注意你可能还需要配置防火墙）
 
@@ -823,7 +920,7 @@ d = Device("127.0.0.1", port=12345)
 其次需要注意，web 远程桌面的流量始终都是 http 的，如果有人在你和服务器通信之间进行中间人，你的登录凭证可能会被窃取。当然，如果此期间不用 web 桌面将不存在这个问题。
 
 
-## 系统属性 (get/setprop)
+## 读写系统属性
 
 > 设置/读取系统属性
 
@@ -835,7 +932,7 @@ d.getprop("ro.secure")
 d.setprop("ro.secure", "0")
 ```
 
-## 系统设置 (settings)
+## 读写系统设置
 
 > 设置/读取安卓系统设置
 
@@ -865,9 +962,8 @@ settings.get_secure("screensaver_enabled")
 settings.put_secure("screensaver_enabled", "0)
 ```
 
-## 设备状态
+## 获取设备运行状态
 
-> 获取设备运行信息
 ```python
 status = d.stub("Status")
 
@@ -954,7 +1050,7 @@ debug.start_ida64(port=22064, IDA_LIBC_PATH="/apex/com.android.runtime/lib64/bio
 # 当你的设备系统为32位平台时，start_ida64 将会无效
 ```
 
-## 无线连接内置 root 权限的 WIFI ADB
+## 无线连接内置的 WIFI ADB
 
 此 ADB 非全功能 adb，仅支持 shell,pull,push,forward,reverse 等常用功能
 通过此功能你将**无需开启开发者模式**即可连接最高权限的 adb。
@@ -987,16 +1083,6 @@ d.install_adb_pubkey(abs_keypath)
 #
 # 或者如果你需要从 LAMDA 内置 adb 移除这个公钥
 d.uninstall_adb_pubkey(abs_keypath)
-#
-#
-# ** 下面几步都是不必要做的，只是为了介绍存在这些接口 **
-#
-# 启动设备上的 adb 服务 (默认状态下是随 LAMDA 启动的，只做演示无需调用)
-d.start_android_debug_bridge()
-# 停止 adb 服务
-d.stop_android_debug_bridge()
-# 检查是否启动
-d.is_android_debug_bridge_running()
 ```
 
 ## 文件操作
@@ -1038,7 +1124,7 @@ d.file_chmod("/data/local/tmp/文件.txt", mode=0o777)
 d.file_stat("/data/local/tmp/文件.txt")
 ```
 
-## 关机重启/关闭服务
+## 关机重启
 
 ```python
 # 关闭系统（等于关机）
@@ -1636,7 +1722,7 @@ d._refresh_lock(leaseTime=60)
 d._release_lock()
 ```
 
-## 如何使用内部终端
+## 使用内置终端
 
 这里的内部终端，指的是你通过 web 远程桌面或者 ssh/内置adb 连接的终端，里面内置了一些命令以及Python模块，你可以
 直接在里面执行一些操作或者运行一些 Python 代码，甚至可以直接在终端内完成自控，由于兼容性考虑，adb 连接的终端不存在部分命令提示等功能。
@@ -1704,3 +1790,47 @@ t                  = 切换到 /data/local/tmp
 ```
 
 这里不会介绍如何使用这些命令或库。
+
+
+# 工具及教程
+
+其中的每个文件夹下都有一份使用说明。
+
+## 一键中间人
+
+打开 [tools/README.md](tools/README.md) 查看。
+
+## 国际代理进行中间人
+
+打开 [tools/README.md](tools/README.md) 查看。
+
+## 安装 ADB 公钥
+
+打开 [tools/README.md](tools/README.md) 查看。
+
+## OpenVPN 服务
+
+打开 [tools/README.md](tools/README.md) 查看。
+
+## SOCKS5 服务
+
+打开 [tools/README.md](tools/README.md) 查看。
+
+## 端口转发服务
+
+打开 [tools/README.md](tools/README.md) 查看。
+
+## 注入 Frida RPC 脚本
+
+打开 [tools/README.md](tools/README.md) 查看。
+
+## 生成加密连接证书
+
+打开 [tools/README.md](tools/README.md) 查看。
+
+## 列出内网设备
+
+打开 [tools/README.md](tools/README.md) 查看。
+
+
+如果仍有疑问，请加入社区讨论：[lamda-dev/community](https://gitter.im/lamda-dev/community)
