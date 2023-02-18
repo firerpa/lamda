@@ -339,6 +339,16 @@ print (data["result"])
 bash emu-install 192.168.1.2
 ```
 
+## statistics.sh
+
+如果你无法正常运行 LAMDA，可以使用此脚本来生成 issue 报告，重启设备并且确保 LAMDA 已经退出，将 `statistics.sh` 使用 adb push 到 /data/local/tmp，随后使用 root 身份执行。
+
+```bash
+# launch.sh 为启动 LAMDA 的脚本路径
+sh /data/local/tmp/statistics.sh /data/local/tmp/arm64-v8a/bin/launch.sh
+# 执行完毕后，会生成文件 /sdcard/statistics.txt，报告此文件即可
+```
+
 ## magisk
 
 lamda 的 magisk 模块构架
