@@ -32,6 +32,7 @@ service Application {
     rpc getPermissions(ApplicationRequest) returns (ApplicationPermissions) {}
     rpc resetApplicationData(ApplicationRequest) returns (Boolean) {}
     rpc deleteApplicationCache(ApplicationRequest) returns (Boolean) {}
+    rpc getLastActivities(Integer) returns (ApplicationActivityInfoList) {}
     rpc startActivity(ApplicationActivityRequest) returns (Boolean) {}
     rpc applicationInfo(ApplicationRequest) returns (ApplicationInfo) {}
     rpc startApplication(ApplicationRequest) returns (Boolean) {}

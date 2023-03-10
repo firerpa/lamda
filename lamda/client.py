@@ -14,14 +14,13 @@ import platform
 import warnings
 import builtins
 import logging
-import atexit
 import grpc
 
 from urllib.parse import quote
 from collections import defaultdict
 from os.path import basename, dirname, expanduser, join as joinpath
+from google.protobuf.json_format import MessageToDict, MessageToJson
 from grpc_interceptor import ClientInterceptor
-from google.protobuf.json_format import MessageToDict
 from google.protobuf.message import Message
 from asn1crypto import pem, x509
 
@@ -71,6 +70,7 @@ __all__ = [
                 "Point",
                 "Bound",
                 "load_proto",
+                "to_dict",
                 "Device",
                 "logger",
 ]
@@ -217,6 +217,11 @@ Bound.corner = corner
 def load_proto(name):
     """ 载入包下面的相关 proto 文件 """
     return grpc.protos_and_services(name)
+
+
+def to_dict(prot):
+    r = MessageToJson(prot, preserving_proto_field_name=True)
+    return json.loads(r)
 
 
 class BaseServiceStub(object):
@@ -868,7 +873,7 @@ class ObjectApplicationOpStub:
         """
         req = protos.ApplicationRequest(name=self.applicationId)
         r = self.stub.queryLaunchActivity(req)
-        return r
+        return to_dict(r)
     def is_permission_granted(self, permission):
         """
         检查是否已经授予应用某权限（应用需要运行时获取的权限）
@@ -984,6 +989,13 @@ class ApplicationStub(BaseServiceStub):
         """
         r = self.stub.enumerateAllPkgNames(protos.Empty())
         return r.names
+    def get_last_activities(self, count=3):
+        """
+        获取系统中最后一个活动的详细信息
+        """
+        req = protos.Integer(value=count)
+        r = self.stub.getLastActivities(req).activities
+        return list(map(to_dict, r))
     def start_activity(self, **activity):
         """
         启动 activity（任意, always return true）
@@ -1637,6 +1649,8 @@ class Device(object):
         return self.stub("Application").enumerate_all_pkg_names()
     def enumerate_running_processes(self):
         return self.stub("Application").enumerate_running_processes()
+    def get_last_activities(self, count=3):
+        return self.stub("Application").get_last_activities(count=count)
     def start_activity(self, **activity):
         return self.stub("Application").start_activity(**activity)
     def application(self, applicationId):
@@ -1807,7 +1821,8 @@ if __name__ == "__main__":
                                    help="service ip address")
     parser.add_argument("-port", type=int, default=65000,
                                    help="service port")
-    parser.add_argument("-cert", type=str, default=None,
+    crt = os.environ.get("CERTIFICATE", None)
+    parser.add_argument("-cert", type=str, default=crt,
                                    help="ssl cert")
     args = parser.parse_args()
 

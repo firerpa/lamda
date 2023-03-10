@@ -1,3 +1,10 @@
+3.120
+* 现 LAMDA 已支持本身作为代理
+* 新增获取系统最近 Activity 的接口
+* 修复一个协议中的 race condition (maybe)
+* 增加部分命令，移除 SQLite db view
+* 实验性的 H.264 投屏
+
 3.108
 * 优化网络断连处理逻辑
 * 增加 Redroid (remote android) 支持

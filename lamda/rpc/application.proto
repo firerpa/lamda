@@ -29,13 +29,23 @@ message ApplicationActivityRequest {
     repeated string categories = 6;
     int64  flags            = 7;
     bool   debug            = 8;
+    string data             = 9;
 }
 
 message ApplicationActivityInfo {
     string package          = 1;
-    string component        = 2;
-    string action           = 3;
-    repeated string categories = 4;
+    string action           = 2;
+    string category         = 3;
+    string component        = 4;
+    google.protobuf.Struct extras = 5;
+    repeated string categories = 6;
+    int64  flags            = 7;
+    bool   debug            = 8;
+    string data             = 9;
+}
+
+message ApplicationActivityInfoList {
+    repeated ApplicationActivityInfo activities = 1;
 }
 
 message ApplicationPermissions {
