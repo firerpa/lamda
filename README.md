@@ -1199,8 +1199,8 @@ d.current_application().activity
 # 导入 FLAG_ACTIVITY* 常量定义
 from lamda.const import *
 
-# 获取系统中最近的10条活动（最多16条）
-activities = d.get_last_activities(count=10)
+# 获取系统中最近的5条活动（最多12条）
+activities = d.get_last_activities(count=5)
 print (activities)
 
 # 你可以直接重放最后一条活动（注意并不是所有活动都可以重放）
