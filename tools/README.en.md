@@ -43,9 +43,9 @@ If you have changed lamda's default port 65000, you will also need to set the en
 
 ```bash
 # For linux / Mac
-export LAMDAPORT=8123
+export PORT=8123
 # For Windows (path must not contain spaces)
-set LAMDAPORT=8123
+set PORT=8123
 ```
 
 192.168.1.2 is the example IP, please get the actual IP address of the device yourself.

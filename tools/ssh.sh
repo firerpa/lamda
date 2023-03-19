@@ -1,6 +1,6 @@
 #!/bin/bash
 TARGET=${1:-localhost}
-PORT=${LAMDAPORT:-65000}
+PORT=${PORT:-65000}
 DEFAULT_ID_RSA=$(mktemp)
 
 umask 077

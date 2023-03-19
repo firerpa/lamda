@@ -6,7 +6,7 @@ if __name__ == "__main__":
     from lamda.client import *
 
     cert = os.environ.get("CERTIFICATE", None)
-    port = int(os.environ.get("LAMDAPORT", 65000))
+    port = int(os.environ.get("PORT", 65000))
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", type=str, dest="device",

@@ -7,7 +7,7 @@ from os.path import isfile
 from lamda.client import *
 
 certfile = os.environ.get("CERTIFICATE", None)
-port = int(os.environ.get("LAMDAPORT", 65000))
+port = int(os.environ.get("PORT", 65000))
 
 android_path = os.path.join("~", ".android")
 abs_android_path = os.path.expanduser(android_path)

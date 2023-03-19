@@ -1,6 +1,6 @@
 #!/bin/bash
 DEFAULT_ID_RSA=$(mktemp)
-PORT=${LAMDAPORT:-65000}
+PORT=${PORT:-65000}
 case "$1" in
                 *':/'*)
                                 p1=root@$1

@@ -300,7 +300,7 @@ pip3 install -U lamda
 # 如果需要使用内置 frida，务必使用下列方法安装
 # 你可能需要外网访问来安装 frida，否则可能会卡住许久(~10分钟)直至安装失败
 # 即使之前安装过 frida，也应该重新执行以下命令
-pip3 install -U --force-reinstall 'lamda[frida]'
+pip3 install -U --force-reinstall 'lamda[full]'
 # 请注意完成安装后，你需要同时使用 pip 更新任何依赖 frida
 # 的第三方库例如 frida-tools objection 等（如果安装过的话）
 # 否则后期使用可能会出现难以察觉的异常

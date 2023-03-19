@@ -16,6 +16,10 @@ import builtins
 import logging
 import grpc
 
+import collections.abc
+# fix pyreadline on windows py310
+collections.Callable = collections.abc.Callable
+
 from urllib.parse import quote
 from collections import defaultdict
 from os.path import basename, dirname, expanduser, join as joinpath
@@ -1817,11 +1821,12 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-device", type=str, required=True,
-                                   help="service ip address")
-    parser.add_argument("-port", type=int, default=65000,
-                                   help="service port")
     crt = os.environ.get("CERTIFICATE", None)
+    port = int(os.environ.get("PORT", 65000))
+    parser.add_argument("-device", type=str, default="localhost",
+                                   help="service ip address")
+    parser.add_argument("-port", type=int, default=port,
+                                   help="service port")
     parser.add_argument("-cert", type=str, default=crt,
                                    help="ssl cert")
     args = parser.parse_args()

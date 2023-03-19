@@ -13,7 +13,7 @@ BcastDiscoverInfo = protos.BcastDiscoverInfo
 BcastResponse = protos.BcastResponse
 BcastRequest = protos.BcastRequest
 
-port = int(os.environ.get("LAMDAPORT", 65000))
+port = int(os.environ.get("PORT", 65000))
 
 
 def BcastCallMethod(method):

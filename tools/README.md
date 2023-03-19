@@ -43,9 +43,9 @@ set CERTIFICATE=C:\Users\path\to\lamda.pem
 
 ```bash
 # 对于 linux / Mac
-export LAMDAPORT=8123
+export PORT=8123
 # 对于 Windows（路径不能包含空格）
-set LAMDAPORT=8123
+set PORT=8123
 ```
 
 192.168.1.2 为示例IP，请自行获取设备的实际IP地址。

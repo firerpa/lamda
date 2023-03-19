@@ -119,7 +119,7 @@ cert = os.environ.get("CERTIFICATE")
 proxy = int(os.environ.get("PROXYPORT",
                     randint(28080, 58080)))
 webport = randint(28080, 58080)
-lamda = int(os.environ.get("LAMDAPORT",
+lamda = int(os.environ.get("PORT",
                     65000))
 
 server = get_default_interface_ip(host)

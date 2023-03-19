@@ -293,7 +293,7 @@ pip3 install -U lamda
 # If you need to use the built-in frida, be sure to install it using the following method
 # You may need extranet access to install frida, otherwise you may be stuck for a long time (~10 minutes) until the installation fails
 # Even if you have installed frida before, you should re-run the following command
-pip3 install -U --force-reinstall 'lamda[frida]'
+pip3 install -U --force-reinstall 'lamda[full]'
 # Please note that after completing the installation you will need to update any third party libraries that rely on frida using pip at the same time
 # any third party libraries such as frida-tools objection etc. (if installed)
 # Otherwise you may get undetectable exceptions in later use
