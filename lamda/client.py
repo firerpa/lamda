@@ -693,6 +693,12 @@ class UiAutomatorStub(BaseServiceStub):
         获取此 watcher 是否启用
         """
         return self.watchers.get(name, {}).get("enable")
+    def get_last_toast(self):
+        """
+        获取系统中最后一个 toast 消息
+        """
+        r = self.stub.getLastToast(protos.Empty())
+        return r
     def remove_watcher(self, name):
         """
         移除一个 watcher
@@ -1758,6 +1764,8 @@ class Device(object):
         return self.stub("UiAutomator").dump_window_hierarchy()
     def wait_for_idle(self, timeout):
         return self.stub("UiAutomator").wait_for_idle(timeout)
+    def get_last_toast(self):
+        return self.stub("UiAutomator").get_last_toast()
     # watcher
     def remove_all_watchers(self):
         return self.stub("UiAutomator").remove_all_watchers()

@@ -20,9 +20,9 @@ setuptools.setup(
         ],
     },
     install_requires= [
-        "grpcio-tools>=1.35.0,<=1.50.0",
-        "grpc-interceptor>=0.13.0,<0.14.2",
-        "grpcio>=1.35.0,<=1.50.0",
+        "grpcio-tools>=1.35.0,<1.49.0",
+        "grpc-interceptor>=0.13.0,<0.15.0",
+        "grpcio>=1.35.0,<1.49.0",
         "asn1crypto>=1.0.0,<2",
     ],
     classifiers = [

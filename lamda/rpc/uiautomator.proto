@@ -369,6 +369,12 @@ message ObjInfo {
         Bound visibleBounds = 17;
 }
 
+message ToastInfo {
+        uint64 timestamp    = 1;
+        string package      = 2;
+        string message      = 3;
+}
+
 message ObjInfoList {
         repeated ObjInfo objects = 1;
 }

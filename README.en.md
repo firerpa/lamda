@@ -1458,6 +1458,12 @@ d.dump_window_hierarchy().getvalue()
 d.wait_for_idle(5*1000)
 ```
 
+> get last toast
+
+```python
+d.get_last_toast()
+```
+
 ## Advanced UI Operations
 
 > Selector

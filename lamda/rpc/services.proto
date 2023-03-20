@@ -148,6 +148,7 @@ service UiAutomator {
     rpc selectorLongClick(SelectorClickRequest) returns (Boolean) {}
 
     rpc selectorExists(SelectorOnlyRequest) returns (Boolean) {}
+    rpc getLastToast(google.protobuf.Empty) returns (ToastInfo) {}
 
     rpc selectorObjInfo(SelectorOnlyRequest) returns (ObjInfo) {}
     rpc selectorObjInfoOfAllInstances(SelectorOnlyRequest) returns (ObjInfoList) {}

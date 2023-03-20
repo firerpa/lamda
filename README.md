@@ -1467,6 +1467,12 @@ d.dump_window_hierarchy().getvalue()
 d.wait_for_idle(5*1000)
 ```
 
+> 获取最近的 toast
+
+```python
+d.get_last_toast()
+```
+
 ## 进阶UI操作
 
 > Selector
