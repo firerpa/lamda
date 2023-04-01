@@ -224,6 +224,7 @@ def load_proto(name):
 
 
 def to_dict(prot):
+    """ 将 proto 返回值转换为字典 """
     r = MessageToJson(prot, preserving_proto_field_name=True)
     return json.loads(r)
 
@@ -1008,7 +1009,7 @@ class ApplicationStub(BaseServiceStub):
         return list(map(to_dict, r))
     def start_activity(self, **activity):
         """
-        启动 activity（任意, always return true）
+        启动 activity（总是返回 True）
         """
         activity.setdefault("extras", {})
         extras = activity.pop("extras")
@@ -1148,7 +1149,7 @@ class DebugStub(BaseServiceStub):
         return r.value
     def start_android_debug_bridge(self):
         """
-        启动 adbd (默认随框架启动)
+        启动内置 adbd (默认随框架启动)
         """
         r = self.stub.startAndroidDebugBridge(protos.Empty())
         return r.value
@@ -1170,7 +1171,7 @@ class DebugStub(BaseServiceStub):
         return r.value
     def stop_android_debug_bridge(self):
         """
-        停止 adb daemon (有可能无效)
+        停止内置 adb daemon
         """
         r = self.stub.stopAndroidDebugBridge(protos.Empty())
         return r.value
@@ -1438,12 +1439,18 @@ class FileStub(BaseServiceStub):
         for chunk in iterator:
             fd.write(chunk.payload)
     def download_fd(self, fpath, fd):
+        """
+        从设备下载文件到文件描述符
+        """
         req = protos.FileRequest(path=fpath)
         iterator = self.stub.downloadFile(req)
         self._fd_streaming_recv(fd, iterator)
         st = self.file_stat(fpath)
         return st
     def upload_fd(self, fd, dest):
+        """
+        上传文件描述符至设备
+        """
         chunksize = 1024*1024*1
         streaming = self._fd_streaming_send(fd, dest,
                                               chunksize)
@@ -1451,9 +1458,15 @@ class FileStub(BaseServiceStub):
         st = self.file_stat(dest)
         return st
     def download_file(self, fpath, dest):
+        """
+        从设备下载文件到本地
+        """
         with io.open(dest, mode="wb") as fd:
             return self.download_fd(fpath, fd)
     def upload_file(self, fpath, dest):
+        """
+        上传本地文件至设备
+        """
         with io.open(fpath, mode="rb") as fd:
             return self.upload_fd(fd, dest)
     def delete_file(self, fpath):

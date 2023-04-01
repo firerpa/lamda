@@ -28,6 +28,7 @@ setuptools.setup(
     classifiers = [
         "Environment :: Console",
         "Intended Audience :: Developers",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Information Technology",
         "Intended Audience :: Science/Research",
         "Programming Language :: Python :: 3",

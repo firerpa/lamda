@@ -73,8 +73,8 @@ Directly through code point and click, it can replace most manual operations.
 
 ## Interface layout review
 
-You can instantly review the interface layout of your Android app for writing automation code from your remote desktop, by pressing `CTRL + I` from your remote desktop to enter the mode.
-Press `CTRL + R` to refresh the layout and `CTRL + I` again to exit.
+You can instantly review the interface layout of your Android application for writing automation code from the remote desktop. You can enter the mode by clicking on the eye icon in the top right corner of the remote desktop.
+Press `CTRL + R` to refresh the layout and click the eye icon again to exit.
 
 ![Interface layout view](image/inspect.gif)
 
@@ -533,14 +533,20 @@ curl -x http://192.168.0.2:65000 https://httpbin.org/ip
 ```
 
 Custom Proxy Configuration
-If you want to use a mobile network (4G/5G) as a proxy outlet, it should be noted that rmnet mobile data may not be enabled when you are connected to a WIFI network, and that WIFI is usually not enabled when you are connected to mobile data. This means that when you are connected to WIFI, the default is to go out through WIFI, and when you are disconnected from WIFI, the default is to go out through data traffic, and there is a certain mutual exclusivity between them (which may vary between system versions). So configuring the iface parameter becomes an optional option and is only provided as an additional possibility, unless you make both the rmnet and wlan NICs active yourself. The following example only changes the login user information for the default agent.
+If you wish to use a mobile network (4G/5G) as a proxy outlet, it should be noted that native rmnet mobile data does not co-exist with WIFI.
+LAMDA requires your Android >= 9.0 in order to use 4G mobile data as a proxy outlet while connected to WIFI.
 
 ```ini
 # Append to properties.local configuration file
 tunnel2.login=lamda
 tunnel2.password=mypassword
-# It is not recommended to configure the iface parameter unless you know what you are doing
-# tunnel2.iface=wlan0
+#
+# There are two configurable values for iface, i.e. wlan, rmnet, when the iface value is wlan
+# will automatically detect the available wlan interfaces and select any one to make the request, when iface is rmnet
+# will try to enable mobile data (even if WIFI is enabled) and send the request from the mobile network interface.
+# When configured as rmnet/wlan but its interface has no network, the proxy will fail.
+# When not configured, requests are made using the default network.
+#tunnel2.iface=rmnet
 ```
 
 If you want to be able to use the device as a proxy from any location, see the `Making LAMDA connectable from any location` section.
@@ -881,7 +887,7 @@ Now, open the web console or a ssh/adb shell connected to your device and execut
 > Some example rules
 
 ```
-@reboot     echo Executed when the framework is started/reloaded (reloaded)
+@reboot     echo Executed when the framework is started
 0 */1 * * * echo Execute every hour
 * * * * *   echo Execute every minute
 0 8 * * *   echo Execute at eight o'clock every day
@@ -1468,9 +1474,8 @@ d.get_last_toast()
 
 > Selector
 
-For the interface layout review, first you need to open the device's web remote desktop. Afterwards, mouse click on the left screen to ensure that the focus falls on the cast screen (otherwise the focus may be captured by the terminal on the right).
-Then press the shortcut `CTRL+I` (to start the layout view), you will no longer be able to swipe the left screen, you can click on the dotted box on the screen to see the information about the corresponding element, you can use some of its properties as parameters for the Selector.
-Pressing `CTRL+I` again will close the layout view, which will not be refreshed as the page changes, it will always be the layout of the screen at the moment you press the shortcut key, if you need to refresh the layout press `CTRL+R` manually.
+To view the layout of the interface, first you need to open the web remote desktop of the device. You can then click on the eye icon in the top right hand corner of the remote desktop to access it, you will no longer be able to swipe the left hand side of the screen, you can click on the dotted box on the screen to view information about the corresponding element, you can use some of these properties as parameters for the Selector.
+Clicking on the eye icon again will close the layout view. The layout view will not be refreshed as the page changes, it will always be the layout of the screen at the moment you press the shortcut key, if you need to refresh the layout please press the shortcut key `CTRL+R` manually.
 
 Normally we would only use `resourceId`, `clickable`, `text`, `description` as parameters.
 If the element has a normal resourceId, it will be used as Selector in preference, i.e.: `Selector(resourceId="com.android.systemui:id/mobile_signal_single"`.
