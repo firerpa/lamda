@@ -115,6 +115,7 @@ For **Cloud Mobile**, AliCloud/Huawei Cloud Mobile is supported, X Finger, X Mul
   - [File Uploads](#file-uploads)
   - [File downloads](#file-downloads)
   - [Mobile Proxy](#mobile-proxy)
+    - [Custom Proxy Configuration](#custom-proxy-configuration)
   - [Connecting devices](#connecting-devices)
   - [Let's start with a warm up](#lets-start-with-a-warm-up)
   - [Setting up a system proxy](#setting-up-a-system-proxy)
@@ -332,12 +333,18 @@ echo "stat-report.url=http://example.com/report" >>/data/local/tmp/properties.lo
 
 This will cause LAMDA to **POST** device status information (JSON) to this link **every minute** after startup, which will not be listed here due to the number of fields.
 
-LAMDA is updated regularly from github, the default channel update frequency is approximately 1-2 months, for stable the update frequency is 3-6 months, it is recommended to manually download the latest version from github release and update it manually on a regular basis. If this frequency affects your usage, run the following command to create an update configuration before starting LAMDA for the first time.
+> Configuring automatic updates
+
+LAMDA has a logic for automatic updates, but due to minute service interruptions, this is currently limited to internal use. Please download and install the latest version from github at your leisure at regular intervals.
+
+If you really don't care if the service is unavailable by the minute when you update, writing the following configuration file before starting LAMDA will ensure that LAMDA is always up to date.
 
 ```bash
-# Enter the adb shell and execute
-echo "upgrade.channel=stable" >>/data/local/tmp/properties.local
+# Go to the adb shell and execute
+echo "upgrade.channel=latest" >> /data/local/tmp/properties.local
 ```
+
+> properties.local startup configuration
 
 Before we start, it is important to introduce the `properties.local` file above.
 properties.local is the LAMDA startup configuration file, usually stored on top of the device, which contains strings of type `a=b`.
@@ -507,8 +514,7 @@ The remote desktop feature is designed for Chrome 95+ only, it does not support 
 
 Open the link `http://192.168.0.2:65000` in your browser to access the web remote desktop, where you can operate the device and execute commands through the root emulation terminal of the interface. If you specify the PEM certificate `--certificate` when starting the server, the remote desktop will require you to enter a password in order to continue accessing it, which you can find in the last line of the PEM certificate as a fixed 32-bit password.
 
-You can also customise the video frame rate (fps), resolution scaling (res) and image quality of the remote desktop. Also, H.264 soft encoding is supported (less traffic and smoother in some cases, only with the latest Chrome browser).
-All you need to do is compose the above parameters into the following link `http://192.168.0.2:65000/?fps=25&quality=20&res=0.5&h264`, this link means that the remote desktop is displayed at 25fps with image quality of 20, scaled to 0.5 times the original resolution, and H264 support is enabled. These are the defaults, except for h264 which is not enabled by default. Please note, however, that adjusting the above parameters will not necessarily produce positive results, so please adjust according to the facts.
+You can also customise the video frame rate (fps), resolution scaling (res) and image quality of the Remote Desktop. Also, H.264 soft encoding is supported (in some cases less traffic and smoother, only with the latest version of Chrome). You can adjust this via the small gear in the top right corner of Remote Desktop, but please note that adjusting the above parameters will not necessarily have a positive effect, so please adjust according to the facts.
 
 For a more user-friendly experience such as keyboard input, see the following section `Wirelessly connecting to a WIFI ADB with built-in root privileges`.
 After completing adb connect to LAMDA, install [Genymobile/scrcpy](https://github.com/Genymobile/scrcpy) or [barry-ran/QtScrcpy](https://github.com/barry-ran/QtScrcpy), see their documentation for details.
@@ -532,9 +538,9 @@ LAMDA's tunnel2 feature, which allows you to use the device running LAMDA as an 
 curl -x http://192.168.0.2:65000 https://httpbin.org/ip
 ```
 
-Custom Proxy Configuration
-If you wish to use a mobile network (4G/5G) as a proxy outlet, it should be noted that native rmnet mobile data does not co-exist with WIFI.
-LAMDA requires your Android >= 9.0 in order to use 4G mobile data as a proxy outlet while connected to WIFI.
+### Custom Proxy Configuration
+
+If you want to use a mobile network (4G/5G) as a proxy outlet.
 
 ```ini
 # Append to properties.local configuration file

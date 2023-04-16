@@ -121,6 +121,7 @@ MOMO (vvb2060) 是我们认为目前最强的ROOT特征检测软件，如 MOMO �
   - [文件上传](#文件上传)
   - [文件下载](#文件下载)
   - [移动代理](#移动代理)
+    - [自定义代理配置](#自定义代理配置)
   - [连接设备](#连接设备)
   - [先来一个热身](#先来一个热身)
   - [设置系统代理](#设置系统代理)
@@ -339,13 +340,18 @@ echo "stat-report.url=http://example.com/report" >>/data/local/tmp/properties.lo
 
 这样 LAMDA 会在启动后**每分钟**向此链接**POST**设备状态信息（JSON），由于字段较多，将不在此罗列。
 
+> 配置自动更新
 
-LAMDA 会定期从 github 更新，默认频道更新频率约1-2月一次，stable 的更新频率为 3-6 月，建议定期手动从 github release 下载最新版本手动更新。如果该频率会影响到你的使用，在首次启动 LAMDA 之前执行以下命令创建更新配置。
+LAMDA 存在一个自动更新的逻辑，但是由于存在分钟级的服务中断，目前仅限于内部自用。除了存在紧急安全问题或者致命BUG等情况，LAMDA 不会进行任何自动更新，请自行定期在闲时从 github 下载并安装最新版本。
+
+如果你确实不在意更新时分钟级的服务不可用，启动 LAMDA 之前写入以下配置文件可以确保 LAMDA 始终为最新版本。
 
 ```bash
 # 进入 adb shell 执行
-echo "upgrade.channel=stable" >>/data/local/tmp/properties.local
+echo "upgrade.channel=latest" >>/data/local/tmp/properties.local
 ```
+
+> properties.local 启动配置
 
 在开始前，有必要介绍一下上面的 `properties.local` 文件，
 properties.local 为 LAMDA 的启动配置文件，通常存储于设备之上，其中包含了 `a=b` 类型的字符串，
@@ -516,8 +522,7 @@ reboot
 
 在浏览器中打开链接 `http://192.168.0.2:65000` 可进入 web 远程桌面，你可以在此操作设备以及通过该界面的root模拟终端执行命令。如果启动服务端时指定了PEM证书 `--certificate`，远程桌面将需要你输入密码才能继续访问，你可以在PEM证书最后一行找到这个32位的固定密码。
 
-你也可以自定义远程桌面的 视频帧率(fps)、分辨率缩放比例(res)以及图像质量(quality)。同时，支持 H.264 软编码（部分情况下使用流量更少更流畅，仅支持最新版 Chrome 浏览器）。
-你只需要将以上参数组成如下链接即可 `http://192.168.0.2:65000/?fps=25&quality=20&res=0.5&h264`，此链接代表，显示25fps的远程桌面，图像质量为20，缩放到原始分辨率的0.5倍，同时开启H264支持。除 h264 默认为不开启外，其他均为默认值。但是请注意，调整以上参数并不一定会产生正向效果，请依据事实调整。
+你也可以自定义远程桌面的 视频帧率(fps)、分辨率缩放比例(res)以及图像质量(quality)。同时，支持 H.264 软编码（部分情况下使用流量更少更流畅，仅支持最新版 Chrome 浏览器）。你可以通过远程桌面右上角的小齿轮进行调整，但是请注意，调整以上参数并不一定会产生正向效果，请依据事实调整。
 
 如果需要键盘输入等更加人性化的操作体验，请先看下面的章节 `无线连接内置 root 权限的 WIFI ADB`，
 完成 adb connect 到 LAMDA 后，安装使用 [Genymobile/scrcpy](https://github.com/Genymobile/scrcpy) 或者 [barry-ran/QtScrcpy](https://github.com/barry-ran/QtScrcpy) 即可，具体使用方法请查看其使用文档。
@@ -541,9 +546,9 @@ LAMDA 的 tunnel2 功能，支持你将运行 LAMDA 的设备作为 http 网络�
 curl -x http://192.168.0.2:65000 https://httpbin.org/ip
 ```
 
-自定义代理配置
-如果你想使用移动网络（4G/5G）作为代理出口，需要说明的是，原生 rmnet 移动数据 与 WIFI 无法共存。
-LAMDA 需要你的安卓 >= 9.0的才能在连接WIFI的情况下使用4G移动数据作为代理出口。
+### 自定义代理配置
+
+如果你想使用移动网络（4G/5G）作为代理出口。
 
 ```ini
 # 追加到 properties.local 配置文件
