@@ -803,12 +803,12 @@ class UiAutomatorStub(BaseServiceStub):
         req = protos.PressKeyRequest(key=key)
         r = self.stub.pressKey(req)
         return r.value
-    def press_keycode(self, code):
+    def press_keycode(self, code, meta=0):
         """
         通过 Keycode(整数)按下未定义的按键
         ref: https://developer.android.com/reference/android/view/KeyEvent
         """
-        req = protos.PressKeyRequest(code=code)
+        req = protos.PressKeyRequest(code=code, meta=meta)
         r = self.stub.pressKeyCode(req)
         return r.value
     def take_screenshot(self, quality, bound=None):
@@ -1767,8 +1767,8 @@ class Device(object):
         return self.stub("UiAutomator").set_orientation(orien)
     def press_key(self, key):
         return self.stub("UiAutomator").press_key(key)
-    def press_keycode(self, code):
-        return self.stub("UiAutomator").press_keycode(code)
+    def press_keycode(self, code, meta=0):
+        return self.stub("UiAutomator").press_keycode(code, meta)
     def take_screenshot(self, quality=100, bound=None):
         return self.stub("UiAutomator").take_screenshot(quality, bound=bound)
     def screenshot(self, quality=100, bound=None):

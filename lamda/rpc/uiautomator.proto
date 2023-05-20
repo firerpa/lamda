@@ -543,6 +543,7 @@ message OrientationRequest {
 message PressKeyRequest {
         Key key         = 1;
         uint32 code     = 2;
+        uint32 meta     = 3;
 }
 
 message TakeScreenshotRequest {
