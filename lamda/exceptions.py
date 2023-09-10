@@ -36,6 +36,8 @@ class StaleObjectException(Exception):
     """ Exception """
 class StartupActivityNotFound(Exception):
     """ Exception """
+class StorageOutOfMemory(Exception):
+    """ Exception """
 class UiAutomatorException(Exception):
     """ Exception """
 class UiObjectNotFoundException(Exception):

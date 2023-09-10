@@ -8,6 +8,7 @@ LAMDA 是一个用于逆向及自动化的辅助框架，它设计为减少安�
 
 * 零依赖，只需 **root** 即可
 * 前身通过超500台设备压力的稳定生产环境考验
+* 可通过扩展模块使用完整的安卓内 Debian (12, bookworm) 环境
 * 通过接口轻松设置根证书，配合 http/socks5 代理实现中间人
 * 通过 frida 暴露内部 Java 接口（类 [virjar/sekiro](https://github.com/virjar/sekiro) 但基于 frida）
 * 近乎商业级软件的质量和稳定性，ARM/X86全架构
@@ -34,6 +35,7 @@ LAMDA 是一个用于逆向及自动化的辅助框架，它设计为减少安�
 * 可使用 ssh 登录设备终端
 * 只要有网即可连接任意地方运行了 LAMDA 的设备
 * 前后台运行 shell 命令，授予撤销应用权限等
+* 内置 Storage 用于存储设备变量
 * 内置 http/socks5 代理，可设置系统/指定应用的代理
 * 内置 frida 15.x, IDA 7.5 server 等工具
 * 内置 crontab 定时任务
@@ -43,7 +45,10 @@ LAMDA 是一个用于逆向及自动化的辅助框架，它设计为减少安�
 * WEB 端文件上传下载
 * UI自动化，通过接口实现自动化操作
 
-如果觉得以下教程过于复杂看不懂，可以选择观看网友制作的 [视频教程](https://lamda.run/tutorial/video)。
+如果觉得以下教程过于复杂看不懂，可以选择观看 [视频教程](https://lamda.run/tutorial/video)。
+
+
+![动图演示](image/demo.gif)
 
 ## 无视恶意软件对抗
 
@@ -53,7 +58,7 @@ MOMO (vvb2060) 是我们认为目前最强的ROOT特征检测软件，如 MOMO �
 
 ## 一键中间人流量分析
 
-支持常规以及国际APP流量分析，DNS流量分析，得益于 [mitmproxy flow hook](https://docs.mitmproxy.org/stable/api/events.html)，你可以对任何请求做到最大限度的掌控，mitmproxy 功能足够丰富，你可以通过其 `Export` 选项导出特定请求的 `curl` 命令或者 `HTTPie` 命令，分析重放、拦截修改、功能组合足以替代你用过的任何此类商业/非商业软件。如果你仍不清楚 mitmproxy 是什么以及其具有的能力，请务必先查找相关文档，因为 LAMDA 将会使用 mitmproxy 为你展现应用请求。
+支持常规以及国际APP流量分析，DNS流量分析，得益于 [mitmproxy flow hook](https://docs.mitmproxy.org/stable/api/events.html)，你可以对任何请求做到最大限度的掌控，mitmproxy 功能足够丰富，你可以使用 Python 脚本实时修改或者捕获应用的请求，也可以通过其 `Export` 选项导出特定请求的 `curl` 命令或者 `HTTPie` 命令，分析重放、拦截修改、功能组合足以替代你用过的任何此类商业/非商业软件。如果你仍不清楚 mitmproxy 是什么以及其具有的能力，请务必先查找相关文档，因为 LAMDA 将会使用 mitmproxy 为你展现应用请求。
 
 通过 tools/ 目录下的 `globalmitm`，`startmitm.py` 实现，使用方法请看其同目录 README。
 
@@ -61,7 +66,7 @@ MOMO (vvb2060) 是我们认为目前最强的ROOT特征检测软件，如 MOMO �
 
 ## 拖拽上传
 
-可直接在远程桌面拖拽上传，支持上传整个目录，最大支持单个 256MB 的文件，文件将始终被上传到 `/data/local/tmp` 目录下。
+可直接在远程桌面拖拽上传，支持上传整个目录，最大支持单个 256MB 的文件，文件将始终被上传到 `/data/usr/uploads` 目录下。
 
 ![拖拽上传动图演示](image/upload.gif)
 
@@ -92,8 +97,6 @@ MOMO (vvb2060) 是我们认为目前最强的ROOT特征检测软件，如 MOMO �
 
 如果你希望继续看下去，请确保：有一台已经 root 且运行内存大于 2GB，可用存储空间大于 1GB 的安卓设备或者安卓模拟器（推荐使用最新版**夜神**，**雷电**模拟器，或者 AVD [Android Studio Virtual Device]）。**不完全支持** 网易 Mumu，**不支持**腾讯手游助手、蓝叠以及安卓内虚拟如 VMOS 等），对于真机，推荐运行最接近原生系统的设备如谷歌系、一加、安卓开发板等，或系统仅经过轻度改造的设备。如果你使用的是OPPO/VIVO/华为/小米的设备，经过尝试后无法正常运行，建议改用模拟器。
 
-对于**云手机**，支持阿里云/华为云手机，不支持X手指、X多云、X电、X云兔、X子星、X马云及任何其他品牌。
-
 <br>
 
 # 目录
@@ -111,8 +114,6 @@ MOMO (vvb2060) 是我们认为目前最强的ROOT特征检测软件，如 MOMO �
   - [安装服务端](#安装服务端)
     - [通过 Magisk 安装](#通过-magisk-安装)
     - [手动安装](#手动安装)
-      - [方式 1](#方式-1)
-      - [方式 2](#方式-2)
   - [启动服务端](#启动服务端)
   - [退出服务端](#退出服务端)
   - [卸载服务端](#卸载服务端)
@@ -131,6 +132,7 @@ MOMO (vvb2060) 是我们认为目前最强的ROOT特征检测软件，如 MOMO �
   - [使用 FRIDA 暴露 Java 接口](#使用-frida-暴露-java-接口)
   - [使用内置的定时任务](#使用内置的定时任务)
   - [使 LAMDA 可被任意地点连接](#使-lamda-可被任意地点连接)
+  - [读写内置键值存储器](#读写内置键值存储器)
   - [读写系统属性](#读写系统属性)
   - [读写系统设置](#读写系统设置)
   - [获取设备运行状态](#获取设备运行状态)
@@ -146,6 +148,7 @@ MOMO (vvb2060) 是我们认为目前最强的ROOT特征检测软件，如 MOMO �
   - [进阶UI操作](#进阶ui操作)
   - [接口锁](#接口锁)
   - [使用内置终端](#使用内置终端)
+  - [使用 Debian 环境扩展模块](#使用-debian-环境扩展模块)
 - [工具及教程](#工具及教程)
   - [一键中间人](#一键中间人)
   - [国际代理进行中间人](#国际代理进行中间人)
@@ -159,15 +162,13 @@ MOMO (vvb2060) 是我们认为目前最强的ROOT特征检测软件，如 MOMO �
 
 # 免责声明及条款
 
-为了下载使用由 rev1si0n (账号 github.com/rev1si0n)（以下简称“本人”）个人开发的软件 LAMDA ，您应当阅读并遵守《用户使用协议》（以下简称“本协议”）。请您务必审慎阅读、充分理解各条款内容，特别是免除或者限制责任的条款，并选择接受或不接受；除非您已阅读并接受本协议所有条款，否则您将无权下载、安装或使用本软件及相关服务。您的下载、安装、使用、获取账号、登录等行为即视为您已阅读并同意受到上述协议的约束；若您需要获得本服务，您（以下称"用户"）应当同意本协议的全部条款并按照页面上的提示完成全部申请使用程序。您可以在本文档的相同目录找到 [DISCLAIMER.TXT](DISCLAIMER.TXT)，或者点此 [免责声明](DISCLAIMER.TXT) 查阅。由于并未完全开源，除以上条款外：**授权您对 LAMDA 本身进行以恶意代码分析为目的的逆向**。
+为了下载使用由 rev1si0n (账号 github.com/rev1si0n)（以下简称“本人”）个人开发的软件 LAMDA ，您应当阅读并遵守《用户使用协议》（以下简称“本协议”）。请您务必审慎阅读、充分理解各条款内容，特别是免除或者限制责任的条款，并选择接受或不接受；除非您已阅读并接受本协议所有条款，否则您将无权下载、安装或使用本软件及相关服务。您的下载、安装、使用、获取账号、登录等行为即视为您已阅读并同意受到上述协议的约束；若您需要获得本服务，您（以下称"用户"）应当同意本协议的全部条款并按照页面上的提示完成全部申请使用程序。您可以在本文档的相同目录找到 [DISCLAIMER.TXT](DISCLAIMER.TXT)，或者点此 [免责声明](DISCLAIMER.TXT) 查阅。此项目代码库中仅包含开源的客户端库、工具代码。因服务端程序以二进制方式发布，并未开源，所以除以上条款外：**授权您对 LAMDA SERVER 本身进行以恶意代码分析为目的的逆向**。
 
 请确认您已阅读并接受本协议所有条款，否则您将无权下载、安装或使用本软件及相关服务。
 
 # 前言
 
-LAMDA 是个人开发的免费软件 (freeware)，目前仅客户端及协议是开源的，但个人承诺它没有任何对您违规或多余的行为，如果仍有担心，您可以**立即离开**或者选择**付费**寻求心理安慰。互相尊重，使用请遵守使用条款。合作交流可以 [点此发送邮件](mailto:ihaven0emmail@gmail.com)。
-
-为什么部分开源？因为 LAMDA 亦黑亦白，很容易被不法分子利用使作者处于危险之中，所以请尊重条款使用。建议在 Linux 或者 Mac 系统上操作文档及样例中的代码。部分功能需要配合 `tools/` 目录下的工具实现，如何使用请参照 [tools/README.md](tools/README.md)。
+LAMDA 是个人开发的免费软件 (freeware)，目前仅客户端库及工具代码是开源的，个人承诺 LAMDA 不会对您及您的设备有任何违规或多余的行为，如果仍有担心，您可以**立即离开**或者选择**付费**寻求心理安慰。互相尊重，使用请遵守使用条款。为什么部分开源？因为 LAMDA 亦黑亦白，很容易被不法分子利用使作者或者不明所以的用户处于危险之中，所以请尊重条款使用。建议在 Linux 或者 Mac 系统上操作文档及样例中的代码。部分功能需要配合 `tools/` 目录下的工具实现，如何使用请参照 [tools/README.md](tools/README.md)。
 
 **特别注意**：**请勿在自用设备上运行，当有可能在公网或不信任的网络中使用时，务必确保在启动时指定了PEM证书**
 
@@ -180,7 +181,7 @@ LAMDA 是个人开发的免费软件 (freeware)，目前仅客户端及协议是
 因为安卓被各种设备广泛使用，无法保证百分百的兼容性，可能会有运行异常等各种未知情况，出现的异常情况包括：无故重启，APP经常崩溃，触摸失效或无故乱动等等，冻屏等情况。如果经常遇到，建议停止使用。
 点此 [报告问题/建议](https://github.com/rev1si0n/lamda/issues/new)，请详细描述并附上机型系统等信息。
 
-社区讨论：[电报 t.me/lamda_dev](https://t.me/lamda_dev) | [gitter.im/lamda-dev](https://gitter.im/lamda-dev/community)
+社区讨论：[电报 t.me/lamda_dev](https://t.me/lamda_dev)
 
 > 顺便支持作者
 
@@ -204,7 +205,6 @@ LAMDA 最理想的运行环境是你刚刚 root（如：新建模拟器，自带
 ```
 * 必须关闭 Magisk Hide
 * 必须关闭 frida-server
-* 建议关闭 Xposed/Magisk 插件
 * 确认完毕重启设备
 ```
 
@@ -292,7 +292,7 @@ docker run -itd --rm --privileged --pull always -v /lib/modules:/lib/modules:ro 
 
 ## 安装客户端
 
-请使用 3.6 - 3.10 版本的 Python，建议有条件使用 Python 3.9
+请使用 3.6 - 3.11 版本的 Python，建议有条件使用 Python 3.9
 
 ```bash
 pip3 install -U lamda
@@ -302,6 +302,8 @@ pip3 install -U lamda
 # 你可能需要外网访问来安装 frida，否则可能会卡住许久(~10分钟)直至安装失败
 # 即使之前安装过 frida，也应该重新执行以下命令
 pip3 install -U --force-reinstall 'lamda[full]'
+# 如果你安装的服务端是 7.0 (beta) 版本，请执行如下命令安装
+pip3 install -U --force-reinstall 'lamda[next]'
 # 请注意完成安装后，你需要同时使用 pip 更新任何依赖 frida
 # 的第三方库例如 frida-tools objection 等（如果安装过的话）
 # 否则后期使用可能会出现难以察觉的异常
@@ -325,7 +327,9 @@ pip3 install -U --force-reinstall lamda
 
 ## 安装服务端
 
-**默认方式安装的 LAMDA 没有开启任何认证，其他人可以访问你设备上的任意内容，监听你的设备甚至接入你的网络进行进一步控制。请特别留意`启用接口认证`的部分，请务必在可以`信任的网络`内使用。**
+**默认方式安装的 LAMDA 没有开启任何认证，其他人可以访问设备上的任意内容，监听你的设备甚至接入设备网络进行进一步控制。请特别留意`启用接口认证`的部分，请务必在可以`信任的网络`内使用。并且请注意，`即使开启了接口认证`，任何`有权限登录远程桌面以及使用API`的人仍然对你的设备以及 LAMDA 本身有着完全的访问权限。**
+
+**由于安全性原因，我们不建议将任何相关文件放在 `/data/local/*` 目录下。**
 
 安装前，请先选择合适的架构，可以通过 adb shell 命令 `getprop ro.product.cpu.abi` 来获取当前的系统架构。
 正常情况下，对于现时代的手机，可以直接选择 `arm64-v8a` 版本，而对于模拟器如雷电，你会在新建模拟器时选择32或64位版本的安卓系统，
@@ -334,8 +338,8 @@ pip3 install -U --force-reinstall lamda
 LAMDA 支持设备状态主动上报，你可以编写接口或使用 grafana 来记录设备运行状况，其中包含了系统、网络、内存、CPU、磁盘等等信息。
 
 ```bash
-# 如果不清楚这个功能是什么请不要执行，注意替换掉以下链接
-echo "stat-report.url=http://example.com/report" >>/data/local/tmp/properties.local
+# 如果不清楚这个功能是什么请不要执行，注意替换掉以下链接（需要 root 身份）
+echo "stat-report.url=http://example.com/report" >>/data/properties.local
 ```
 
 这样 LAMDA 会在启动后**每分钟**向此链接**POST**设备状态信息（JSON），由于字段较多，将不在此罗列。
@@ -347,8 +351,8 @@ LAMDA 存在一个自动更新的逻辑，但是由于存在分钟级的服务�
 如果你确实不在意更新时分钟级的服务不可用，启动 LAMDA 之前写入以下配置文件可以确保 LAMDA 始终为最新版本。
 
 ```bash
-# 进入 adb shell 执行
-echo "upgrade.channel=latest" >>/data/local/tmp/properties.local
+# 进入 adb shell 执行（需要 root 身份）
+echo "upgrade.channel=latest" >>/data/properties.local
 ```
 
 > properties.local 启动配置
@@ -356,7 +360,7 @@ echo "upgrade.channel=latest" >>/data/local/tmp/properties.local
 在开始前，有必要介绍一下上面的 `properties.local` 文件，
 properties.local 为 LAMDA 的启动配置文件，通常存储于设备之上，其中包含了 `a=b` 类型的字符串，
 通过编写此文件，你可以实现在 LAMDA 启动时自动连接到 OpenVPN、代理、端口转发等。
-LAMDA 在启动时，会从 `/data/usr`、`/data/local/tmp`、`${CFGDIR:-/data/local}` 查找该文件并载入。
+LAMDA 在启动时，会从 `/data`, `/data/usr` 查找该文件并载入（usr 目录在 LAMDA 首次启动前并不存在，所以你可能需要手动创建）。
 你可以在以上三个位置任意一个放置你的 properties.local 配置文件。
 
 除了 `properties.local`，还有一个从加载远端配置的参数 `--properties.remote`，它可以让 LAMDA 在启动时从HTTP服务器下载配置，请继续看往启动 LAMDA 的章节。
@@ -387,77 +391,57 @@ abi not match       (使用了错误的 tar.gz 包)
 
 ### 手动安装
 
-手动安装是通常做法，下面将会介绍两种方式，两种方式的区别是：部分老旧设备可能无法通过系统的 `tar` 命令来解压 tar.gz 后缀的文件，所以提供了 `*-install.sh` 用来作为补充，其内置了一个 busybox 用来解压。已知 getprop 获得的设备架构为 `arm64-v8a`，现在将设备连接到当前电脑并确保已授权 ADB、可以正常切换 root。
-
-#### 方式 1
+由于部分老旧设备可能无法通过系统的 `tar` 命令来解压 tar.gz 后缀的文件，所以提供了 `busybox` 用来作为补充，你可能需要同时下载提供的 busybox。现在已知 getprop 获得的设备架构为 `arm64-v8a`，现在将设备连接到当前电脑并确保已授权 ADB、可以正常切换 root。
 
 从 `release` 页面 [lamda/releases](https://github.com/rev1si0n/lamda/releases)
-下载 `arm64-v8a.tar.gz-install.sh`。
+下载 `lamda-server-arm64-v8a.tar.gz` 以及 `busybox-arm64-v8a`。
 
 ```bash
-# /data/local/tmp 是标准服务安装路径，但并不是强制要求
-# 你可以放到除了 /sdcard 之外任何具备可读写权限的文件夹
-adb push arm64-v8a.tar.gz-install.sh /data/local/tmp
-# 进入 adb shell
-adb shell
-# 输入 su 确保为 root 身份
-su
-# 切换到目录
-cd  /data/local/tmp
-# 执行安装脚本并启动（这将解包并启动服务）
-sh arm64-v8a.tar.gz-install.sh
-# 删除安装包
-rm arm64-v8a.tar.gz-install.sh
-```
-
-#### 方式 2
-
-从 `release` 页面 [lamda/releases](https://github.com/rev1si0n/lamda/releases)
-下载 `arm64-v8a.tar.gz`。
-
-```bash
-# /data/local/tmp 是标准服务安装路径，但并不是强制要求
-# 你可以放到除了 /sdcard 之外任何具备可读写权限的文件夹
-adb push arm64-v8a.tar.gz /data/local/tmp
+# 将文件临时推送到 /data/local/tmp
+adb push lamda-server-arm64-v8a.tar.gz /data/local/tmp
+adb push busybox-arm64-v8a /data/local/tmp
 ```
 
 完成后，进入 `adb shell`，解包文件：
 
 ```bash
 # 你现在应该在 adb shell 内
-cd /data/local/tmp
+# 使用此种方式，服务端程序将被安装到 /data
+# 确保切换为 root 身份
+su
+# 确保上传的 busybox 可执行
+chmod 755 /data/local/tmp/busybox-arm64-v8a
+
+cd /data
 # 解包服务端文件
-# 注意自带的 tar 命令可能因为不支持 z 选项导致解包失败，你可能需要使用 busybox tar 来解包
-# 如果系统不附带 busybox 命令，请自行从 https://busybox.net/downloads/binaries/1.20.0 下载合适架构的版本
-tar -xzf arm64-v8a.tar.gz
-# 删除安装包
-rm arm64-v8a.tar.gz
+/data/local/tmp/busybox-arm64-v8a tar -xzf /data/local/tmp/lamda-server-arm64-v8a.tar.gz
+# 服务将被解压到 /data/server 目录下
+
+# 删除安装包以及 busybox
+rm /data/local/tmp/lamda-server-arm64-v8a.tar.gz
+rm /data/local/tmp/busybox-arm64-v8a
 ```
 
 ## 启动服务端
 
-对于方式 1 安装，安装后会顺带启动服务，所以使用该方法**安装后**你无需执行下面的命令，但是按照下面的操作再来一次也并没有问题。
-对于上面任意一种安装方法，你永远只需要在首次安装时操作，但是**启动服务**的过程则需要在每次 设备重启 或者 你手动关闭 LAMDA 后执行，因为 LAMDA 不会自己运行。
+使用 Magisk 安装后的 LAMDA 会在开机时自动启动，你只需要在首次安装后重启一次设备即可。而对于手动安装的 LAMDA，在每次**设备重启**或者**手动退出服务**后你都需要重新执行以下命令来启动 LAMDA SERVER。
 
 进入 adb shell，并切换为 `su` root 身份，执行：
 
 ```bash
-# 你现在应该在 adb shell 内，切换到目录
-cd /data/local/tmp
-#
+# 确保为 root 身份
+# 你现在应该在 adb shell 内
+su
 # 启动服务端
-# 注意，arm64-v8a 这个目录根据平台不同名称也不同
-# 如果你使用的是 x86 版本，那么这个目录名则是 x86/，你需要对命令做相应修改
-sh arm64-v8a/bin/launch.sh
+sh /data/server/bin/launch.sh
 #
 # 如果你想要启用加密传输
-# 请先使用 tools/ 中的 cert.sh/py 来生成PEM证书
-# 将其push到设备例如 /data/local/tmp/lamda.pem
+# 请先使用 tools/ 中的 cert.py 来生成 PEM 证书
+# 将其push到设备例如 /data/lamda.pem
 # 并将其属主及权限设置为 root 以及 600 (chown root:root lamda.pem; chmod 600 lamda.pem)
 # 并使用以下命令启动，lamda.pem 必须为绝对路径
-sh arm64-v8a/bin/launch.sh --certificate=/data/local/tmp/lamda.pem
-# 这将加密任何通过 LAMDA 客户端产生的通信流量
-# 但不包括 webui 远程桌面的流量
+sh /data/server/bin/launch.sh --certificate=/data/lamda.pem
+# 这将加密任何通过 LAMDA 产生的通信流量
 #
 # 从远端加载 properties.local
 # 有时候你可能希望从链接加载启动配置，这时你可以将 properties.local 上传到服务器
@@ -465,21 +449,21 @@ sh arm64-v8a/bin/launch.sh --certificate=/data/local/tmp/lamda.pem
 # 你也可以自行编写web服务来根据这些设备参数分发不同的启动配置
 # 建议使用 HTTPS 链接增加安全性，请确保设备时间正确。
 # 随后使用如下方式启动 LAMDA
-sh arm64-v8a/bin/launch.sh --properties.remote=http://example.com/config/properties.local
+sh /data/server/bin/launch.sh --properties.remote=http://example.com/config/properties.local
 # 对于开启了 Basic Auth 的静态文件服务，同样支持提供用户名密码
-sh arm64-v8a/bin/launch.sh --properties.remote=http://user:password@example.com/config/properties.local
+sh /data/server/bin/launch.sh --properties.remote=http://user:password@example.com/config/properties.local
 # 提示：LAMDA 会在超时或者返回 50x 状态码时重试请求，
 # 如果连续 5 次仍然失败，LAMDA 会放弃尝试并继续启动。
 #
 # 当然，可以自定义重试次数但是注意，如果服务器持续无响应，LAMDA 也将永远卡在这里
 # 什么时候需要设置重试次数：刚开机时设备可能并没有网络连接，如果你要在这时启动 LAMDA 你可以增大该值
-sh arm64-v8a/bin/launch.sh --properties.remote=http://example.com/config/properties.local --properties.tries=30
+sh /data/server/bin/launch.sh --properties.remote=http://example.com/config/properties.local --properties.tries=30
 # 重试机制的每轮等待秒数n会随着重试次数的增加而增加。所以请谨慎设置该值。
 #
 # 如果你需要 LAMDA 监听到特定端口而不是 65000
 # 如果修改，请确保所有内网设备均以相同端口启动
 # 否则设备发现等功能无法正常工作
-sh arm64-v8a/bin/launch.sh --port=8123
+sh /data/server/bin/launch.sh --port=8123
 # 请不要绑定 1024 以下的端口
 ```
 
@@ -505,7 +489,7 @@ LAMDA 对于自身数据的规划非常规范，绝对不会在你的系统中�
 
 ```bash
 # 删除 LAMDA 相关目录
-rm -rf /data/local/tmp/arm64-v8a /data/usr
+rm -rf /data/server /data/usr
 # 重启设备
 reboot
 ```
@@ -520,7 +504,7 @@ reboot
 
 远程桌面功能仅为 Chrome 95+ 设计，不支持多人访问，不保证兼容所有浏览器，如遇功能不正常请使用 Chrome。
 
-在浏览器中打开链接 `http://192.168.0.2:65000` 可进入 web 远程桌面，你可以在此操作设备以及通过该界面的root模拟终端执行命令。如果启动服务端时指定了PEM证书 `--certificate`，远程桌面将需要你输入密码才能继续访问，你可以在PEM证书最后一行找到这个32位的固定密码。
+在浏览器中打开链接 `http://192.168.0.2:65000` 可进入 web 远程桌面，你可以在此操作设备以及通过该界面的root模拟终端执行命令。如果启动服务端时指定了PEM证书 `--certificate`，远程桌面将需要你输入密码才能继续访问，并且你需要将 `http://` 改为 `https://` 使用 HTTPS 的方式访问，你可以使用文本编辑器在PEM证书第一行找到这个固定密码。
 
 你也可以自定义远程桌面的 视频帧率(fps)、分辨率缩放比例(res)以及图像质量(quality)。同时，支持 H.264 软编码（部分情况下使用流量更少更流畅，仅支持最新版 Chrome 浏览器）。你可以通过远程桌面右上角的小齿轮进行调整，但是请注意，调整以上参数并不一定会产生正向效果，请依据事实调整。
 
@@ -529,7 +513,7 @@ reboot
 
 ## 文件上传
 
-你可以在此页面直接**拖动文件或目录到右侧终端**上来上传文件/文件夹到设备，支持同时拖动多个文件或文件夹，单个文件最大不得超过 256MB，最多只支持同时上传 2k 个文件，上传的任何文件权限均为 644，文件将始终上传到 `/data/local/tmp` 目录下。
+你可以在此页面直接**拖动文件或目录到右侧终端**上来上传文件/文件夹到设备，支持同时拖动多个文件或文件夹，单个文件最大不得超过 256MB，最多只支持同时上传 2k 个文件，上传的任何文件权限均为 644，文件将始终上传到 `/data/usr/uploads` 目录下。
 
 ## 文件下载
 
@@ -543,6 +527,7 @@ LAMDA 的 tunnel2 功能，支持你将运行 LAMDA 的设备作为 http 网络�
 ```bash
 # 默认代理无需任何认证，但是当你使用了 --certificate 启动时
 # 那么登录用户名为: lamda，密码与远程桌面登录令牌 (token) 相同
+# 建议使用自定义配置 tunnel2.password 自行设置密码
 curl -x http://192.168.0.2:65000 https://httpbin.org/ip
 ```
 
@@ -809,10 +794,10 @@ device = d.frida
 device.enumerate_processes()
 ```
 
-等效于
+等效原生代码
 
 ```python
-# 只是示例，请尽量使用上述方法连接
+# 仅做示例，为了通用性，请务必使用上述方法
 manager = frida.get_device_manager()
 device = manager.add_remote_device("192.168.0.2:65000")
 device.enumerate_processes()
@@ -825,32 +810,9 @@ device.enumerate_processes()
 ```bash
 frida -H 192.168.0.2:65000 -f com.android.settings
 # 如果你在服务端启动时指定了 certificate 选项，请注意也需要在此加入 --certificate 参数例如
-frida -H 192.168.0.2:65000 -f com.android.settings --certificate /path/to/lamda.pem
+# 且需要提供 token，这个 token 可以在 lamda.pem 的最后一行找到
+frida -H 192.168.0.2:65000 -f com.android.settings --certificate /path/to/lamda.pem --token f141bce852f70730506f995991450adb
 ```
-
-对于 objection 以及 r0capture 等，这些第三方工具可能并不会完全遵循原生 frida 工具的命令行用法，如果你需要使用这些第三方工具，需要确保 LAMDA 启动时**没有使用** `--certificate` 参数（加密传输），因为这些工具可能并没有可以传递PEM证书的参数。
-
-```bash
-# objection 示例连接方法 (-N -h 192.168.0.2 -p 65000)
-objection -N -h 192.168.0.2 -p 65000 -g com.android.settings explore
-```
-
-```bash
-# r0capture 示例连接方法 (-H 192.168.0.2:65000)
-python3 r0capture.py -H 192.168.0.2:65000 -f com.some.package
-```
-
-```bash
-# jnitrace 示例连接方法 (-R 192.168.0.2:65000)
-jnitrace -R 192.168.0.2:65000 -l libc.so com.some.package
-```
-
-```bash
-# frida-dexdump 示例连接方法 (-H 192.168.0.2:65000)
-frida-dexdump -H 192.168.0.2:65000 -p PID
-```
-
-其他未提及的第三方工具请自行查看其使用方法。
 
 ## 使用 FRIDA 暴露 Java 接口
 
@@ -859,7 +821,7 @@ frida-dexdump -H 192.168.0.2:65000 -p PID
 
 > 请转到 tools 目录查看使用方法。
 
-此功能需要你能熟练编写 frida 脚本。示例中使用的脚本请参照 test-fridarpc.js 文件，特别注意: frida 脚本中 rpc.exports 定义的函数参数以及返回值只能为 int/float/string/list/jsdict 或者任意 js 中**可以被 JSON序列化**的值。假设设备IP为 192.168.0.2。
+此功能需要你能熟练编写 frida 脚本。示例中使用的脚本请参照 test-fridarpc.js 文件，特别注意: frida 脚本中 rpc.exports 定义的函数参数以及返回值只能为 int/float/string/list/map 或者任意 js 中**可以被 JSON序列化**的值。假设设备IP为 192.168.0.2。
 
 > 执行以下命令注入 RPC 到 com.android.settings（注意查看是否有报错），下面的相关文件在 tools 目录
 
@@ -867,7 +829,7 @@ frida-dexdump -H 192.168.0.2:65000 -p PID
 python3 fridarpc.py -f test-fridarpc.js -a com.android.settings -d 192.168.0.2
 ```
 
-现在已经将接口暴露出来了，只需要请求 `http://192.168.0.2:65000/fridarpc/myRpcName/getMyString?args=["A","B"]` 即可得到脚本内方法的返回结果，链接也可以用浏览器打开，接口同时支持 POST 以及 GET，参数列表也可以同时使用多个参数，空列表代表无参数，注意这里的 args 参数序列化后的字符串最长**不能超过** `32KB`。
+现在已经将接口暴露出来了，只需要请求 `http://192.168.0.2:65000/fridarpc/myRpcName/getMyString?args=["A","B"]` 即可得到脚本内方法的返回结果，链接也可以用浏览器打开，接口同时支持 POST 以及 GET，参数列表也可以同时使用多个参数，空列表代表无参数，注意这里的 args 参数序列化后的字符串最长**不能超过** `32KB`（在使用了 --certificate 的情况下，链接需要改为 https 方式）。
 
 链接中的两个字符串参数 "A", "B" 即为注入的脚本中的方法 `getMyString(paramA, paramB)` 的位置参数。
 
@@ -920,6 +882,7 @@ print (res.status_code, res.json()["result"])
 > 首先在你的公网服务器上执行以下命令启动 frps（注意你可能还需要配置防火墙）
 
 ```bash
+# frps 版本需要 > v0.45.0
 frps --token lamda --bind_addr 0.0.0.0 --bind_port 6009 --proxy_bind_addr 127.0.0.1 --allow_ports 10000-15000
 ```
 
@@ -960,6 +923,80 @@ d = Device("127.0.0.1", port=12345)
 如果你仍准备使用上述 frp 的方法实现任意访问，请先确保 LAMDA 服务启动时使用了**PEM证书**，并将启动 frps 命令时的 `--proxy_bind_addr 127.0.0.1`
 改为 `--proxy_bind_addr 0.0.0.0`，这将导致 12345 端口直接绑定到公网。如果你未使用PEM证书启动 lamda，任何人都将可以访问，这是**非常非常危险**的。
 其次需要注意，web 远程桌面的流量始终都是 http 的，如果有人在你和服务器通信之间进行中间人，你的登录凭证可能会被窃取。当然，如果此期间不用 web 桌面将不存在这个问题。
+
+## 读写内置键值存储器
+
+> Storage 是 LAMDA 内置的键值存储，它具有持久性，即使 LAMDA 重启，你依然可以在下次 LAMDA 启动时读取这些变量。
+> 该 Storage 让你可以在设备中持久化存储信息以供不同的 client API 进程读取。
+
+Storage 的总容量为 128MB，请勿用来存储大量数据。
+
+```python
+# 获取一个 Storage 对象
+storage = d.stub("Storage")
+
+# 清空 Storage 中的所有信息（包括容器）
+storage.clear()
+
+# 清除名为 container_name 的容器中存储的所有键值
+storage.remove("container_name")
+
+# 获取一个键值容器对象
+container = storage.use("container_name")
+
+# 存储在 Storage 中的 key_name 和 container_name 是安全的
+# 无法通过任何方式读取原始字符串，你必须完整知道容器名称以及 key 才能从容器中读取数据
+# 如果还需要安全的存储值，比如，当该设备会被其他人使用，但是你不想存储的配置被其他人读取，
+# 你可以像以下示例，提供加解密方法，这样即使 LAMDA 被非法访问
+# 非预期的访问者也无法解密容器中存储的任何明文信息
+from lamda.client import FernetCryptor
+# 获取键值容器对象，对该容器的读写均通过 FernetCryptor 加解密
+container = storage.use("container_name", cryptor=FernetCryptor, key="this_is_password")
+
+# 当然，你也可以自己编写加解密流程
+from lamda.client import BaseCryptor
+class MyCryptor(BaseCryptor):
+  def __init__(self, cryptor_arg=0):
+    # 这里写入你的加解密初始化过程
+  def encrypt(self, data):
+    # 这里写入你的加密过程
+    return data
+  def decrypt(self, data):
+    # 这里写入你的解密过程
+    return data
+# 获取键值容器对象，对该容器的读写均通过 MyCryptor 加解密
+container = storage.use("container_name", cryptor=MyCryptor, cryptor_arg=999)
+
+
+# 获取 key_name 的值（如果不存在，则返回 None）
+container.get("key_name")
+
+# 获取 key_name 的生存时间（-2 为该键不存在，-1 为无限生存时间）
+# 其他正整数则为该 key 的剩余存活秒数
+container.ttl("key_name")
+
+# 设置 key_name 的值为 "value"，并且 10 秒后自动删除
+container.setex("key_name", "value", 10)
+
+# 设置 key_name 的生存时间为 60 秒
+# 60 秒后，该键值将自动被删除
+container.expire("key_name", 60)
+
+# 仅当 key_name 不存在时设置该键值
+container.setnx("key_name", "value")
+
+# 设置 key_name 的值为 "value"
+# 其中，值支持任何 msgpack 可序列化的变量
+container.set("key_name", [1, 2, 3])
+container.set("key_name", {"john": "due"})
+container.set("key_name", b"value")
+container.set("key_name", "value")
+
+# 检查 key_name 是否存在于容器中
+container.exists("key_name")
+# 删除 key_name
+container.delete("key_name")
+```
 
 
 ## 读写系统属性
@@ -1146,24 +1183,24 @@ fd = open("写入到的本地文件", "wb")
 d.download_fd("/verity_key", fd)
 
 # 上传文件到设备
-d.upload_file("本地文件路径.txt", "/data/local/tmp/上传到设备上的文件.txt")
+d.upload_file("本地文件路径.txt", "/data/usr/上传到设备上的文件.txt")
 
 # 从 内存/已打开的文件 上传文件
 from io import BytesIO
-d.upload_fd(BytesIO(b"fileContent"), "/data/local/tmp/上传到设备上的文件.txt")
+d.upload_fd(BytesIO(b"fileContent"), "/data/usr/上传到设备上的文件.txt")
 
 # 注意必须使用 rb 模式打开文件
 fd = open("myfile.txt", "rb")
-d.upload_fd(fd, "/data/local/tmp/上传到设备上的文件.txt")
+d.upload_fd(fd, "/data/usr/上传到设备上的文件.txt")
 
 # 删除设备上的文件
-d.delete_file("/data/local/tmp/文件.txt")
+d.delete_file("/data/usr/文件.txt")
 
 # 修改设备上的文件权限
-d.file_chmod("/data/local/tmp/文件.txt", mode=0o777)
+d.file_chmod("/data/usr/文件.txt", mode=0o777)
 
 # 获取设备上文件的信息
-d.file_stat("/data/local/tmp/文件.txt")
+d.file_stat("/data/usr/文件.txt")
 ```
 
 ## 关机重启
@@ -1856,6 +1893,71 @@ t                  = 切换到 /data/local/tmp
 这里不会介绍如何使用这些命令或库。
 
 
+## 使用 Debian 环境扩展模块
+
+LAMDA 可以通过一个模块创建可在安卓内使用的完整 Debian 环境，你可以使用 apt 安装软件以及进行代码编译，同样，你可以在此环境中自行编译及使用 bpf 相关程序。你可以在 release 页面中找到 `lamda-mod-debian-arm64-v8a.tar.gz`（请根据你的机器架构下载对应的安装包）。
+然后通过远程桌面或者 内置 adb 等方式，将 lamda-mod-debian-arm64-v8a.tar.gz 上传到设备，随后进行如下安装操作。
+
+> 注：该 debian 环境只包含基础的软件包，你需要使用 apt 自行安装 git、python3 等常用命令。
+
+```bash
+# 切换到用户模块目录
+cd /data/usr/modules
+# 假设，该文件被你上传到了 /data/local/tmp
+tar -xzf /data/local/tmp/lamda-mod-debian-arm64-v8a.tar.gz
+# 解包完成
+```
+
+解包完成后，当前目录下将会存在一个 `debian` 目录，这时，你已经完成了基本的安装，下面介绍如何进入系统。
+
+```bash
+# 首先我们需要获知绝对目录，在以上情况下，绝对目录为 /data/usr/modules/debian
+# 注意：每个根（debian 根系统）同时只支持一个终端实例使用
+# 执行以下命令进入 debian interactive shell
+debian /bin/bash
+# 执行一次 id 命令
+debian /bin/bash -c id
+#
+# 如果你并没有将模块安装于 /data/usr/modules，则需要指定模块位置
+debian --root /path/to/debian /bin/bash
+```
+
+下面介绍进阶使用方法，你可以使用此 debian 环境自行建立一个 ssh 服务器，或者在此 debian 环境中运行 Python 脚本。
+由于每个独立的 debian 环境只支持一个终端实例使用，我们建议用 ssh 的方式，这样，你可以接入多个 shell 到此 debian 环境。
+什么是 `只支持一个终端实例使用`？就是当你执行 `debian /bin/bash` 后并保持使用状态，如果你在其他地方继续执行此命令，
+该命令将会返回错误，使你无法再次进入此根系统，除非你将之前的 `debian /bin/bash` 退出。
+
+现在，我们介绍如何在此 debian 环境中运行一个 ssh 服务以及安装基础的 Python 环境。
+
+```bash
+# 执行命令进入 debian shell
+debian /bin/bash
+# 现在，你应该在 debian shell 中，执行以下命令
+root@localhost: apt update
+root@localhost: apt install -y openssh-server procps python3 python3-pip python3-dev
+root@localhost: echo 'PermitRootLogin yes' >>/etc/ssh/sshd_config
+root@localhost: echo 'StrictModes no' >>/etc/ssh/sshd_config
+root@localhost: mkdir -p /run/sshd
+root@localhost: # 修改 root 密码
+root@localhost: echo root:lamda|chpasswd
+root@localhost: # 退出 debian 环境
+root@localhost: exit
+# 现在，你已经进入了 lamda 的 shell 环境，执行以下命令来启动 debian 环境中的 ssh 服务
+debian /usr/sbin/sshd -D -e
+```
+
+如果你想此 debian ssh 环境随 lamda 一同启动，请执行 `crontab -e`，并在其中写下如下规则并重启即可。
+
+```bash
+@reboot debian /usr/sbin/sshd -D -e >/data/usr/sshd.log 2>&1
+```
+
+现在，获取该设备的 IP 地址，随后在你的电脑上执行如下命令并输入密码 lamda 即可登录该 debian shell
+
+```bash
+ssh root@192.168.x.x (手机IP)
+```
+
 # 工具及教程
 
 其中的每个文件夹下都有一份使用说明。
@@ -1897,4 +1999,4 @@ t                  = 切换到 /data/local/tmp
 打开 [tools/README.md](tools/README.md) 查看。
 
 
-如果仍有疑问，请加入社区讨论：[电报 t.me/lamda_dev](https://t.me/lamda_dev) | [gitter.im/lamda-dev](https://gitter.im/lamda-dev/community)
+如果仍有疑问，请加入社区讨论：[电报 t.me/lamda_dev](https://t.me/lamda_dev)

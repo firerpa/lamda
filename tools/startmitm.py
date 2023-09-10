@@ -94,8 +94,17 @@ print (r"%60s" %                ("lamda#v%s BY rev1si0n" % (__version__)))
 pkgName = None
 argp = argparse.ArgumentParser()
 
+login = "lamda"
+psw = uuid.uuid4().hex[::3]
+cert = os.environ.get("CERTIFICATE")
+proxy = int(os.environ.get("PROXYPORT",
+                    randint(28080, 58080)))
+webport = randint(28080, 58080)
+lamda = int(os.environ.get("PORT",
+                    65000))
+
 def dnsopt(dns):
-    return "reverse:dns://{}@53".format(dns)
+    return "reverse:dns://{}@{}".format(dns, proxy)
 argp.add_argument("device", nargs=1)
 argp.add_argument("-m", "--mode", default="regular")
 argp.add_argument("--serial", type=str, default=None)
@@ -112,15 +121,6 @@ if ":" in host:
 if args.dns and ver(VERSION) < ver("9.0.0"):
     log ("dns mitm needs mitmproxy>=9.0.0")
     sys.exit (1)
-
-login = "mitm"
-psw = uuid.uuid4().hex[::4]
-cert = os.environ.get("CERTIFICATE")
-proxy = int(os.environ.get("PROXYPORT",
-                    randint(28080, 58080)))
-webport = randint(28080, 58080)
-lamda = int(os.environ.get("PORT",
-                    65000))
 
 server = get_default_interface_ip(host)
 usb = server in ("127.0.0.1", "::1")
@@ -152,7 +152,7 @@ profile = GproxyProfile()
 profile.type = GproxyType.HTTP_CONNECT
 profile.nameserver = args.nameserver
 if not usb and args.dns:
-    profile.nameserver = server
+    profile.nameserver = "{}:{}".format(server, proxy)
 profile.drop_udp = True
 
 profile.host = server
