@@ -107,7 +107,7 @@ docker run -it --rm --privileged --net host -v ~/lamda-openvpn-server:/etc/openv
 docker run -it --rm --privileged --net host -v ~/lamda-openvpn-server:/etc/openvpn rev1si0n/openvpn ovpn-client-profile ovpn myname >myname.ovpn
 # 生成 lamda 使用的 OpenVPNProfile，可以直接在 lamda 中使用
 # 其中包含一段 properties.local 注释部分，你可以将其中的 openvpn.* 配置
-# 复制到 /data/local/tmp/properties.local 中以实现自动连接 VPN
+# 复制到 /data/usr/properties.local 中以实现自动连接 VPN
 docker run -it --rm --privileged --net host -v ~/lamda-openvpn-server:/etc/openvpn rev1si0n/openvpn ovpn-client-profile lamda myname
 ```
 

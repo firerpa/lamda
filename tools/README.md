@@ -50,34 +50,32 @@ set PORT=8123
 
 192.168.1.2 为示例IP，请自行获取设备的实际IP地址。
 
-## cert.sh
+## cert.py
 
 用来生成用于传输加密的证书
+
+> 注：你有可能需要手动安装 pyOpenSSL 依赖库 `pip install pyOpenSSL`
+
 ```bash
-bash cert.sh
+python3 cert.py
 ```
 
 如果你需要生成特定 CN 的证书
+
 ```bash
-bash cert.sh device1.example.com
+python3 cert.py device1.example.com
 ```
 
 即可，当前目录下的 lamda.pem 或者 device1.example.com.pem 即为所需的证书。
 在服务端应用该证书后，客户端也必须使用此证书来进行远程调用以及 ssh 连接。
-应用此证书后，将会加密任何通过 client 库进行的操作，ssh 将不再使用默认的秘钥。
-同时，web 控制页面将需要登录（你可以在证书最后一行找到此登录密码），
+应用此证书后，将会加密任何通过 client 库进行的操作，内置 SSH 将不再使用默认的秘钥。
+同时，web 控制页面将需要使用 HTTPS 方式访问且需要登录（你可以在证书的第一行找到这个固定密码），
 
 如果操作系统不方便使用此工具，当前目录下已经为你准备好了一个默认的 SSL 证书
 
 ```bash
 test.pem    # 用于加密客户端与服务端通信的证书
 ```
-
-## cert.py
-
-用来生成用于传输加密的证书，等效于 `cert.sh` 只不过这个脚本同时可以运行于 Windows，用法等同于 cert.sh。
-
-> 注：你有可能需要手动安装 pyOpenSSL 依赖库 `pip install pyOpenSSL`
 
 
 ## id_rsa
@@ -212,7 +210,6 @@ python3 -u startmitm.py 192.168.1.2 --mode upstream:example.com:8080 --upstream-
 ### DNS 中间人 (DNS+HTTP/S)
 
 截获 DNS 请求需要确保 mitmproxy 的版本 >= 9.0.0（且 Python>=3.9)，且需要以**管理员**或者**root**身份运行脚本。
-部分系统上会存在自带的 DNS 服务，在使用该功能前请务必确保没有其他服务使用了 53 端口。
 
 此选项与上方 `--nameserver` 意义不同，`--dns` 选项专指 dns 中间人
 
@@ -284,10 +281,50 @@ bash ssh.sh 192.168.1.2
 bash scp.sh 192.168.1.2:/sdcard/DCIM .
 ```
 
-将本地目录/文件 `test/` 复制到设备 192.168.1.2 的 `/sdcard/`
+将本地目录 `test/` 复制到设备 192.168.1.2 的 `/sdcard/`
 
 ```bash
 bash scp.sh test/ 192.168.1.2:/sdcard
+```
+
+## rsync.sh
+
+使用 `rsync` 增量上传或下载文件。
+
+将 192.168.1.2 的 `/sdcard/DCIM` 下载当前目录
+
+```bash
+bash rsync.sh 192.168.1.2:/sdcard/DCIM .
+```
+
+将 192.168.1.2 的 `/sdcard/DCIM` 下载当前目录，并且保持本地与远程目录的同步。
+
+> 这将删除在本地目录中存在但在远程目录不存在的文件，具有危险性，请三思后再执行。
+
+```bash
+bash rsync.sh 192.168.1.2:/sdcard/DCIM . --delete
+```
+
+**关于其他可用的额外参数（例如 --delete），请参阅 rsync 的文档**
+
+将本地目录 `test` 上传到设备 192.168.1.2 的 `/sdcard/`
+
+```bash
+bash rsync.sh test 192.168.1.2:/sdcard
+```
+
+将本地目录 `test` 上传到设备 192.168.1.2 的 `/sdcard/`，并且保持远程与本地目录的同步。
+
+> 这将删除在远程目录中存在但在本地目录不存在的文件，具有危险性，请三思后再执行。
+
+```bash
+bash rsync.sh test 192.168.1.2:/sdcard --delete
+```
+
+将本地目录 `test/` **下的内容**上传到设备 192.168.1.2 的 `/sdcard/`
+
+```bash
+bash rsync.sh test/ 192.168.1.2:/sdcard
 ```
 
 ## discover.py
@@ -310,7 +347,7 @@ python3 discover.py
 python3 fridarpc.py -f test-fridarpc.js -a com.android.settings -d 192.168.0.2
 ```
 
-现在已经将接口拿出来了，只需要请求 `http://192.168.0.2:65000/fridarpc/myRpcName/getMyString?args=["A","B"]` 即可得到脚本内方法的返回结果，链接也可以用浏览器打开，接口同时支持 POST 以及 GET，参数列表也可以同时使用多个参数。
+现在已经将接口拿出来了，只需要请求 `http://192.168.0.2:65000/script/myRpcName/getMyString?args=["A","B"]` 即可得到脚本内方法的返回结果，链接也可以用浏览器打开，接口同时支持 POST 以及 GET，参数列表也可以同时使用多个参数。
 
 注意参数的提供形式，是**双引号**，建议使用 json.dumps(["A", "B"])
 
@@ -318,7 +355,7 @@ python3 fridarpc.py -f test-fridarpc.js -a com.android.settings -d 192.168.0.2
 ```python
 import json
 import requests
-url = "http://192.168.0.2:65000/fridarpc/myRpcName/getMyString"
+url = "http://192.168.0.2:65000/script/myRpcName/getMyString"
 data = requests.post(url, data={"args": json.dumps(["A", "B"])}).json()
 print (data["result"])
 
@@ -345,7 +382,7 @@ bash emu-install 192.168.1.2
 
 ```bash
 # launch.sh 为启动 LAMDA 的脚本路径
-sh /data/local/tmp/statistics.sh /data/local/tmp/arm64-v8a/bin/launch.sh
+sh /data/local/tmp/statistics.sh /data/server/bin/launch.sh
 # 执行完毕后，会生成文件 /sdcard/statistics.txt，报告此文件即可
 ```
 

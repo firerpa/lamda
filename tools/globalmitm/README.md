@@ -50,15 +50,15 @@ docker run --rm -it --net host rev1si0n/mitm 192.168.x.x
 
 ```bash
 # 使用 SOCKS5 代理
-docker run -it --rm -p 53:53/udp -p 8118:8118 -p 1234:1234 -e LANIP=192.168.0.2 -e SOCKS5=192.168.0.2:1080 rev1si0n/mitm 192.168.x.x
+docker run -it --rm -p 8118:8118/udp -p 8118:8118/tcp -p 1234:1234 -e LANIP=192.168.0.2 -e SOCKS5=192.168.0.2:1080 rev1si0n/mitm 192.168.x.x
 # 使用 HTTP 代理
-docker run -it --rm -p 53:53/udp -p 8118:8118 -p 1234:1234 -e LANIP=192.168.0.2 -e HTTP=192.168.0.2:7890 rev1si0n/mitm 192.168.x.x
+docker run -it --rm -p 8118:8118/udp -p 8118:8118/tcp -p 1234:1234 -e LANIP=192.168.0.2 -e HTTP=192.168.0.2:7890 rev1si0n/mitm 192.168.x.x
 ```
 
 > 普通模式
 
 ```bash
-docker run -it --rm -p 8118:8118 -p 1234:1234 -e LANIP=192.168.0.2 rev1si0n/mitm 192.168.x.x
+docker run -it --rm -p 8118:8118/tcp -p 1234:1234 -e LANIP=192.168.0.2 rev1si0n/mitm 192.168.x.x
 ```
 
 现在使用浏览器打开 `http://127.0.0.1:1234` 或者 `http://本机IP:1234` 即可进行中间人。

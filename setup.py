@@ -10,20 +10,22 @@ setuptools.setup(
     description     = "Android reverse engineering & automation framework",
     url             = "https://github.com/rev1si0n/lamda",
     author          = "rev1si0n",
-    python_requires = ">=3.6,<3.11",
+    python_requires = ">=3.6,<3.12",
     zip_safe        = False,
     extras_require  = {
-        "next": ["frida>=16.0.0,<17.0.0"],
-        "full": ["frida>=15.0.0,<16.0.0,!=15.1.15,!=15.1.16,!=15.1.17"],
+        "full": ["frida>=16.0.0,<17.0.0"],
         ":sys_platform == \"win32\"": [
             "pyreadline==2.1",
         ],
     },
     install_requires= [
-        "grpcio-tools>=1.35.0,<1.49.0",
+        "grpcio-tools>=1.35.0,<1.60.0",
         "grpc-interceptor>=0.13.0,<0.15.0",
-        "grpcio>=1.35.0,<1.49.0",
+        "grpcio>=1.35.0,<1.60.0",
+        "cryptography>=35.0.0",
+        "msgpack>=1.0.0",
         "asn1crypto>=1.0.0,<2",
+        "pem==23.1.0",
     ],
     classifiers = [
         "Environment :: Console",

@@ -1,0 +1,129 @@
+# properties.local 配置文件
+#
+# ------ 请勿直接复制此文件 请挑选所需配置新建文件 ------
+#
+# 注意请务必确保该文件的属主以及权限为 root:root, 600
+# 此文件是 LAMDA 的默认配置文件，你可以在启动时让 LAMDA 自动启动一些服务
+# 文件应该位于 /data 或者 /data/usr (LAMDA 首次启动前不会存在该目录，如不存在请自行创建)
+# 它的读取顺序为以上列出的顺序
+#
+# 使用 # 开头的行为注释行，将被忽略
+# 请确保每行的格式均为 a=b 且不得包含空格
+#
+# 如果文件中存在重复的配置项，最后一个重复的配置项将被使用，例如存在两行配置
+# openvpn.enable=false
+# openvpn.enable=true
+# 那么，最后一个 true 将被使用
+#
+
+# 设置 LAMDA 的默认监听端口
+port=65000
+
+# 设置此项将同时导致 LAMDA 的 Python 客户端 API 停用
+# 此项在且仅在启动 LAMDA 后设备崩溃，或者你不需要使用 API 时设置
+disable-client-api=false
+
+# ---------- OpenVPN 配置 ----------
+# ***** 注意请勿手动编写此 OpenVPN 配置，你应该始终使用 tools
+# ***** 目录下的 openvpn 镜像中提供的脚本来生成此配置
+# ***** 并做适当修改，以下是一个示例配置
+openvpn.proto=udp
+openvpn.cipher=AES-256-GCM
+openvpn.host=123.123.123.123
+openvpn.port=1190
+openvpn.ca=LS0tLS1CRUdJTiBDRVJUSUZJQ0FUR...
+openvpn.cert=LS0tLS1CRUdJTiBDRVJUSUZJQ0FUR...
+openvpn.key=LS0tLS1CRUdJTiBQUklWQVRFIEtFWS...
+openvpn.tls_encryption=tls-crypt
+openvpn.tls_key_direction=
+openvpn.tls_key=LS0tLS1CRUdJTiBP...
+# ---- 以下为 OpenVPN 可配置项 ----
+# 是否开启全局 VPN
+openvpn.global=false
+# 是否启用 true | false
+openvpn.enable=true
+
+# ---------- Gproxy 配置 ----------
+# 此配置用来使 LAMDA 在启动时自动连接到代理
+#
+# 是否启用 true | false
+gproxy.enable=true
+# 代理类型 http-connect 或者 socks5
+gproxy.type=http-connect
+# 代理服务器地址
+gproxy.host=172.1.1.1
+# 代理服务器端口
+gproxy.port=8080
+# 代理服务器的登录密码（置空则无认证）
+gproxy.password=
+# 代理服务器的登录用户（置空则无认证）
+gproxy.login=
+
+# ---------- CRONTAB 服务 ----------
+# 如果你不需要用到定时任务，可以关闭此服务
+# 是否启用 true | false
+cron.enable=true
+
+# ---------- SSHD 服务 ----------
+# 如果你不需要用 ssh 连接设备，可以关闭此服务
+# 是否启用 true | false
+sshd.enable=true
+
+#
+# 注意 IDA 以及 IDA64 服务需要你的设备为 debuggable (ro.debuggable)
+# ---------- IDA 服务 ----------
+# 是否启用 true | false
+ida.enable=true
+# 绑定接口
+ida.bind=0.0.0.0
+# 绑定端口
+ida.port=65032
+
+# 注意 IDA 以及 IDA64 服务需要你的设备为 debuggable (ro.debuggable)
+# ---------- IDA64 服务 ----------
+# 是否启用 true | false
+ida64.enable=true
+# 绑定接口
+ida64.bind=0.0.0.0
+# 绑定端口
+ida64.port=65064
+
+# ---------- 端口转发(frp) 服务 ----------
+# 是否启用 true | false
+fwd.enable=true
+# 转发到远端的端口（0则代表任意分配）
+fwd.rport=0
+# frp 服务器的地址
+fwd.host=123.123.123.123
+# frp 服务器端口
+fwd.port=9911
+# frp 协议
+fwd.protocol=tcp
+# frp 登录认证
+fwd.token=abc123
+
+# ---------- ADB 服务 ----------
+# 是否启用 true | false
+adb.enable=true
+# 内置 adb 的默认目录 (adb shell 目录)
+adb.directory=/data/local/tmp
+# 如果为 true，那么 adb 连接将拥有 root 身份，否则为 shell 身份
+# 当此项配置为 false，你也将用于类原生的 adb shell，你将无法使用 LAMDA 内置命令
+# 同时请注意，由于 adb 并无 TLS 连接，流量可能会被监听，所以为了安全起见
+# 当 LAMDA 服务使用了certificate 启动时，默认情况下该值将自动设为 false
+# 但当你将其写入 properties.local，则始终以文件中的配置为准
+# 请自行对安全性负责
+adb.privileged=true
+
+# ---------- 代理服务 ----------
+# 是否启用 true | false
+tunnel2.enable=true
+# 只有 login 以及 password 全部设置，代理才会需要登录验证，任一项留空代理将无需登录验证
+tunnel2.login=lamda
+# 代理的登录密码
+tunnel2.password=1234
+# 出网接口 (rmnet|wlan)
+# 当出网接口为 rmnet 时，代理将尝试通过移动数据转发你的请求
+# 当出网接口为 wlan 时，将通过 wlan 接口转发请求
+# 当配置为空时，将使用默认网络转发请求
+tunnel2.iface=rmnet

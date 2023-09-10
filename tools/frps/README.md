@@ -13,7 +13,7 @@ docker run -it --rm --net host -e TOKEN=mypasswod -e BIND=127.0.0.1 -e PORTS=100
 ```
 
 注意，启动后会在终端输出一些配置及连接信息，找到 `----- LAMDA  CONFIG -----` 段
-复制其中 `fwd.xxxxx=xxxx` 的行，并将其写入到设备上的 `/data/local/tmp/properties.local` 文件中，
+复制其中 `fwd.xxxxx=xxxx` 的行，并将其写入到设备上的 `/data/usr/properties.local` 文件中，
 你可以修改其中的 `rport` 字段为你想要的端口，这个端口值必须在启动时指定的 `PORTS` 范围中，默认 0 则为随机分配。
 重启设备并启动 lamda，lamda 将会自动将自身端口转发到服务器上。
 

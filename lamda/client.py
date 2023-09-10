@@ -10,18 +10,26 @@ import copy
 import time
 import uuid
 import json
+import base64
+import hashlib
 import platform
 import warnings
 import builtins
 import logging
+import msgpack
+# fix protobuf>=4.0/win32, #10158
+if sys.platform == "win32":
+    os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 import grpc
 
+import pem as Pem
 import collections.abc
-# fix pyreadline on windows py310
+# fix pyreadline, py310, Windows
 collections.Callable = collections.abc.Callable
 
 from urllib.parse import quote
 from collections import defaultdict
+from cryptography.fernet import Fernet
 from os.path import basename, dirname, expanduser, join as joinpath
 from google.protobuf.json_format import MessageToDict, MessageToJson
 from grpc_interceptor import ClientInterceptor
@@ -56,6 +64,8 @@ __all__ = [
                 "Keys",
                 "KeyCode",
                 "KeyCodes",
+                "BaseCryptor",
+                "FernetCryptor",
                 "OpenVPNAuth",
                 "OpenVPNEncryption",
                 "OpenVPNKeyDirection",
@@ -229,9 +239,37 @@ def to_dict(prot):
     return json.loads(r)
 
 
+class BaseCryptor(object):
+    def __str__(self):
+        return "{}".format(self.__class__.__name__)
+    __repr__ = __str__
+    def encrypt(self, data):
+        return data
+    def decrypt(self, data):
+        return data
+
+
 class BaseServiceStub(object):
+    def __str__(self):
+        return "{}".format(self.__class__.__name__)
+    __repr__ = __str__
     def __init__(self, stub):
         self.stub = stub
+
+
+class FernetCryptor(BaseCryptor):
+    def __init__(self, key=None):
+        key = self._get_key(key)
+        self.encoder = Fernet(key)
+    def encrypt(self, data):
+        return self.encoder.encrypt(data)
+    def decrypt(self, data):
+        return self.encoder.decrypt(data)
+    def _get_key(self, key):
+        key = (key or "").encode()
+        key = hashlib.sha256(key).digest()
+        key = base64.b64encode(key)
+        return key
 
 
 class ClientLoggingInterceptor(ClientInterceptor):
@@ -251,18 +289,14 @@ class ClientLoggingInterceptor(ClientInterceptor):
 
 
 class ClientSessionMetadataInterceptor(ClientInterceptor):
-    def get_instance_ID(self):
-        return "{:06d}{:010d}".format(os.getpid(), id(self))
-
+    def __init__(self, session):
+        super(ClientSessionMetadataInterceptor, self).__init__()
+        self.session = session
     def intercept(self, function, request, details):
-        """
-        在每次远程调用加上本实例的ID用于实现锁功能
-        """
         metadata = {}
         metadata["version"] = __version__
-        metadata["instance"] = self.get_instance_ID()
+        metadata["instance"] = self.session
         metadata["hostname"] = quote(platform.node())
-        metadata["python_branch"] = platform.python_branch()
         details = details._replace(metadata=metadata.items())
         res = function(request, details)
         return res
@@ -286,7 +320,7 @@ class GrpcRemoteExceptionInterceptor(ClientInterceptor):
         return clazz(*args)
 
     def raise_remote_exception(self, res):
-        metadata = dict(res.initial_metadata())
+        metadata = dict(res.initial_metadata() or [])
         exception = metadata.get("exception", None)
         if exception != None:
             raise self.remote_exception(exception)
@@ -371,8 +405,6 @@ class ObjectUiAutomatorOpStub:
         r = self.stub.selectorClickExists(req)
         return r.value
     def click_exist(self, *args, **kwargs):
-        # deprecated
-        warnings.warn("use d(..).click_exists() instead", DeprecationWarning)
         return self.click_exists(*args, **kwargs)
     def long_click(self, corner=Corner.COR_CENTER):
         """
@@ -390,8 +422,6 @@ class ObjectUiAutomatorOpStub:
         r = self.stub.selectorExists(req)
         return r.value
     def exist(self, *args, **kwargs):
-        # deprecated
-        warnings.warn("use d(..).exists() instead", DeprecationWarning)
         return self.exists(*args, **kwargs)
     def info(self):
         """
@@ -837,7 +867,7 @@ class UiAutomatorStub(BaseServiceStub):
         return ObjectUiAutomatorOpStub(self.stub, kwargs)
 
 
-class ObjectApplicationOpStub:
+class ApplicationOpStub:
     def __init__(self, stub, applicationId):
         """
         Application 子接口，用来模拟出实例的意味
@@ -845,7 +875,8 @@ class ObjectApplicationOpStub:
         self.applicationId = applicationId
         self.stub = stub
     def __str__(self):
-        return "Application: {}".format(self.applicationId)
+        return "{}:{}".format(self.stub.__class__.__name__,
+                                        self.applicationId)
     __repr__ = __str__
     def is_foreground(self):
         """
@@ -907,6 +938,8 @@ class ObjectApplicationOpStub:
         req = protos.ApplicationRequest(name=self.applicationId)
         r = self.stub.resetApplicationData(req)
         return r.value
+    def reset(self):
+        return self.reset_data()
     def start(self):
         """
         启动应用
@@ -1018,7 +1051,118 @@ class ApplicationStub(BaseServiceStub):
         r = self.stub.startActivity(req)
         return r.value
     def __call__(self, applicationId):
-        return ObjectApplicationOpStub(self.stub, applicationId)
+        return ApplicationOpStub(self.stub, applicationId)
+
+
+class StorageOpStub:
+    def __str__(self):
+        return "{}:{}".format(self.stub.__class__.__name__,
+                                            self.name)
+    __repr__ = __str__
+    # 用于容器值序列化的方法
+    def _decrypt(self, data):
+        return self.cryptor.decrypt(data)
+    def _encrypt(self, data):
+        return self.cryptor.encrypt(data)
+    def _unpack(self, value):
+        return msgpack.loads(self._decrypt(value))
+    def _pack(self, value):
+        return self._encrypt(msgpack.dumps(value))
+    # 注意：此接口可能并不是跨语言通用
+    def __init__(self, stub, name, cryptor=None):
+        self.cryptor = cryptor
+        self.name = name
+        self.stub = stub
+    def delete(self, key):
+        """
+        删除一个 KEY
+        """
+        req = protos.StorageRequest(key=key)
+        req.container = self.name
+        res = self.stub.delete(req)
+        return res.value
+    def exists(self, key):
+        """
+        检查一个 KEY 是否存在
+        """
+        req = protos.StorageRequest(key=key)
+        req.container = self.name
+        res = self.stub.exists(req)
+        return res.value
+    def get(self, key, default=None):
+        """
+        获取 KEY 对应的键值
+        """
+        req = protos.StorageRequest(key=key)
+        req.container = self.name
+        val = self.stub.get(req).value
+        res = self._unpack(val) if val else default
+        return res
+    def set(self, key, value):
+        """
+        设置 KEY 对应的键值
+        """
+        value = self._pack(value)
+        req = protos.StorageRequest(key=key, value=value)
+        req.container = self.name
+        res = self.stub.set(req)
+        return res.value
+    def setex(self, key, value, ttl):
+        """
+        设置 KEY 对应的键值，该 KEY 在 TTL 秒后自动删除
+        """
+        value = self._pack(value)
+        req = protos.StorageRequest(key=key, value=value)
+        req.container = self.name
+        req.ttl = ttl
+        res = self.stub.setex(req)
+        return res.value
+    def setnx(self, key, value):
+        """
+        设置 KEY 对应的键值 (仅当该键不存在时)
+        """
+        value = self._pack(value)
+        req = protos.StorageRequest(key=key, value=value)
+        req.container = self.name
+        res = self.stub.setnx(req)
+        return res.value
+    def expire(self, key, ttl):
+        """
+        设置 KEY 在 TTL 秒后过期
+        """
+        req = protos.StorageRequest(key=key, ttl=ttl)
+        req.container = self.name
+        res = self.stub.expire(req)
+        return res.value
+    def ttl(self, key):
+        """
+        获取 KEY 的 TTL (过期时间)
+        """
+        req = protos.StorageRequest(key=key)
+        req.container = self.name
+        res = self.stub.ttl(req)
+        return res.value
+
+
+class StorageStub(BaseServiceStub):
+    def clear(self):
+        """
+        删除所有 Storage 容器
+        """
+        r = self.stub.clearAll(protos.Empty())
+        return r.value
+    def use(self, name, cryptor=BaseCryptor, **kwargs):
+        """
+        使用一个 Storage 容器
+        """
+        return StorageOpStub(self.stub, name, cryptor(**kwargs))
+    def remove(self, name):
+        """
+        删除一个 Storage 容器
+        """
+        req = protos.String(value=name)
+        r = self.stub.clearContainer(req)
+        return r.value
 
 
 class UtilStub(BaseServiceStub):
@@ -1075,11 +1219,12 @@ class UtilStub(BaseServiceStub):
         """
         r = self.stub.shutdown(protos.Empty())
         return r.value
-    def reload(self):
+    def reload(self, clean=False):
         """
         重载设备上运行的服务端
         """
-        r = self.stub.reload(protos.Empty())
+        req = protos.Boolean(value=clean)
+        r = self.stub.reload(req)
         return r.value
     def exit(self):
         """
@@ -1500,6 +1645,18 @@ class LockStub(BaseServiceStub):
         req = protos.Integer(value=leaseTime)
         r = self.stub.acquireLock(req)
         return r.value
+    def get_locking_session(self):
+        """
+        获取当前占有设备锁的会话ID
+        """
+        r = self.stub.getLockingSession(protos.Empty())
+        return r.value
+    def get_session_token(self):
+        """
+        获取当前占有设备锁的会话的令牌
+        """
+        r = self.stub.getSessionToken(protos.Empty())
+        return r.value
     def refresh_lock(self, leaseTime=60):
         """
         刷新用于控制设备的锁，应该在定时任务每60s内调用以保持会话
@@ -1606,50 +1763,65 @@ class WifiStub(BaseServiceStub):
 
 class Device(object):
     def __init__(self, host, port=65000,
-                                        certificate=None):
+                                        certificate=None,
+                                        session=None):
         self.certificate = certificate
         self.server = "{0}:{1}".format(host, port)
         if certificate is not None:
             with open(certificate, "rb") as fd:
-                cer = fd.read()
-            creds = grpc.ssl_channel_credentials(cer)
-            chann = grpc.secure_channel(self.server, creds,
+                key, crt, ca = self._parse_certdata(fd.read())
+            creds = grpc.ssl_channel_credentials(root_certificates=ca,
+                                                 certificate_chain=crt,
+                                                 private_key=key)
+            self._chan = grpc.secure_channel(self.server, creds,
                     options=(("grpc.ssl_target_name_override",
-                                self._ssl_common_name(cer)),
+                                self._parse_cname(crt)),
                              ("grpc.enable_http_proxy",
-                                False)))
+                                0)))
         else:
-            chann = grpc.insecure_channel(self.server)
-        interceptors = [ClientSessionMetadataInterceptor(),
+            self._chan = grpc.insecure_channel(self.server)
+        session = session or uuid.uuid4().hex
+        interceptors = [ClientSessionMetadataInterceptor(session),
                         GrpcRemoteExceptionInterceptor(),
                         ClientLoggingInterceptor()]
-        self.chann = grpc.intercept_channel(chann,
+        self.channel = grpc.intercept_channel(self._chan,
                         *interceptors)
+        self.session = session
     @property
     def frida(self):
         if _frida_dma is None:
             raise ModuleNotFoundError("frida")
+        kwargs = {}
         if self.certificate is not None:
-            device = _frida_dma.add_remote_device(self.server,
-                            certificate=self.certificate)
-        else:
-            device = _frida_dma.add_remote_device(self.server)
+            kwargs["certificate"] = self.certificate
+        if self._get_session_token():
+            kwargs["token"] = self._get_session_token()
+        device = _frida_dma.add_remote_device(self.server,
+                                        **kwargs)
         return device
     def __str__(self):
         return "Device@{}".format(self.server)
     __repr__ = __str__
-    def _ssl_common_name(self, cer):
-        _, _, der = pem.unarmor(cer)
+    def _parse_certdata(self, data):
+        key, crt, ca = Pem.parse(data)
+        ca = ca.as_bytes()
+        crt = crt.as_bytes()
+        key = key.as_bytes()
+        return key, crt, ca
+    def _parse_cname(self, crt):
+        _, _, der = pem.unarmor(crt)
         subject = x509.Certificate.load(der).subject
         return subject.native["common_name"]
     def _get_service_stub(self, module):
         stub = getattr(services, "{0}Stub".format(module))
-        return stub(self.chann)
+        return stub(self.channel)
     def stub(self, module):
         modu = sys.modules[__name__]
         stub = self._get_service_stub(module)
         wrap = getattr(modu, "{0}Stub".format(module))
-        return wrap(stub)
+        inst = getattr(self, module, wrap(stub))
+        self.__setattr__(module, inst)
+        return inst
     # 快速调用: File
     def download_fd(self, fpath, fd):
         return self.stub("File").download_fd(fpath, fd)
@@ -1695,8 +1867,8 @@ class Device(object):
         return self.stub("Util").shutdown()
     def exit(self):
         return self.stub("Util").exit()
-    def reload(self):
-        return self.stub("Util").reload()
+    def reload(self, clean=False):
+        return self.stub("Util").reload(clean)
     def beep(self):
         return self.stub("Util").beep()
     def setprop(self, name, value):
@@ -1815,6 +1987,7 @@ class Device(object):
         return self.stub("UiAutomator").device_info()
     def __call__(self, **kwargs):
         return self.stub("UiAutomator")(**kwargs)
+    # 日志打印
     def setup_log_format(self):
         logging.basicConfig(format=FORMAT)
     def set_debug_log_enabled(self, enable):
@@ -1822,6 +1995,10 @@ class Device(object):
         logger.setLevel(level)
         return enable
     # 接口锁定
+    def _get_session_token(self):
+        return self.stub("Lock").get_session_token()
+    def _get_locking_session(self):
+        return self.stub("Lock").get_locking_session()
     def _acquire_lock(self, leaseTime=60):
         return self.stub("Lock").acquire_lock(leaseTime)
     def _refresh_lock(self, leaseTime=60):

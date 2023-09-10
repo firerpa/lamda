@@ -47,5 +47,4 @@ EOL
 else
 DEFAULT_ID_RSA=$CERTIFICATE
 fi
-exec scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no \
-         -o LogLevel=ERROR -i $DEFAULT_ID_RSA -P $PORT -pr $p1 $p2
+exec rsync -avz ${@:3} -e "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=ERROR -i $DEFAULT_ID_RSA -p $PORT" $p1 $p2

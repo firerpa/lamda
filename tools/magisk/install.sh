@@ -1,8 +1,12 @@
 #!/system/bin/sh
 ABI=$(getprop ro.product.cpu.abi)
-SERVER=$TMPDIR/$ABI.tar.gz
+SERVER=$TMPDIR/lamda-server-$ABI.tar.gz
 BB="/data/adb/magisk/busybox"
 CONFDIR="$MODPATH/config"
+
+if [ -d "/data/adb/ksu/" ]; then
+BB="/data/adb/ksu/bin/busybox"
+fi
 
 export LATESTARTSERVICE=true
 

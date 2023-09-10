@@ -1,6 +1,6 @@
 #!/bin/bash
 DEVICE=$1
-TARGET=/data/local/tmp
+TARGET=/data
 
 RED='\033[1;31m'
 GRE='\033[1;32m'
@@ -28,9 +28,9 @@ adb -s $DEVICE remount >/dev/null 2>&1
 echo -e "[*] 正在上传 ${ABI}.tar.gz"
 adb -s $DEVICE push ${ABI}.tar.gz ${TARGET}
 
-adb -s $DEVICE shell rm -rf ${TARGET}/${ABI}/bin >/dev/null 2>&1
-adb -s $DEVICE shell rm -rf ${TARGET}/${ABI}/lib >/dev/null 2>&1
-adb -s $DEVICE shell rm -rf ${TARGET}/${ABI}/etc >/dev/null 2>&1
+adb -s $DEVICE shell rm -rf ${TARGET}/server/bin >/dev/null 2>&1
+adb -s $DEVICE shell rm -rf ${TARGET}/server/lib >/dev/null 2>&1
+adb -s $DEVICE shell rm -rf ${TARGET}/server/etc >/dev/null 2>&1
 
 echo -e "[*] 正在解压 ${ABI}.tar.gz"
 adb -s $DEVICE shell tar -C ${TARGET} -xzf ${TARGET}/${ABI}.tar.gz
@@ -40,7 +40,7 @@ adb -s $DEVICE shell mount -o rw,remount /system
 adb -s $DEVICE shell mount -o rw,remount /
 
 adb -s $DEVICE shell "sed -i 's,\(do_bootcomplete$\)\(.*\),\1; sh /data/launch.sh,' /system/etc/init.sh" >/dev/null 2>&1
-adb -s $DEVICE shell "echo \"exec sh ${TARGET}/${ABI}/bin/launch.sh\" > /data/launch.sh"
+adb -s $DEVICE shell "echo \"exec sh ${TARGET}/server/bin/launch.sh\" > /data/launch.sh"
 
 if adb -s $DEVICE shell cat /system/etc/init.sh 2>/dev/null | grep launch.sh >/dev/null; then
 echo -e "[*]$GRE 成功安装为开机启动 $RST"
