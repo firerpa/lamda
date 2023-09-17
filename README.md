@@ -20,7 +20,7 @@ LAMDA 是一个用于逆向及自动化的辅助框架，它设计为减少安�
 * 界面布局检视
 * 无线连接内置 root 权限的 WIFI ADB
 * 支持自定义启动配置
-* 支持模拟器及真机、云手机/无头开发板、redroid (仅ARM)
+* 支持模拟器及真机、云手机/无头开发板、Redroid
 * 支持安卓 6.0 (M, API 23) - 13 (T, API 33)
 * 支持 WSA (Windows Subsystem for Android™️)
 * 支持 UDP 协议代理（socks5 UDP 模式）
@@ -49,12 +49,6 @@ LAMDA 是一个用于逆向及自动化的辅助框架，它设计为减少安�
 
 
 ![动图演示](image/demo.gif)
-
-## 无视恶意软件对抗
-
-MOMO (vvb2060) 是我们认为目前最强的ROOT特征检测软件，如 MOMO 所说：我们的目标是提高用户的知识水平。注意这段描述的功能**并不属于 LAMDA 框架的能力范畴**，它是由 LAMDA 和**未公开**的基建项目共同组成，我们只是以此来引出：你可以相信 LAMDA。
-
-![反检测动图演示](image/detection.gif)
 
 ## 一键中间人流量分析
 
@@ -254,7 +248,7 @@ emulator -avd Pixel_5_API_29 -partition-size 2048 -no-snapshot-load
 
 > Redroid (android in docker)
 
-注意目前**仅支持基于 ARM (aarch64) 宿主机**的 Redroid，你可以通过命令 `uname -m` 来检查。
+注意目前 LAMDA **3.0**，**5.0** **仅支持基于 ARM (aarch64) 宿主机**的 Redroid，**7.0** 才支持 x86 版本的 Redroid，你可以通过命令 `uname -m` 来检查。
 
 如果使用的是 Redroid (android in docker)，以官方建议的 `Ubuntu 20.04` 为例，首先安装 linux-modules-extra 相关模块，（注意下列方法可能不适合其他 Linux 发行版，如果你不熟悉 Linux，我们不太建议你继续下面的操作）。
 

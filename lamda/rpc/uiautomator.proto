@@ -408,6 +408,7 @@ message Selector {
         uint32 instance                 = 26;
         repeated string childOrSibling  = 27;
         repeated Selector childOrSiblingSelector  = 28;
+        repeated string fields          = 50;
 }
 
 message DeviceInfo {
@@ -425,37 +426,22 @@ message DeviceInfo {
 }
 
 message SelectorTakeScreenshotRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
         uint32 quality            = 3;
 }
 message SelectorSetTextRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
         string text               = 3;
 }
 message SelectorClickRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
         Corner corner             = 3;
 }
 message SelectorOnlyRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
 }
 message SelectorDragToRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
         oneof _target {
                 Selector target   = 3;
                 Point point       = 4;
@@ -463,10 +449,7 @@ message SelectorDragToRequest {
         uint32 step               = 5;
 }
 message SelectorScrollToRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
         oneof _target {
                 Selector target   = 3;
                 Point point       = 4;
@@ -474,43 +457,28 @@ message SelectorScrollToRequest {
         bool vertical             = 5;
 }
 message SelectorWaitRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
         uint32 timeout            = 3;
 }
 message SelectorSwipeRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
         Direction direction       = 3;
         uint32 step               = 4;
 }
 message SelectorFlingRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
         bool vertical             = 3;
         uint32 maxSwipes           = 4;
 }
 message SelectorScrollRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
         bool vertical             = 3;
         uint32 maxSwipes          = 4;
         uint32 step               = 5;
 }
 
 message SelectorPinchRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
         uint32 percent            = 3;
         uint32 step               = 4;
 }

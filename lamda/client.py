@@ -192,7 +192,7 @@ TouchAction = protos.TouchAction
 
 ApplicationInfo = protos.ApplicationInfo
 # uiautomator types
-Selector = protos.Selector
+_Selector = protos.Selector
 Bound = protos.Bound
 Point = protos.Point
 
@@ -237,6 +237,12 @@ def to_dict(prot):
     """ 将 proto 返回值转换为字典 """
     r = MessageToJson(prot, preserving_proto_field_name=True)
     return json.loads(r)
+
+
+def Selector(**kwargs):
+    """ Selector wrapper """
+    sel = _Selector(**kwargs, fields=kwargs.keys())
+    return sel
 
 
 class BaseCryptor(object):
@@ -332,7 +338,7 @@ class ObjectUiAutomatorOpStub:
         UiAutomator 子接口，用来模拟出实例的意味
         """
         self._selector = selector
-        self.selector = protos.Selector(**selector)
+        self.selector = Selector(**selector)
         self.stub = stub
     def __str__(self):
         selector = ", ".join(["{}={}".format(k, v) \
