@@ -2,7 +2,7 @@
 ABI=$(getprop ro.product.cpu.abi)
 SERVER=$TMPDIR/lamda-server-$ABI.tar.gz
 BB="/data/adb/magisk/busybox"
-CONFDIR="$MODPATH/config"
+USRDIR=/data/usr
 
 if [ -d "/data/adb/ksu/" ]; then
 BB="/data/adb/ksu/bin/busybox"
@@ -21,20 +21,19 @@ ui_print "                                       installer   "
 pushd $(pwd)
 cd $MODPATH
 if [ ! -f $SERVER ]; then
-abort "${ABI}.tar.gz not found in archive"
+abort "lamda-server-${ABI}.tar.gz not found in archive"
 fi
 
 ui_print "- Extracting server files"
 $BB tar -xzf $SERVER
 
 ui_print "- Placing configs"
-mkdir -p /data/usr
-cp -af $TMPDIR/adb_keys /data/usr/.adb_keys
+mkdir -p ${USRDIR}
 
-mkdir -p $CONFDIR
+cp -af $TMPDIR/adb_keys ${USRDIR}/.adb_keys
 
-cp -af $TMPDIR/properties.local $CONFDIR
-cp -af $TMPDIR/lamda.pem $CONFDIR
+cp -af $TMPDIR/properties.local ${USRDIR}
+cp -af $TMPDIR/lamda.pem ${USRDIR}
 
 ui_print "- Please reboot your device"
 popd

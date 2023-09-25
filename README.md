@@ -175,7 +175,7 @@ LAMDA 是个人开发的免费软件 (freeware)，目前仅客户端库及工具
 因为安卓被各种设备广泛使用，无法保证百分百的兼容性，可能会有运行异常等各种未知情况，出现的异常情况包括：无故重启，APP经常崩溃，触摸失效或无故乱动等等，冻屏等情况。如果经常遇到，建议停止使用。
 点此 [报告问题/建议](https://github.com/rev1si0n/lamda/issues/new)，请详细描述并附上机型系统等信息。
 
-社区讨论：[电报 t.me/lamda_dev](https://t.me/lamda_dev)
+社区讨论：[电报 t.me/lamda_dev](https://t.me/lamda_dev) | [微信群组(Wechat)](https://lamda.run/join/wechat)
 
 > 顺便支持作者
 
@@ -227,7 +227,7 @@ LAMDA 最理想的运行环境是你刚刚 root（如：新建模拟器，自带
 
 > WSA (Windows Subsystem Android)
 
-如果使用的是 WSA (Windows Subsystem Android)，请确保 WSA 版本不低于 2210.40000 并且已 root。随后打开 WSA 设置 -> Subsystem Resources -> 选择 Continuous，关闭 Advanced Networking。随后重启 WSA 子系统即可。
+如果使用的是 WSA (Windows Subsystem Android)，请确保 WSA 版本不低于 2210.40000 并且已 root。随后打开 WSA 设置 -> Subsystem Resources -> 选择 Continuous，关闭 Advanced Networking。选择 Developer，开启 Developer mode 并展开选项卡，打开 "Support single machine UI automation"，随后重启 WSA 子系统即可。
 
 > AVD (Android Studio Virtual Device)
 
@@ -498,7 +498,7 @@ reboot
 
 远程桌面功能仅为 Chrome 95+ 设计，不支持多人访问，不保证兼容所有浏览器，如遇功能不正常请使用 Chrome。
 
-在浏览器中打开链接 `http://192.168.0.2:65000` 可进入 web 远程桌面，你可以在此操作设备以及通过该界面的root模拟终端执行命令。如果启动服务端时指定了PEM证书 `--certificate`，远程桌面将需要你输入密码才能继续访问，并且你需要将 `http://` 改为 `https://` 使用 HTTPS 的方式访问，你可以使用文本编辑器在PEM证书第一行找到这个固定密码。
+在浏览器中打开链接 `http://192.168.0.2:65000` 可进入 web 远程桌面，你可以在此操作设备以及通过该界面的root模拟终端执行命令。如果启动服务端时指定了PEM证书 `--certificate`，远程桌面将需要你输入密码才能继续访问，并且你需要将 `http://` 改为 `https://` 使用 HTTPS 的方式访问，你可以使用文本编辑器在PEM证书第一行找到这个固定密码，当然你也可以通过在 properties.local 文件中定义 `ssl-web-credential=password123` 来设置自定义密码。
 
 你也可以自定义远程桌面的 视频帧率(fps)、分辨率缩放比例(res)以及图像质量(quality)。同时，支持 H.264 软编码（部分情况下使用流量更少更流畅，仅支持最新版 Chrome 浏览器）。你可以通过远程桌面右上角的小齿轮进行调整，但是请注意，调整以上参数并不一定会产生正向效果，请依据事实调整。
 
