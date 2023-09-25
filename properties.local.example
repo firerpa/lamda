@@ -19,6 +19,15 @@
 # 设置 LAMDA 的默认监听端口
 port=65000
 
+# 你可以将远程桌面上显示的 LAMDA 改成任意你想要的名称（至多12字符）
+brandname=LAMDA
+
+# 设置 LAMDA 的远程桌面登录密码，6-32 位字符
+# 注意：此密码 仅在使用了证书 (--certificate) 的情况下才会生效
+# 因为如果不使用证书加密远程桌面以及API及其他流量，设置密码也为徒劳
+# 此密码用于作为证书中生成密码的备用密码（便于记忆）
+ssl-web-credential=password123
+
 # 设置此项将同时导致 LAMDA 的 Python 客户端 API 停用
 # 此项在且仅在启动 LAMDA 后设备崩溃，或者你不需要使用 API 时设置
 disable-client-api=false
