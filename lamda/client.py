@@ -1002,13 +1002,6 @@ class ApplicationOpStub:
         req = protos.ApplicationRequest(name=self.applicationId)
         r = self.stub.removeFromDozeModeWhiteList(req)
         return True
-    def install_from_local_file(self, fpath):
-        """
-        安装设备上的 apk 文件（注意此路径为设备上的 apk 路径）
-        """
-        req = protos.ApplicationRequest(path=fpath)
-        r = self.stub.installFromLocalFile(req)
-        return r
     def is_installed(self):
         """
         检查应用是否已经安装
@@ -1056,6 +1049,13 @@ class ApplicationStub(BaseServiceStub):
         req.extras.update(extras)
         r = self.stub.startActivity(req)
         return r.value
+    def install_app_file(self, fpath):
+        """
+        安装设备上的 apk 文件（注意此路径为设备上的 apk 路径）
+        """
+        req = protos.ApplicationRequest(path=fpath)
+        r = self.stub.installFromLocalFile(req)
+        return r
     def __call__(self, applicationId):
         return ApplicationOpStub(self.stub, applicationId)
 
@@ -1844,6 +1844,8 @@ class Device(object):
     def file_stat(self, fpath):
         return self.stub("File").file_stat(fpath)
     # 快速调用: Application
+    def install_app_file(self, rpath):
+        return self.stub("Application").install_app_file(rpath)
     def current_application(self):
         return self.stub("Application").current_application()
     def enumerate_all_pkg_names(self):

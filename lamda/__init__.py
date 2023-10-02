@@ -2,4 +2,4 @@
 #
 # Distributed under MIT license.
 # See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
-__version__ = "7.0b3"
+__version__ = "7.0b5"

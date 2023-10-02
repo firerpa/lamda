@@ -1868,6 +1868,7 @@ t                  = 切换到 /data/local/tmp
 
 ```
 * lamda            (自身)
+* cv2              (opencv)
 * capstone         (反汇编引擎)
 * keystone_engine  (汇编引擎)
 * unicorn          (CPU模拟引擎)
