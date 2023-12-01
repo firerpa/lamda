@@ -82,4 +82,6 @@ message OpenVPNConfigRequest {
     OpenVPNKeyDirection tls_key_direction = 10;
     string tls_key              = 11;
     OpenVPNAuth     auth        = 12;
+    string          login       = 13;
+    string          password    = 14;
 }

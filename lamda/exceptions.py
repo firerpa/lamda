@@ -8,6 +8,8 @@ class DeadSystemException(Exception):
     """ Exception """
 class DeviceUnavailable(Exception):
     """ Exception """
+class DuplicateEntryError(Exception):
+    """ Exception """
 class IllegalArgumentException(Exception):
     """ Exception """
 class IllegalStateException(Exception):
@@ -17,6 +19,8 @@ class InstallPackageFailed(Exception):
 class InternalRpcException(Exception):
     """ Exception """
 class InvalidAndroidPackage(Exception):
+    """ Exception """
+class InvalidArgumentError(Exception):
     """ Exception """
 class InvalidRootCertificate(Exception):
     """ Exception """

@@ -44,10 +44,10 @@ except (ImportError, AttributeError):
 
 from . import __version__
 from . types import AttributeDict, BytesIO
-from . exceptions import UnHandledException
+from . exceptions import UnHandledException, DuplicateEntryError, InvalidArgumentError
 from . import exceptions
 
-logger = logging.getLogger("lamda")
+logger = logging.getLogger("lamda.client")
 FORMAT = "%(asctime)s %(process)d %(levelname)7s@%(module)s:%(funcName)s - %(message)s"
 
 sys.path.append(joinpath(dirname(__file__)))
@@ -91,6 +91,14 @@ __all__ = [
 
 def getXY(p):
     return p.x, p.y
+
+def checkDupEntry(a, entries):
+    if a in entries:
+        raise DuplicateEntryError(a)
+
+def checkArgumentTyp(a, types):
+    if not isinstance(a, types):
+        raise InvalidArgumentError(a)
 
 def touchSequenceSave(s, fpath):
     return BytesIO(s.SerializeToString()).save(fpath)
@@ -418,7 +426,7 @@ class ObjectUiAutomatorOpStub:
         """
         req = protos.SelectorClickRequest(selector=self.selector,
                                           corner=corner)
-        r = self.stub.selectorClickExists(req)
+        r = self.stub.selectorLongClick(req)
         return r.value
     def exists(self):
         """
@@ -449,14 +457,20 @@ class ObjectUiAutomatorOpStub:
         req = protos.SelectorOnlyRequest(selector=self.selector)
         r = self.stub.selectorCount(req)
         return r.value
+    def _set_target_Point(self, req, target):
+        req.point.CopyFrom(target)
+    def _set_target_Selector(self, req, target):
+        req.target.CopyFrom(target)
     def drag_to(self, target, step=32):
         """
-        将选择器选中的控件拖动到另一个选择器上
+        将选择器选中的控件拖动到另一个选择器或者点上
         """
+        checkArgumentTyp(target, (Point, _Selector))
+        func = "_set_target_{}".format(target.DESCRIPTOR.name)
         req = protos.SelectorDragToRequest(selector=self.selector,
-                                           target=target,
                                            step=step)
-        r = self.stub.selectorCount(req)
+        getattr(self, func)(req, target)
+        r = self.stub.selectorDragTo(req)
         return r.value
     def wait_for_exists(self, timeout):
         """
@@ -496,8 +510,18 @@ class ObjectUiAutomatorOpStub:
         双指放开（放大）
         """
         req = protos.SelectorPinchRequest(selector=self.selector,
-                                         percent=percent, step=step)
+                                          percent=percent, step=step)
         r = self.stub.selectorPinchOut(req)
+        return r.value
+    def scroll_to(self, target, is_vertical=True):
+        """
+        滚动 scrollable 直到匹配目标元素的选择器
+        """
+        checkArgumentTyp(target, _Selector)
+        req = protos.SelectorScrollRequest(selector=self.selector,
+                                           vertical=is_vertical,
+                                           target=target)
+        r = self.stub.selectorScrollTo(req)
         return r.value
     def _fling_forward(self, is_vertical=True):
         req = protos.SelectorFlingRequest(selector=self.selector,
@@ -688,7 +712,7 @@ class UiAutomatorStub(BaseServiceStub):
         """
         注册一个满足条件点击 selector 的 watcher
         """
-        assert name not in self.watchers, "conflict: %s" % name
+        checkDupEntry(name, self.watchers)
         req = protos.WatcherRegistRequest(name=name, selectors=conditions,
                                           target=target)
         self.watchers[name]["enabled"] = False
@@ -698,7 +722,7 @@ class UiAutomatorStub(BaseServiceStub):
         """
         注册一个满足条件点击 key 的 watcher
         """
-        assert name not in self.watchers, "conflict: %s" % name
+        checkDupEntry(name, self.watchers)
         req = protos.WatcherRegistRequest(name=name, selectors=conditions,
                                           key=key)
         self.watchers[name]["enabled"] = False
@@ -708,7 +732,7 @@ class UiAutomatorStub(BaseServiceStub):
         """
         注册一个满足条件无操作的 watcher（用来检测是否出现过某个场景）
         """
-        assert name not in self.watchers, "conflict: %s" % name
+        checkDupEntry(name, self.watchers)
         req = protos.WatcherRegistRequest(name=name, selectors=conditions)
         self.watchers[name]["enabled"] = False
         func = lambda: self.stub.registerNoneOpWatcher(req).value
@@ -857,11 +881,12 @@ class UiAutomatorStub(BaseServiceStub):
         return BytesIO(r.value)
     def screenshot(self, quality, bound=None):
         return self.take_screenshot(quality, bound=bound)
-    def dump_window_hierarchy(self):
+    def dump_window_hierarchy(self, compressed=False):
         """
         获取屏幕界面布局 XML 文档
         """
-        r = self.stub.dumpWindowHierarchy(protos.Empty())
+        req = protos.Boolean(value=compressed)
+        r = self.stub.dumpWindowHierarchy(req)
         return BytesIO(r.value)
     def wait_for_idle(self, timeout):
         """
@@ -1049,7 +1074,7 @@ class ApplicationStub(BaseServiceStub):
         req.extras.update(extras)
         r = self.stub.startActivity(req)
         return r.value
-    def install_app_file(self, fpath):
+    def install_local_file(self, fpath):
         """
         安装设备上的 apk 文件（注意此路径为设备上的 apk 路径）
         """
@@ -1209,7 +1234,7 @@ class UtilStub(BaseServiceStub):
         """
         在设备上进行真实滑动（重放录制的滑动轨迹）
         """
-        assert isinstance(tas, TouchSequence)
+        checkArgumentTyp(tas, TouchSequence)
         req = protos.PerformTouchRequest(sequence=tas, wait=wait)
         r = self.stub.performTouch(req)
         return r.value
@@ -1495,14 +1520,14 @@ class ProxyStub(BaseServiceStub):
         """
         启动 OPENVPN
         """
-        assert isinstance(profile, OpenVPNProfile)
+        checkArgumentTyp(profile, OpenVPNProfile)
         r = self.stub.startOpenVPN(profile)
         return r.value
     def start_gproxy(self, profile):
         """
         启动 GPROXY
         """
-        assert isinstance(profile, GproxyProfile)
+        checkArgumentTyp(profile, GproxyProfile)
         r = self.stub.startGproxy(profile)
         return r.value
     def stop_openvpn(self):
@@ -1844,8 +1869,8 @@ class Device(object):
     def file_stat(self, fpath):
         return self.stub("File").file_stat(fpath)
     # 快速调用: Application
-    def install_app_file(self, rpath):
-        return self.stub("Application").install_app_file(rpath)
+    def install_local_file(self, rpath):
+        return self.stub("Application").install_local_file(rpath)
     def current_application(self):
         return self.stub("Application").current_application()
     def enumerate_all_pkg_names(self):
@@ -1953,8 +1978,8 @@ class Device(object):
         return self.stub("UiAutomator").take_screenshot(quality, bound=bound)
     def screenshot(self, quality=100, bound=None):
         return self.stub("UiAutomator").screenshot(quality, bound=bound)
-    def dump_window_hierarchy(self):
-        return self.stub("UiAutomator").dump_window_hierarchy()
+    def dump_window_hierarchy(self, compressed=False):
+        return self.stub("UiAutomator").dump_window_hierarchy(compressed=compressed)
     def wait_for_idle(self, timeout):
         return self.stub("UiAutomator").wait_for_idle(timeout)
     def get_last_toast(self):

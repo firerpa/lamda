@@ -1,9 +1,20 @@
+7.15
+* 支持安卓 14 (SDK 34)
+* 修复注册监视器异常的问题
+* 提高远程桌面兼容性（理论支持所有设备）
+* 修复 scroll_from_bottom_to_top_to_end 异常。感谢 ThanhPham
+* 修复 drag_to、long_click 代码错误
+* 内置 OpenVPN 支持 userpass 登录
+* 远程桌面支持设置最高60帧
+* 更新 DISCLAIMER.TXT
+* 其他小修改及修复
+
 5.6
 * 修复布局导出不全的问题。感谢 ThanhPham
 
 5.5
 * 修复 adb push 文件损坏问题
-* 添加 install_app_file 接口
+* 添加 install_local_file 接口
 * 代码结构优化
 
 5.3

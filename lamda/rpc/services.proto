@@ -135,7 +135,7 @@ service UiAutomator {
     rpc deviceInfo(google.protobuf.Empty) returns (DeviceInfo) {}
 
     rpc takeScreenshot(TakeScreenshotRequest) returns (Bytes) {}
-    rpc dumpWindowHierarchy(google.protobuf.Empty) returns (Bytes) {}
+    rpc dumpWindowHierarchy(Boolean) returns (Bytes) {}
     rpc waitForIdle(Integer) returns (Boolean) {}
 
     rpc selectorTakeScreenshot(SelectorTakeScreenshotRequest) returns (Bytes) {}
@@ -170,6 +170,7 @@ service UiAutomator {
     rpc selectorScrollToEnd(SelectorScrollRequest) returns (Boolean) {}
     rpc selectorScrollBackward(SelectorScrollRequest) returns (Boolean) {}
     rpc selectorScrollForward(SelectorScrollRequest) returns (Boolean) {}
+    rpc selectorScrollTo(SelectorScrollRequest) returns (Boolean) {}
 
     rpc selectorPinchOut(SelectorPinchRequest) returns (Boolean) {}
     rpc selectorPinchIn(SelectorPinchRequest) returns (Boolean) {}

@@ -448,14 +448,6 @@ message SelectorDragToRequest {
         }
         uint32 step               = 5;
 }
-message SelectorScrollToRequest {
-        Selector selector         = 1;
-        oneof _target {
-                Selector target   = 3;
-                Point point       = 4;
-        }
-        bool vertical             = 5;
-}
 message SelectorWaitRequest {
         Selector selector         = 1;
         uint32 timeout            = 3;
@@ -472,6 +464,7 @@ message SelectorFlingRequest {
 }
 message SelectorScrollRequest {
         Selector selector         = 1;
+        Selector target           = 2;
         bool vertical             = 3;
         uint32 maxSwipes          = 4;
         uint32 step               = 5;
