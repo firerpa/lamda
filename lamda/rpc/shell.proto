@@ -1,4 +1,4 @@
-// Copyright 2022 rev1si0n (ihaven0emmail@gmail.com). All rights reserved.
+// Copyright 2022 rev1si0n (lamda.devel@gmail.com). All rights reserved.
 //
 // Distributed under MIT license.
 // See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
@@ -9,12 +9,13 @@ message ShellRequest {
     string tid        = 1;
     string name       = 2;
     string script     = 3;
+    int32  timeout    = 4;
 }
 
 message ShellResult {
     int32  exitstatus = 1;
-    string stdout     = 2;
-    string stderr     = 3;
+    bytes  stdout     = 2;
+    bytes  stderr     = 3;
 }
 
 message ShellTask {

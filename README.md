@@ -26,4 +26,4 @@ LAMDA 是一个用于逆向及自动化的辅助框架，设计为减少安全�
 
 ![中间人流量分析动图演示](image/mitm.gif)
 
-当然，LAMDA 的能力不止于如上种种，他是你强有力的设备控制及管理工具，如果您对他感兴趣，请转到 [使用文档](https://github.com/rev1si0n/lamda/wiki)。
+当然，LAMDA 的能力不止于如上种种，他是你强有力的控制及管理工具，如果您感兴趣，请转到 [使用文档](https://github.com/rev1si0n/lamda/wiki)。

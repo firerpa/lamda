@@ -1,6 +1,6 @@
 FROM debian:bullseye-slim
 
-LABEL maintainer="rev1si0n <ihaven0emmail@gmail.com>"
+LABEL maintainer="rev1si0n <lamda.devel@gmail.com>"
 
 ENV VERSION=2.11.4
 ENV PLAT=linux-386

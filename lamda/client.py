@@ -738,7 +738,7 @@ class UiAutomatorStub(BaseServiceStub):
         func = lambda: self.stub.registerNoneOpWatcher(req).value
         self.watchers[name]["enable"] = func
     def _remove_watcher(self, name):
-        return self.stub.removeWatcher(protos.String(value=name))
+        return self.stub.removeWatcher(protos.String(value=name)).value
     def set_watcher_enabled(self, name, enable):
         """
         设置是否启用此 watcher
@@ -1414,11 +1414,13 @@ class SettingsStub(BaseServiceStub):
 
 
 class ShellStub(BaseServiceStub):
-    def execute_script(self, script, alias=None):
+    def execute_script(self, script, alias=None,
+                                    timeout=60):
         """
         前台执行一段脚本（支持标准的多行脚本）
         """
-        req = protos.ShellRequest(name=alias, script=script)
+        req = protos.ShellRequest(name=alias, script=script,
+                                            timeout=timeout)
         r = self.stub.executeForeground(req)
         return r
     def execute_background_script(self, script, alias=None):
@@ -1676,15 +1678,9 @@ class LockStub(BaseServiceStub):
         req = protos.Integer(value=leaseTime)
         r = self.stub.acquireLock(req)
         return r.value
-    def get_locking_session(self):
-        """
-        获取当前占有设备锁的会话ID
-        """
-        r = self.stub.getLockingSession(protos.Empty())
-        return r.value
     def get_session_token(self):
         """
-        获取当前占有设备锁的会话的令牌
+        获取当前会话的动态令牌
         """
         r = self.stub.getSessionToken(protos.Empty())
         return r.value
@@ -1827,6 +1823,10 @@ class Device(object):
             kwargs["certificate"] = self.certificate
         if self._get_session_token():
             kwargs["token"] = self._get_session_token()
+        try:
+            _frida_dma.remove_remote_device(self.server)
+        except frida.InvalidArgumentError:
+            """ No-op """
         device = _frida_dma.add_remote_device(self.server,
                                         **kwargs)
         return device
@@ -1933,8 +1933,9 @@ class Device(object):
     def stop_gproxy(self):
         return self.stub("Proxy").stop_gproxy()
     # 快速调用: Shell
-    def execute_script(self, script, alias=None):
-        return self.stub("Shell").execute_script(script, alias=alias)
+    def execute_script(self, script, alias=None, timeout=60):
+        return self.stub("Shell").execute_script(script, alias=alias,
+                                                        timeout=timeout)
     def execute_background_script(self, script, alias=None):
         return self.stub("Shell").execute_background_script(script, alias=alias)
     def is_background_script_finished(self, tid):
@@ -2030,8 +2031,6 @@ class Device(object):
     # 接口锁定
     def _get_session_token(self):
         return self.stub("Lock").get_session_token()
-    def _get_locking_session(self):
-        return self.stub("Lock").get_locking_session()
     def _acquire_lock(self, leaseTime=60):
         return self.stub("Lock").acquire_lock(leaseTime)
     def _refresh_lock(self, leaseTime=60):

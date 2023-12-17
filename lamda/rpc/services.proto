@@ -1,4 +1,4 @@
-// Copyright 2022 rev1si0n (ihaven0emmail@gmail.com). All rights reserved.
+// Copyright 2022 rev1si0n (lamda.devel@gmail.com). All rights reserved.
 //
 // Distributed under MIT license.
 // See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
@@ -238,7 +238,6 @@ service File {
 
 service Lock {
     rpc releaseLock(google.protobuf.Empty) returns (Boolean) {}
-    rpc getLockingSession(google.protobuf.Empty) returns (String) {}
     rpc getSessionToken(google.protobuf.Empty) returns (String) {}
     rpc acquireLock(Integer) returns (Boolean) {}
     rpc refreshLock(Integer) returns (Boolean) {}

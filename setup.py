@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# Copyright 2022 rev1si0n (ihaven0emmail@gmail.com). All rights reserved.
+# Copyright 2022 rev1si0n (lamda.devel@gmail.com). All rights reserved.
 import setuptools
 
 exec(open("lamda/__init__.py", "rt").read())

@@ -1,6 +1,6 @@
 FROM alpine:3.15
 # this will produce large image but IDC
-LABEL maintainer="rev1si0n <ihaven0emmail@gmail.com>"
+LABEL maintainer="rev1si0n <lamda.devel@gmail.com>"
 
 ENV SOURCESMIRROR=mirrors.ustc.edu.cn
 RUN sed -i "s/dl-cdn.alpinelinux.org/${SOURCESMIRROR}/g" /etc/apk/repositories
