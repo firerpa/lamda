@@ -30,6 +30,7 @@ ssl-web-credential=password123
 
 # 设置此项将同时导致 LAMDA 的 Python 客户端 API 停用
 # 此项在且仅在启动 LAMDA 后设备崩溃，或者你不需要使用 API 时设置
+# 此选项同时将禁用包括任何可能对系统稳定性产生影响的组件
 disable-client-api=false
 
 # ---------- OpenVPN 配置 ----------
