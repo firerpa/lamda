@@ -6,8 +6,8 @@ syntax = "proto3";
 package lamda.rpc;
 
 message SelinuxPolicyRequest {
-    string source       = 1;
-    string target       = 2;
-    string tclass       = 3;
-    string action       = 4;
+        string source       = 1;
+        string target       = 2;
+        string tclass       = 3;
+        string action       = 4;
 }

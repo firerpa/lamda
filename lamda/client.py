@@ -47,8 +47,11 @@ from . types import AttributeDict, BytesIO
 from . exceptions import UnHandledException, DuplicateEntryError, InvalidArgumentError
 from . import exceptions
 
+handler = logging.StreamHandler()
 logger = logging.getLogger("lamda.client")
-FORMAT = "%(asctime)s %(process)d %(levelname)7s@%(module)s:%(funcName)s - %(message)s"
+formatter = logging.Formatter("%(asctime)s %(process)d %(levelname)7s@%(module)s:%(funcName)s - %(message)s")
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 sys.path.append(joinpath(dirname(__file__)))
 sys.path.append(joinpath(dirname(__file__), "rpc"))
@@ -183,6 +186,7 @@ OpenVPNEncryption = protos.OpenVPNEncryption
 OpenVPNKeyDirection = protos.OpenVPNKeyDirection
 OpenVPNCipher = protos.OpenVPNCipher
 OpenVPNProto = protos.OpenVPNProto
+ToastDuration = protos.ToastDuration
 Orientation = protos.Orientation
 
 # proxy request alias
@@ -1269,6 +1273,13 @@ class UtilStub(BaseServiceStub):
         """
         r = self.stub.beepBeep(protos.Empty())
         return r.value
+    def show_toast(self, text, duration=ToastDuration.TD_SHORT):
+        """
+        在系统界面底部显示一个 Toast 消息
+        """
+        req = protos.ShowToastRequest(text=text, duration=duration)
+        r = self.stub.showToast(req)
+        return r.value
     def setprop(self, name, value):
         """
         设置系统属性（aka: setprop，支持设置 ro.xx 只读属性）
@@ -1888,6 +1899,8 @@ class Device(object):
         return self.stub("Util").record_touch()
     def perform_touch(self, sequence, wait=True):
         return self.stub("Util").perform_touch(sequence, wait=wait)
+    def show_toast(self, text, duration=ToastDuration.TD_SHORT):
+        return self.stub("Util").show_toast(text, duration=duration)
     def is_ca_certificate_installed(self, certdata):
         return self.stub("Util").is_ca_certificate_installed(certdata)
     def uninstall_ca_certificate(self, certfile):
@@ -2022,8 +2035,6 @@ class Device(object):
     def __call__(self, **kwargs):
         return self.stub("UiAutomator")(**kwargs)
     # 日志打印
-    def setup_log_format(self):
-        logging.basicConfig(format=FORMAT)
     def set_debug_log_enabled(self, enable):
         level = logging.DEBUG if enable else logging.WARN
         logger.setLevel(level)

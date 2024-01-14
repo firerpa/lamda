@@ -12,7 +12,7 @@ enum Group {
 }
 
 message SettingsRequest {
-    Group  group    = 1;
-    string name     = 2;
-    string value    = 3;
+        Group  group    = 1;
+        string name     = 2;
+        string value    = 3;
 }

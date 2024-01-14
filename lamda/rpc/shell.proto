@@ -6,20 +6,20 @@ syntax = "proto3";
 package lamda.rpc;
 
 message ShellRequest {
-    string tid        = 1;
-    string name       = 2;
-    string script     = 3;
-    int32  timeout    = 4;
+        string tid        = 1;
+        string name       = 2;
+        string script     = 3;
+        int32  timeout    = 4;
 }
 
 message ShellResult {
-    int32  exitstatus = 1;
-    bytes  stdout     = 2;
-    bytes  stderr     = 3;
+        int32  exitstatus = 1;
+        bytes  stdout     = 2;
+        bytes  stderr     = 3;
 }
 
 message ShellTask {
-    string tid        = 1;
-    string name       = 2;
-    int32  pid        = 3;
+        string tid        = 1;
+        string name       = 2;
+        int32  pid        = 3;
 }

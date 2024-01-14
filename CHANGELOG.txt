@@ -1,3 +1,9 @@
+7.28
+* 新增 show_toast 接口
+* 内置代理现已支持代理 DNS 流量
+* startmitm 现已支持 DNS 通过上游代理
+* 修复安卓 10+ frida spwan
+
 7.25
 * 修复定时任务运行失败的问题
 * 修复从 termux 启动失败的问题

@@ -5,6 +5,11 @@
 syntax = "proto3";
 package lamda.rpc;
 
+enum ToastDuration {
+        TD_SHORT         = 0;
+        TD_LONG          = 1;
+}
+
 message TouchDown {
         int32 tid      = 1;
         int32 x        = 2;
@@ -46,10 +51,15 @@ message PerformTouchRequest {
 }
 
 message SetPropRequest {
-  string name   = 1;
-  string value  = 2;
+        string name             = 1;
+        string value            = 2;
 }
 
 message CertifiRequest {
-  bytes  cert  = 1;
+        bytes  cert             = 1;
+}
+
+message ShowToastRequest {
+        string           text   = 1;
+        ToastDuration duration  = 2;
 }

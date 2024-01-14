@@ -14,16 +14,17 @@ enum GproxyType {
 }
 
 message GproxyConfigRequest {
-    ApplicationInfo application = 1;
-    GproxyType type             = 2;
-    string nameserver           = 3;
-    string login                = 4;
-    string password             = 5;
-    string host                 = 6;
-    uint32 port                 = 7;
-    bool bypass_local_subnet    = 8;
-    bool drop_udp               = 9;
-    bool udp_proxy              = 10;
+        ApplicationInfo application = 1;
+        GproxyType type             = 2;
+        string nameserver           = 3;
+        string login                = 4;
+        string password             = 5;
+        string host                 = 6;
+        uint32 port                 = 7;
+        bool bypass_local_subnet    = 8;
+        bool drop_udp               = 9;
+        bool udp_proxy              = 10;
+        bool dns_proxy              = 11;
 }
 
 enum OpenVPNProto {
@@ -70,18 +71,18 @@ enum OpenVPNEncryption {
 }
 
 message OpenVPNConfigRequest {
-    bool all_traffic            = 1;
-    OpenVPNProto    proto       = 2;
-    string host                 = 3;
-    uint32 port                 = 4;
-    OpenVPNCipher   cipher      = 5;
-    string ca                   = 6;
-    string cert                 = 7;
-    string key                  = 8;
-    OpenVPNEncryption tls_encryption = 9;
-    OpenVPNKeyDirection tls_key_direction = 10;
-    string tls_key              = 11;
-    OpenVPNAuth     auth        = 12;
-    string          login       = 13;
-    string          password    = 14;
+        bool all_traffic            = 1;
+        OpenVPNProto    proto       = 2;
+        string host                 = 3;
+        uint32 port                 = 4;
+        OpenVPNCipher   cipher      = 5;
+        string ca                   = 6;
+        string cert                 = 7;
+        string key                  = 8;
+        OpenVPNEncryption tls_encryption = 9;
+        OpenVPNKeyDirection tls_key_direction = 10;
+        string tls_key              = 11;
+        OpenVPNAuth     auth        = 12;
+        string          login       = 13;
+        string          password    = 14;
 }
