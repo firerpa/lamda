@@ -1,15 +1,28 @@
 #!/usr/bin/env python3
+# Copyright 2024 rev1si0n (lamda.devel@gmail.com). All rights reserved.
+#
+# Distributed under MIT license.
+# See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
 #encoding=utf-8
 import os
+import re
 import sys
 import time
+import logging
 import subprocess
 import argparse
 import uuid
+import asyncio
+import threading
+import dns.message
+import dns.query
+import httpx
 
 from socket import *
 from random import randint
 from multiprocessing import Process
+from urllib.parse import urlparse
+from functools import partial
 
 from mitmproxy.certs import CertStore
 from mitmproxy.tools.main import mitmweb as web
@@ -36,13 +49,85 @@ def cleanup(*args, **kwargs):
     os._exit (0)
 
 
+def is_doh(server):
+    u = urlparse(server)
+    return u.scheme in ("http", "https")
+
+
+def fmt_rdns(dns, lport):
+    return "reverse:dns://{}@{}".format(dns, lport)
+
+
+class DOHProxiedProtocol(asyncio.Protocol):
+    def __init__(self, loop, server, proxy):
+        self.server = server
+        log ("using DOH: {}".format(server))
+        self.client = httpx.Client(proxies=proxy)
+        self.loop = loop
+    def datagram_received(self, pkt, addr):
+        self.loop.create_task(self.handle(pkt, addr))
+    def connection_made(self, transport):
+        self.transport = transport
+    async def handle(self, pkt, addr):
+        res = await self.loop.run_in_executor(None,
+                               self.dns_query, pkt)
+        self.transport.sendto(res, addr)
+    def dns_query(self, pkt):
+        res = dns.message.from_wire(pkt)
+        res = dns.query.https(res, self.server,
+                           session=self.client)
+        return res.to_wire()
+    @classmethod
+    def start(cls, *args, **kwargs):
+        dns = threading.Thread(target=cls._start,
+                            args=args, kwargs=kwargs)
+        dns.daemon = True
+        dns.start()
+    @classmethod
+    def _start(cls, bind, port, upstream, proxy=None):
+        loop = asyncio.new_event_loop()
+        factory = partial(cls, loop, upstream, proxy)
+        coro = loop.create_datagram_endpoint(factory,
+                            local_addr=(bind, port),
+                            reuse_port=True)
+        loop.run_until_complete(coro)
+        loop.run_forever()
+
+
+def setup_dns_upstream(args):
+    port = randint(28080, 58080)
+    dns = "{}:{}".format("127.0.0.1", port)
+    DOHProxiedProtocol.start(
+                             "127.0.0.1",
+                             port,
+                             args.dns,
+                             args.upstream)
+    args.dns = fmt_rdns(dns, proxy)
+
+
 def add_server(command, spec):
     spec and command.append("--mode")
     spec and command.append(spec)
 
 
+def add_upstream(args, ext):
+    u = urlparse(args.upstream)
+    upstream = "upstream:{}://{}:{}".format(u.scheme,
+                                            u.hostname,
+                                            u.port)
+    args.mode = upstream
+    cred = "{}:{}".format(u.username, u.password)
+    u.username and ext.append("--upstream-auth")
+    u.username and ext.append(cred)
+
+
 def log(*args):
     print (time.ctime(), *args)
+
+
+def die(*args):
+    print (time.ctime(), *args)
+    sys.exit (1)
 
 
 def adb(*args):
@@ -103,15 +188,12 @@ webport = randint(28080, 58080)
 lamda = int(os.environ.get("PORT",
                     65000))
 
-def dnsopt(dns):
-    return "reverse:dns://{}@{}".format(dns, proxy)
 argp.add_argument("device", nargs=1)
-argp.add_argument("-m", "--mode", default="regular")
+mod = argp.add_mutually_exclusive_group(required=False)
+mod.add_argument("-m", "--mode", default="regular")
+mod.add_argument("--upstream", type=str, default=None)
 argp.add_argument("--serial", type=str, default=None)
-dns = argp.add_mutually_exclusive_group(required=False)
-dns.add_argument("--dns", type=dnsopt, nargs="?",
-                                    const="1.1.1.1")
-dns.add_argument("--nameserver", type=str, default="")
+argp.add_argument("--dns", type=str, default=None)
 args, extras = argp.parse_known_args()
 serial = args.serial
 host = args.device[0]
@@ -127,17 +209,30 @@ usb = server in ("127.0.0.1", "::1")
 
 if cert:
     log ("ssl:", cert)
+if args.upstream:
+    add_upstream(args, extras)
 if usb and args.dns:
-    log ("dns mitm not available over usb")
-    sys.exit (1)
-if usb and (forward(lamda, lamda).wait() != 0 or \
-            reverse(proxy, proxy).wait() != 0):
-    log ("forward failed")
-    sys.exit (1)
+    die ("dns mitm not available in USB mode")
+if usb and args.upstream:
+    log ("dns will not sent via upstream in USB mode")
+if args.upstream and not args.dns:
+    die ("dns must be set in upstream mode")
+if args.upstream and args.dns and not is_doh(args.dns):
+    die ("dns must be DOH in upstream mode")
+if usb and forward(lamda, lamda).wait() != 0:
+    die ("adb forward failed")
+if usb and reverse(proxy, proxy).wait() != 0:
+    die ("adb forward failed")
+if not args.upstream and args.dns and not is_doh(args.dns):
+    args.dns = fmt_rdns(args.dns, proxy)
+if args.dns and is_doh(args.dns):
+    setup_dns_upstream(args)
+
 
 # 创建设备实例
 d = Device(host, port=lamda,
                  certificate=cert)
+logger.setLevel(logging.WARN)
 
 # 拼接证书文件路径
 DIR = os.path.expanduser(CONF_DIR)
@@ -150,8 +245,8 @@ d.install_ca_certificate(ca)
 # 初始化 proxy 配置
 profile = GproxyProfile()
 profile.type = GproxyType.HTTP_CONNECT
-profile.nameserver = args.nameserver
-if not usb and args.dns:
+profile.nameserver = "1.1.1.1"
+if not usb and (args.upstream or args.dns):
     profile.nameserver = "{}:{}".format(server, proxy)
 profile.drop_udp = True
 

@@ -72,6 +72,7 @@ __all__ = [
                 "OpenVPNAuth",
                 "OpenVPNEncryption",
                 "OpenVPNKeyDirection",
+                "ToastDuration",
                 "OpenVPNCipher",
                 "OpenVPNProto",
                 "Orientation",
