@@ -904,10 +904,11 @@ class UiAutomatorStub(BaseServiceStub):
 
 
 class ApplicationOpStub:
-    def __init__(self, stub, applicationId):
+    def __init__(self, stub, applicationId, user=0):
         """
         Application 子接口，用来模拟出实例的意味
         """
+        self.user = user
         self.applicationId = applicationId
         self.stub = stub
     def __str__(self):
@@ -919,6 +920,7 @@ class ApplicationOpStub:
         应用是否正处于前台运行
         """
         req = protos.ApplicationRequest(name=self.applicationId)
+        req.user = self.user
         r = self.stub.isForeground(req)
         return r.value
     def permissions(self):
@@ -926,6 +928,7 @@ class ApplicationOpStub:
         获取应用的所有权限列表
         """
         req = protos.ApplicationRequest(name=self.applicationId)
+        req.user = self.user
         r = self.stub.getPermissions(req)
         return r.permissions
     def grant(self, permission, mode=GrantType.GRANT_ALLOW):
@@ -935,6 +938,7 @@ class ApplicationOpStub:
         req = protos.ApplicationRequest(name=self.applicationId,
                                         permission=permission,
                                         mode=mode)
+        req.user = self.user
         r = self.stub.grantPermission(req)
         return r.value
     def revoke(self, permission):
@@ -943,6 +947,7 @@ class ApplicationOpStub:
         """
         req = protos.ApplicationRequest(name=self.applicationId,
                                         permission=permission)
+        req.user = self.user
         r = self.stub.revokePermission(req)
         return r.value
     def query_launch_activity(self):
@@ -950,6 +955,7 @@ class ApplicationOpStub:
         获取应用的启动 activity 信息
         """
         req = protos.ApplicationRequest(name=self.applicationId)
+        req.user = self.user
         r = self.stub.queryLaunchActivity(req)
         return to_dict(r)
     def is_permission_granted(self, permission):
@@ -958,6 +964,7 @@ class ApplicationOpStub:
         """
         req = protos.ApplicationRequest(name=self.applicationId,
                                         permission=permission)
+        req.user = self.user
         r = self.stub.isPermissionGranted(req)
         return r.value
     def delete_cache(self):
@@ -965,6 +972,7 @@ class ApplicationOpStub:
         清空应用的缓存数据（非数据仅缓存）
         """
         req = protos.ApplicationRequest(name=self.applicationId)
+        req.user = self.user
         r = self.stub.deleteApplicationCache(req)
         return r.value
     def reset_data(self):
@@ -972,6 +980,7 @@ class ApplicationOpStub:
         清空应用的所有数据
         """
         req = protos.ApplicationRequest(name=self.applicationId)
+        req.user = self.user
         r = self.stub.resetApplicationData(req)
         return r.value
     def reset(self):
@@ -981,6 +990,7 @@ class ApplicationOpStub:
         启动应用
         """
         req = protos.ApplicationRequest(name=self.applicationId)
+        req.user = self.user
         r = self.stub.startApplication(req)
         return r.value
     def stop(self):
@@ -988,6 +998,7 @@ class ApplicationOpStub:
         停止应用
         """
         req = protos.ApplicationRequest(name=self.applicationId)
+        req.user = self.user
         r = self.stub.stopApplication(req)
         return r.value
     def info(self):
@@ -995,6 +1006,7 @@ class ApplicationOpStub:
         获取应用信息
         """
         req = protos.ApplicationRequest(name=self.applicationId)
+        req.user = self.user
         r = self.stub.applicationInfo(req)
         return r
     def uninstall(self):
@@ -1002,6 +1014,7 @@ class ApplicationOpStub:
         卸载应用 (always return true)
         """
         req = protos.ApplicationRequest(name=self.applicationId)
+        req.user = self.user
         r = self.stub.uninstallApplication(req)
         return r.value
     def enable(self):
@@ -1009,6 +1022,7 @@ class ApplicationOpStub:
         启用应用
         """
         req = protos.ApplicationRequest(name=self.applicationId)
+        req.user = self.user
         r = self.stub.enableApplication(req)
         return r.value
     def disable(self):
@@ -1016,6 +1030,7 @@ class ApplicationOpStub:
         禁用应用（这将使应用从启动器消失）
         """
         req = protos.ApplicationRequest(name=self.applicationId)
+        req.user = self.user
         r = self.stub.disableApplication(req)
         return r.value
     def add_to_doze_mode_whitelist(self):
@@ -1023,6 +1038,7 @@ class ApplicationOpStub:
         将APP加入省电白名单（可以一直运行，可能不会覆盖所有系统）
         """
         req = protos.ApplicationRequest(name=self.applicationId)
+        req.user = self.user
         r = self.stub.addToDozeModeWhiteList(req)
         return True
     def remove_from_doze_mode_whitelist(self):
@@ -1030,6 +1046,7 @@ class ApplicationOpStub:
         将APP移除省电白名单 (always return true)
         """
         req = protos.ApplicationRequest(name=self.applicationId)
+        req.user = self.user
         r = self.stub.removeFromDozeModeWhiteList(req)
         return True
     def is_installed(self):
@@ -1037,6 +1054,7 @@ class ApplicationOpStub:
         检查应用是否已经安装
         """
         req = protos.ApplicationRequest(name=self.applicationId)
+        req.user = self.user
         r = self.stub.isInstalled(req)
         return r.value
 
@@ -1086,8 +1104,8 @@ class ApplicationStub(BaseServiceStub):
         req = protos.ApplicationRequest(path=fpath)
         r = self.stub.installFromLocalFile(req)
         return r
-    def __call__(self, applicationId):
-        return ApplicationOpStub(self.stub, applicationId)
+    def __call__(self, applicationId, user=0):
+        return ApplicationOpStub(self.stub, applicationId, user)
 
 
 class StorageOpStub:
@@ -1893,8 +1911,8 @@ class Device(object):
         return self.stub("Application").get_last_activities(count=count)
     def start_activity(self, **activity):
         return self.stub("Application").start_activity(**activity)
-    def application(self, applicationId):
-        return self.stub("Application")(applicationId)
+    def application(self, applicationId, user=0):
+        return self.stub("Application")(applicationId, user=user)
     # 快速调用: Util
     def record_touch(self):
         return self.stub("Util").record_touch()
