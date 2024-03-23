@@ -88,8 +88,7 @@ class DOHProxiedProtocol(asyncio.Protocol):
         loop = asyncio.new_event_loop()
         factory = partial(cls, loop, upstream, proxy)
         coro = loop.create_datagram_endpoint(factory,
-                            local_addr=(bind, port),
-                            reuse_port=True)
+                            local_addr=(bind, port))
         loop.run_until_complete(coro)
         loop.run_forever()
 

@@ -67,6 +67,8 @@ __all__ = [
                 "Keys",
                 "KeyCode",
                 "KeyCodes",
+                "MetaKeyCode",
+                "MetaKeyCodes",
                 "BaseCryptor",
                 "FernetCryptor",
                 "OpenVPNAuth",
@@ -181,6 +183,9 @@ Keys = protos.Key # make an alias
 
 KeyCode = protos.KeyCode
 KeyCodes = protos.KeyCode # make an alias
+
+MetaKeyCode = protos.MetaKeyCode
+MetaKeyCodes = protos.MetaKeyCode # make an alias
 
 OpenVPNAuth = protos.OpenVPNAuth
 OpenVPNEncryption = protos.OpenVPNEncryption

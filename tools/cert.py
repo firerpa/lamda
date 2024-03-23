@@ -42,7 +42,7 @@ if not os.path.isfile("{}.pem".format(CN)):
     pk.generate_key(crypto.TYPE_RSA, 2048)
 
     req = crypto.X509Req()
-    req.set_version(2)
+    req.set_version(0)
     req.get_subject().CN    = CN
     req.set_pubkey(pk)
     req.sign(pk, "sha256")
