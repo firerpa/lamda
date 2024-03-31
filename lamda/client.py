@@ -242,6 +242,8 @@ TouchSequence.__iter__ = touchSequenceIter
 Bound.width = property(width)
 Bound.height = property(height)
 
+FindImageMethod = protos.FindImageMethod
+
 Bound.center = center
 Bound.corner = corner
 
@@ -853,6 +855,19 @@ class UiAutomatorStub(BaseServiceStub):
         """
         r = self.stub.getClipboard(protos.Empty())
         return r.value
+    def find_similar_image(self, data, threshold=0,
+                           max_distance=0, bound=None,
+                           method=FindImageMethod.FI_TEMPLATE):
+        """
+        根据提供的目标图片从屏幕中获取相似图片位置
+        """
+        req = protos.FindImageRequest(bound=bound)
+        req.method = method
+        req.max_distance = max_distance
+        req.threshold = threshold
+        req.partial = data
+        r = self.stub.findSimilarImage(req)
+        return r.bounds
     def freeze_rotation(self, freeze=True):
         """
         锁定屏幕旋转
@@ -2022,6 +2037,11 @@ class Device(object):
         return self.stub("UiAutomator").wait_for_idle(timeout)
     def get_last_toast(self):
         return self.stub("UiAutomator").get_last_toast()
+    def find_similar_image(self, data, threshold=0,
+                                max_distance=0, bound=None,
+                                method=FindImageMethod.FI_TEMPLATE):
+        return self.stub("UiAutomator").find_similar_image(data, threshold=threshold,
+                                max_distance=max_distance, bound=bound, method=method)
     # watcher
     def remove_all_watchers(self):
         return self.stub("UiAutomator").remove_all_watchers()

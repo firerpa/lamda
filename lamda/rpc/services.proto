@@ -186,6 +186,7 @@ service UiAutomator {
     rpc registerClickUiObjectWatcher(WatcherRegistRequest) returns (Boolean) {}
     rpc registerPressKeysWatcher(WatcherRegistRequest) returns (Boolean) {}
     rpc registerNoneOpWatcher(WatcherRegistRequest) returns (Boolean) {}
+    rpc findSimilarImage(FindImageRequest) returns (FindImageResponse) {}
 }
 
 service Wifi {

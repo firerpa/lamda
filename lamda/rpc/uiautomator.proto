@@ -554,3 +554,20 @@ message WatcherRegistRequest {
                 Key key = 4;
         }
 }
+
+enum FindImageMethod {
+        FI_TEMPLATE             = 0;
+        FI_FEATURE_POINT        = 1;
+}
+
+message FindImageRequest {
+        FindImageMethod method  = 1;
+        Bound bound             = 2;
+        bytes partial           = 3;
+        uint32 max_distance     = 4;
+        float threshold         = 5;
+}
+
+message FindImageResponse {
+        repeated Bound bounds = 1;
+}
