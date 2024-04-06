@@ -556,16 +556,32 @@ message WatcherRegistRequest {
 }
 
 enum FindImageMethod {
-        FI_TEMPLATE             = 0;
-        FI_FEATURE_POINT        = 1;
+        FIM_TEMPLATE            = 0;
+        FIM_FEATURE             = 1;
+}
+
+enum FindImageArea {
+        FIA_WHOLE_SCREEN        = 0;
+        FIA_LEFT                = 1;
+        FIA_TOP_LEFT            = 2;
+        FIA_TOP                 = 3;
+        FIA_TOP_RIGHT           = 4;
+        FIA_RIGHT               = 5;
+        FIA_BOTTOM_RIGHT        = 6;
+        FIA_BOTTOM              = 7;
+        FIA_BOTTOM_LEFT         = 8;
 }
 
 message FindImageRequest {
-        FindImageMethod method  = 1;
-        Bound bound             = 2;
-        bytes partial           = 3;
-        uint32 max_distance     = 4;
-        float threshold         = 5;
+        bytes partial           = 1;
+        FindImageMethod method  = 2;
+        oneof _area {
+                FindImageArea area = 3;
+                Bound bound     = 4;
+        }
+        uint32 distance         = 5;
+        float threshold         = 6;
+        float scale             = 7;
 }
 
 message FindImageResponse {

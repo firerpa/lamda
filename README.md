@@ -19,7 +19,9 @@ LAMDA 是一个用于逆向及自动化的辅助框架，设计为减少安全�
 <p align="center">
 <img src="image/wx.png" alt="公众号" width="234">
 </p>
-<p align="center"><small>关注公众号查看视频教程以及更多使用方法</small><br><small><b>知识应该是共享的，我们不会要求你为相关知识付费</b></small><br><small>文字版文档请查看<a href="https://github.com/rev1si0n/lamda/wiki">使用文档</a></small></p>
+<p align="center"><small>关注公众号查看视频教程以及更多使用方法</small><br><small><b>知识应该是共享的，我们不会要求你为相关知识付费</b></small><br><br><small><a href="https://space.bilibili.com/1964784386/video">BILIBILI 同步发布</a></small><br><small>文字版文档请查看<a href="https://github.com/rev1si0n/lamda/wiki">使用文档</a></small></small>
+</p>
+
 
 经过超 500 台设备的稳定生产环境考验，具有近乎商业级软件的质量和稳定性，仅需 root 权限即可正常运行。具备 ARM/X86 全架构，安卓 6.0-14 的广泛兼容性，支持模拟器、真机、云手机、 WSA（Windows Subsystem for Android™️）、无头开发板以及 Redroid。提供大量可编程接口，支持界面布局检视、获取/重放系统中最近的 Activity、唤起应用的 Activity 等功能。除此之外，它支持大文件上传下载，远程桌面，以及UI自动化编程接口，点击、截图、获取界面元素、执行 shell 命令、设备状态、资源读取、系统配置、属性读写、一键中间人等，可通过 SSH 或内置 ADB 登录设备终端。具备 socks5、OpenVPN 代理并可通过接口轻松设置根证书，实现中间人攻击，以及 Frida、IDA 等工具等等，同时支持定时任务、Magisk开机自启动，你可以在任何地方通过网络连接运行着 LAMDA 设备。
 

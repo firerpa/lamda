@@ -74,6 +74,8 @@ __all__ = [
                 "OpenVPNAuth",
                 "OpenVPNEncryption",
                 "OpenVPNKeyDirection",
+                "FindImageMethod",
+                "FindImageArea",
                 "ToastDuration",
                 "OpenVPNCipher",
                 "OpenVPNProto",
@@ -230,7 +232,6 @@ TouchAction.action = property(touchActionRealAction)
 
 TouchSequence.load = classmethod(touchSequenceLoad)
 TouchSequence.save = touchSequenceSave
-
 TouchSequence.appendAction = touchSequenceAppendAction
 TouchSequence.appendDown = touchSequenceAppendDown
 TouchSequence.appendWait = touchSequenceAppendWait
@@ -243,6 +244,7 @@ Bound.width = property(width)
 Bound.height = property(height)
 
 FindImageMethod = protos.FindImageMethod
+FindImageArea = protos.FindImageArea
 
 Bound.center = center
 Bound.corner = corner
@@ -855,16 +857,26 @@ class UiAutomatorStub(BaseServiceStub):
         """
         r = self.stub.getClipboard(protos.Empty())
         return r.value
-    def find_similar_image(self, data, threshold=0,
-                           max_distance=0, bound=None,
-                           method=FindImageMethod.FI_TEMPLATE):
+    def _set_target_Area(self, req, area):
+        req.area = area
+    def _set_target_Bound(self, req, bound):
+        req.bound.CopyFrom(bound)
+    def find_similar_image(self, data, threshold=0.0, distance=250,
+                           scale=1.0, area=FindImageArea.FIA_WHOLE_SCREEN,
+                           method=FindImageMethod.FIM_TEMPLATE):
         """
         根据提供的目标图片从屏幕中获取相似图片位置
         """
-        req = protos.FindImageRequest(bound=bound)
+        req = protos.FindImageRequest()
+        checkArgumentTyp(area, (Bound, int))
+        name = getattr(getattr(area, "DESCRIPTOR", None),
+                                         "name", "Area")
+        func = "_set_target_{}".format(name)
+        getattr(self, func)(req, area)
         req.method = method
-        req.max_distance = max_distance
+        req.distance = distance
         req.threshold = threshold
+        req.scale = scale
         req.partial = data
         r = self.stub.findSimilarImage(req)
         return r.bounds
@@ -2037,11 +2049,12 @@ class Device(object):
         return self.stub("UiAutomator").wait_for_idle(timeout)
     def get_last_toast(self):
         return self.stub("UiAutomator").get_last_toast()
-    def find_similar_image(self, data, threshold=0,
-                                max_distance=0, bound=None,
-                                method=FindImageMethod.FI_TEMPLATE):
+    def find_similar_image(self, data, threshold=0.0, distance=250,
+                                scale=1.0, area=FindImageArea.FIA_WHOLE_SCREEN,
+                                method=FindImageMethod.FIM_TEMPLATE):
         return self.stub("UiAutomator").find_similar_image(data, threshold=threshold,
-                                max_distance=max_distance, bound=bound, method=method)
+                                distance=distance, scale=scale,
+                                area=area, method=method)
     # watcher
     def remove_all_watchers(self):
         return self.stub("UiAutomator").remove_all_watchers()
@@ -2117,7 +2130,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     readline.parse_and_bind("tab: complete")
-
     d = Device(args.device, port=args.port,
-                    certificate=args.cert)
+                        certificate=args.cert)
     code.interact(local=globals())
