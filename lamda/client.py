@@ -1373,63 +1373,17 @@ class DebugStub(BaseServiceStub):
         """
         r = self.stub.isAndroidDebugBridgeRunning(protos.Empty())
         return r.value
-    def is_ida_running(self):
-        """
-        IDA 服务端是否在运行
-        """
-        r = self.stub.isIDARunning(protos.Empty())
-        return r.value
-    def is_ida64_running(self):
-        """
-        IDA64 服务端是否在运行
-        """
-        r = self.stub.isIDA64Running(protos.Empty())
-        return r.value
     def start_android_debug_bridge(self):
         """
         启动内置 adbd (默认随框架启动)
         """
         r = self.stub.startAndroidDebugBridge(protos.Empty())
         return r.value
-    def start_ida(self, port=23932, **env):
-        """
-        启动 IDA 服务端
-        """
-        req = protos.IDAConfigRequest(port=port)
-        req.environment.update(env)
-        r = self.stub.startIDA(req)
-        return r.value
-    def start_ida64(self, port=23964, **env):
-        """
-        启动 IDA64 服务端
-        """
-        req = protos.IDAConfigRequest(port=port)
-        req.environment.update(env)
-        r = self.stub.startIDA64(req)
-        return r.value
     def stop_android_debug_bridge(self):
         """
         停止内置 adb daemon
         """
         r = self.stub.stopAndroidDebugBridge(protos.Empty())
-        return r.value
-    def set_debuggable(self):
-        """
-        设置系统为 debuggable
-        """
-        r = self.stub.setDebuggable(protos.Empty())
-        return r.value
-    def stop_ida(self):
-        """
-        停止 IDA 服务端
-        """
-        r = self.stub.stopIDA(protos.Empty())
-        return r.value
-    def stop_ida64(self):
-        """
-        停止 IDA64 服务端
-        """
-        r = self.stub.stopIDA64(protos.Empty())
         return r.value
 
 

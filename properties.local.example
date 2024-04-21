@@ -33,6 +33,11 @@ ssl-web-credential=password123
 # 此选项同时将禁用包括任何可能对系统稳定性产生影响的组件
 disable-client-api=false
 
+# 增强隐身模式，在可能损坏自身或第三方组件部分
+# 功能的情况下尽量保护 LAMDA 及其附属组件不被探测
+# 非必要请勿使用 (7.65 版本引入)
+enhanced-stealth-mode=false
+
 # ---------- OpenVPN 配置 ----------
 # ***** 注意请勿手动编写此 OpenVPN 配置，你应该始终使用 tools
 # ***** 目录下的 openvpn 镜像中提供的脚本来生成此配置
@@ -78,25 +83,6 @@ cron.enable=true
 # 如果你不需要用 ssh 连接设备，可以关闭此服务
 # 是否启用 true | false
 sshd.enable=true
-
-#
-# 注意 IDA 以及 IDA64 服务需要你的设备为 debuggable (ro.debuggable)
-# ---------- IDA 服务 ----------
-# 是否启用 true | false
-ida.enable=true
-# 绑定接口
-ida.bind=0.0.0.0
-# 绑定端口
-ida.port=65032
-
-# 注意 IDA 以及 IDA64 服务需要你的设备为 debuggable (ro.debuggable)
-# ---------- IDA64 服务 ----------
-# 是否启用 true | false
-ida64.enable=true
-# 绑定接口
-ida64.bind=0.0.0.0
-# 绑定端口
-ida64.port=65064
 
 # ---------- 端口转发(frp) 服务 ----------
 # 是否启用 true | false

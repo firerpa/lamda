@@ -7,11 +7,6 @@ package lamda.rpc;
 
 import "google/protobuf/struct.proto";
 
-message IDAConfigRequest {
-        uint32 port = 1;
-        google.protobuf.Struct environment = 8;
-}
-
 message ADBDConfigRequest {
         string adb_pubkey = 1;
 }
