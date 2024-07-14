@@ -10,7 +10,7 @@ setuptools.setup(
     description     = "Android reverse engineering & automation framework",
     url             = "https://github.com/rev1si0n/lamda",
     author          = "rev1si0n",
-    python_requires = ">=3.6,<3.12",
+    python_requires = ">=3.6,<=3.12",
     zip_safe        = False,
     extras_require  = {
         "full": ["frida>=16.0.0,<17.0.0"],

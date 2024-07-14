@@ -22,16 +22,46 @@ LAMDA 是一个用于逆向及自动化的辅助框架，设计为减少安全�
 <p align="center"><small>关注公众号查看视频教程以及更多使用方法</small><br><small><b>知识应该是共享的，我们不会要求你为相关知识付费</b></small><br><br><small><a href="https://space.bilibili.com/1964784386/video">BILIBILI 同步发布</a></small><br><small>文字版文档请查看<a href="https://github.com/rev1si0n/lamda/wiki">使用文档</a></small></small>
 </p>
 
-
 经过超 500 台设备的稳定生产环境考验，具有近乎商业级软件的质量和稳定性，仅需 root 权限即可正常运行。具备 ARM/X86 全架构，安卓 6.0-14 的广泛兼容性，支持模拟器、真机、云手机、 WSA（Windows Subsystem for Android™️）、无头开发板以及 Redroid。提供大量可编程接口，支持界面布局检视、获取/重放系统中最近的 Activity、唤起应用的 Activity 等功能。除此之外，它支持大文件上传下载，远程桌面，以及UI自动化编程接口，点击、截图、获取界面元素、执行 shell 命令、设备状态、资源读取、系统配置、属性读写、一键中间人等，可通过 SSH 或内置 ADB 登录设备终端。具备 socks5、OpenVPN 代理并可通过接口轻松设置系统证书及中间人，同时支持定时任务、Magisk开机自启动，你可以在任何地方通过网络连接运行着 LAMDA 设备。
 
-![动图演示](image/demo.gif)
+<h3><p align="center">星火设备管理系统</p></h3>
 
-## 一键中间人流量分析
+<p align="center">星火设备管理系统是用于管理运行着 LAMDA 的设备管控平台，他可以集中管理您分散全国各地不同网络的安卓设备。真正的弱中心化分布式设备管理，您与所有设备都可以是相隔天涯海角，所有设备都是以您为中心，您在哪，设备就在哪。您无需自行购买任何或者搭建任何服务器资源，只需您自己的电脑即可使用。多年技术积累，专注解决行业痛点及难题。</p>
+
+<p align="center"><small>首发低至 ¥3 元 5台</small><br><small><b>您可以关注上方公众号后在菜单订阅及查看使用教程</b></small></p>
+
+<p align="center">
+<img src="image/overview.png" alt="设备管理平台" width="95%">
+</p>
+<p align="center">
+<img src="image/detail.png" alt="设备管理平台" width="95%">
+</p>
+<p align="center">
+<img src="image/totalview.png" alt="设备管理平台" width="95%">
+</p>
+
+<h3><p align="center">丰富的设备编程接口</p></h3>
+
+<p align="center">LAMDA 提供多达 160 条编程 API 接口，让你可以对安卓设备进行无微不至的管理和操作，提供了包括命令执行，系统设置，系统状态，应用相关，自动化相关，代理以及文件等十几个大类的接口。同时提供了封装完整的 Python 库让你可以快速上手使用。</p>
+
+<p align="center">
+<img src="image/api.png" alt="动图演示" width="95%">
+</p>
+
+
+<h3><p align="center">简洁易用的界面</p></h3>
+
+<p align="center">
+<img src="image/demo.gif" alt="动图演示" width="95%">
+</p>
+
+<h3><p align="center">一键中间人流量分析</p></h3>
 
 支持常规以及国际APP流量分析，DNS流量分析，得益于 [mitmproxy flow hook](https://docs.mitmproxy.org/stable/api/events.html)，你可以对任何请求做到最大限度的掌控，mitmproxy 功能足够丰富，你可以使用 Python 脚本实时修改或者捕获应用的请求，也可以通过其 `Export` 选项导出特定请求的 `curl` 命令或者 `HTTPie` 命令，分析重放、拦截修改、功能组合足以替代你用过的任何此类商业/非商业软件。如果你仍不清楚 mitmproxy 是什么以及其具有的能力，请务必先查找相关文档，因为 LAMDA 将会使用 mitmproxy 为你展现应用请求。
 
-![中间人流量分析动图演示](image/mitm.gif)
+<p align="center">
+<img src="image/mitm.gif" alt="动图演示" width="95%">
+</p>
 
 <p align="center">
 当然，LAMDA 提供的能力不止于这些，由于篇幅较长将不在此罗列，他是你强有力的设备控制及管理工具，如果你感兴趣，请转到 使用文档。
