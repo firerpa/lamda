@@ -1,0 +1,18 @@
+version: "3"
+# docker run -d --name firerpa --privileged -v ~/firerpa:/user -e LICENSE= -e DOMAIN=firerpa.local -e WEB_PORT=8000 -e API_PORT=65000 -p 8000:8000 -p 65000:65000 --restart always registry.device-farm.com/firerpa/server:latest
+services:
+        firerpa:
+                container_name: firerpa
+                image: registry.device-farm.com/firerpa/server:latest
+                privileged: true
+                volumes:
+                        - ~/firerpa:/user
+                environment:
+                        - LICENSE=
+                        - DOMAIN=firerpa.local
+                        - WEB_PORT=8000
+                        - API_PORT=65000
+                ports:
+                        - 8000:8000
+                        - 65000:65000
+                restart: always
