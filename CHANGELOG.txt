@@ -1,3 +1,7 @@
+7.72
+* 更新部分子模块
+* 已知问题修复
+
 7.71
 * 修复 Permission Loophole #95
 * 修复 enumerate_all_pkg_names
