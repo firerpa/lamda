@@ -7,8 +7,8 @@ exec(open("lamda/__init__.py", "rt").read())
 setuptools.setup(
     name            = "lamda",
     version         = "{}".format(__version__),
-    description     = "Android reverse engineering & automation framework",
-    url             = "https://github.com/rev1si0n/lamda",
+    description     = "Android reverse engineering & automation framework (Client API)",
+    url             = "https://github.com/firerpa/lamda",
     author          = "rev1si0n",
     python_requires = ">=3.6,<=3.12",
     zip_safe        = False,
