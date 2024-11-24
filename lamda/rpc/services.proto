@@ -49,6 +49,7 @@ service Application {
 
     rpc addToDozeModeWhiteList(ApplicationRequest) returns (Boolean) {}
     rpc removeFromDozeModeWhiteList(ApplicationRequest) returns (Boolean) {}
+    rpc getIdentifierByLabel(String) returns (String) {}
 }
 
 service Debug {
