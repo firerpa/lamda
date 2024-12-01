@@ -12,7 +12,7 @@
 <img src="https://img.shields.io/github/v/release/rev1si0n/lamda" />
 </p>
 
-<p align="center"><a href="https://github.com/rev1si0n/lamda/wiki">使用文档</a> | <a href="https://t.me/lamda_dev">TELEGRAM</a> | <a href="https://lamda.run/join/qq">QQ 群组</a> | <a href="https://github.com/rev1si0n/lamda/blob/HEAD/CHANGELOG.txt">更新历史</a></p>
+<p align="center"><a href="https://device-farm.com/doc/pages/Home.html">使用文档</a> | <a href="https://t.me/lamda_dev">TELEGRAM</a> | <a href="https://lamda.run/join/qq">QQ 群组</a> | <a href="https://github.com/rev1si0n/lamda/blob/HEAD/CHANGELOG.txt">更新历史</a></p>
 
 智能机的崛起，传统网页端的普及度也开始显著减弱，数据与应用正加速向移动端转移。越来越多的人选择通过智能手机和平板等移动设备来获取信息和服务。随着移动设备的普及，用户享受到更便捷、更即时的访问体验，传统的网页内容消费模式面临重新审视。与此同时，数据采集的技术也亟需适应这一趋势。过去，许多数据采集工具专注于网页内容，但在移动端环境中，尤其是在移动端封闭的黑盒中，现今的常规采集技术也面临着新的挑战。LAMDA 的诞生，为这一切创造了可能。
 
