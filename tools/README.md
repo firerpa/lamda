@@ -1,1 +1,1 @@
-使用方法请查看项目 WIKI
+使用方法请查看 https://device-farm.com/doc/

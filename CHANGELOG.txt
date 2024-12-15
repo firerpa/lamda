@@ -1,3 +1,8 @@
+7.76
+* 修复工具版本依赖
+* 修复 Python 版本匹配问题
+* 更新部分子模块
+
 7.75
 * 新增 OCR识别接口
 * 新增 get_application_by_name

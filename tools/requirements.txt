@@ -1,5 +1,5 @@
 mitmproxy>=9.0.0,<=10.2.0
 dnspython
-httpx[socks]
+httpx[socks]<0.28.0
 packaging
 Pillow
