@@ -13,6 +13,16 @@ enum GrantType {
                 GRANT_IGNORE      = 2;
 }
 
+enum DataEncode {
+        DATA_ENCODE_NONE  = 0;
+        DATA_ENCODE_ZLIB  = 1;
+}
+
+enum ScriptRuntime {
+        RUNTIME_QJS        = 0;
+        RUNTIME_V8         = 1;
+}
+
 message ApplicationRequest {
         string name             = 1;
         string permission       = 2;
@@ -82,4 +92,23 @@ message ApplicationProcesses {
 
 message ApplicationPkgNames {
         repeated string names   = 1;
+}
+
+message HookRequest {
+        string package          = 1;
+        bytes script            = 2;
+        ScriptRuntime runtime   = 3;
+        string destination      = 4;
+        DataEncode encode       = 5;
+        uint32 standup          = 6;
+}
+
+message HookRpcRequest {
+        string package          = 1;
+        string callinfo         = 2;
+}
+
+message HookRpcResponse {
+        string package          = 1;
+        string callresult       = 2;
 }

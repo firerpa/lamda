@@ -256,6 +256,11 @@ TouchSequence.appendUp = touchSequenceAppendUp
 TouchSequence.__getitem__ = touchSequenceIndexer
 TouchSequence.__iter__ = touchSequenceIter
 
+DataEncode = protos.DataEncode
+ScriptRuntime = protos.ScriptRuntime
+HookRpcRequest = protos.HookRpcRequest
+HookRpcResponse = protos.HookRpcResponse
+
 Bound.width = property(width)
 Bound.height = property(height)
 
@@ -960,6 +965,24 @@ class UiAutomatorStub(BaseServiceStub):
         return ObjectUiAutomatorOpStub(self.stub, kwargs)
 
 
+class AppScriptRpcInterface(object):
+    def __init__(self, stub, application,
+                                    name):
+        self.application = application
+        self.stub = stub
+        self.name = name
+    def __call__(self, *args):
+        call_args = dict()
+        call_args["method"] = self.name
+        call_args["args"] = args
+        req = HookRpcRequest()
+        req.package = self.application.applicationId
+        req.callinfo = json.dumps(call_args)
+        result = self.stub.callScript(req)
+        r = json.loads(result.callresult)
+        return r
+
+
 class ApplicationOpStub:
     def __init__(self, stub, applicationId, user=0):
         """
@@ -1114,6 +1137,51 @@ class ApplicationOpStub:
         req.user = self.user
         r = self.stub.isInstalled(req)
         return r.value
+    def attach_script(self, script, runtime=ScriptRuntime.RUNTIME_QJS,
+                                                    emit="",
+                                encode=DataEncode.DATA_ENCODE_NONE,
+                                standup=5):
+        """
+        向应用注入持久化 Hook 脚本
+        """
+        s = isinstance(script, str)
+        script = script.encode() if s else script
+        req = protos.HookRequest()
+        req.package     = self.applicationId
+        req.script      = script
+        req.runtime     = runtime
+        req.standup     = standup
+        req.destination = emit
+        req.encode      = encode
+        r = self.stub.attachScript(req)
+        return r.value
+    def detach_script(self):
+        """
+        移除注入应用的 Hook 脚本
+        """
+        req = protos.String(value=self.applicationId)
+        r = self.stub.detachScript(req)
+        return r.value
+    def is_attached_script(self):
+        """
+        检查使用在此应用注入了 Hook 脚本
+        """
+        req = protos.String(value=self.applicationId)
+        r = self.stub.isScriptAttached(req)
+        return r.value
+    def is_script_alive(self):
+        """
+        检查应用中的 Hook 脚本是否正常
+        """
+        req = protos.String(value=self.applicationId)
+        r = self.stub.isScriptAlive(req)
+        return r.value
+    def __getattr__(self, name):
+        """
+        调用注入应用 Hook 脚本的导出方法
+        """
+        return AppScriptRpcInterface(self.stub, self,
+                                            name)
 
 
 class ApplicationStub(BaseServiceStub):

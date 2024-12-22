@@ -50,6 +50,12 @@ service Application {
     rpc addToDozeModeWhiteList(ApplicationRequest) returns (Boolean) {}
     rpc removeFromDozeModeWhiteList(ApplicationRequest) returns (Boolean) {}
     rpc getIdentifierByLabel(String) returns (String) {}
+
+    rpc callScript(HookRpcRequest) returns (HookRpcResponse) {}
+    rpc isScriptAlive(String) returns (Boolean) {}
+    rpc isScriptAttached(String) returns (Boolean) {}
+    rpc attachScript(HookRequest) returns (Boolean) {}
+    rpc detachScript(String) returns (Boolean) {}
 }
 
 service Debug {
