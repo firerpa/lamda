@@ -57,6 +57,8 @@ logger.addHandler(handler)
 
 sys.path.append(joinpath(dirname(__file__)))
 sys.path.append(joinpath(dirname(__file__), "rpc"))
+# use native resolver to support mDNS
+os.environ["GRPC_DNS_RESOLVER"] = "native"
 
 protos, services = grpc.protos_and_services("services.proto")
 __all__ = [
@@ -179,6 +181,8 @@ def contain(a, b):
                 b.right <= a.right])
 
 def equal(a, b):
+    if not isinstance(b, protos.Bound):
+        return False
     return all([b.top == a.top,
                 b.left == a.left,
                 b.bottom == a.bottom,
@@ -194,6 +198,8 @@ Corner = protos.Corner
 Direction = protos.Direction
 GproxyType = protos.GproxyType
 GrantType = protos.GrantType
+ScriptRuntime = protos.ScriptRuntime
+DataEncode = protos.DataEncode
 
 Group = protos.Group
 Key = protos.Key
@@ -256,8 +262,6 @@ TouchSequence.appendUp = touchSequenceAppendUp
 TouchSequence.__getitem__ = touchSequenceIndexer
 TouchSequence.__iter__ = touchSequenceIter
 
-DataEncode = protos.DataEncode
-ScriptRuntime = protos.ScriptRuntime
 HookRpcRequest = protos.HookRpcRequest
 HookRpcResponse = protos.HookRpcResponse
 
@@ -385,13 +389,14 @@ class GrpcRemoteExceptionInterceptor(ClientInterceptor):
 
 
 class ObjectUiAutomatorOpStub:
-    def __init__(self, stub, selector):
+    def __init__(self, caller, selector):
         """
         UiAutomator 子接口，用来模拟出实例的意味
         """
         self._selector = selector
         self.selector = Selector(**selector)
-        self.stub = stub
+        self.stub = caller.stub
+        self.caller = caller
     def __str__(self):
         selector = ", ".join(["{}={}".format(k, v) \
                         for k, v in self._selector.items()])
@@ -494,6 +499,72 @@ class ObjectUiAutomatorOpStub:
         req = protos.SelectorOnlyRequest(selector=self.selector)
         r = self.stub.selectorObjInfoOfAllInstances(req)
         return r.objects
+    def all_instances(self):
+        """
+        获取选择器选中的所有元素控件
+        """
+        return list(self)
+    def _new_object(self, **kwargs):
+        selector = copy.deepcopy(self._selector)
+        selector.update(**kwargs)
+        instance = self.caller(**selector)
+        return instance
+    def text(self, txt):
+        return self._new_object(text=txt)
+    def resourceId(self, name):
+        return self._new_object(resourceId=name)
+    def description(self, desc):
+        return self._new_object(description=desc)
+    def packageName(self, name):
+        return self._new_object(packageName=name)
+    def className(self, name):
+        return self._new_object(className=name)
+    def textContains(self, needle):
+        return self._new_object(textContains=needle)
+    def descriptionContains(self, needle):
+        return self._new_object(descriptionContains=needle)
+    def textStartsWith(self, needle):
+        return self._new_object(textStartsWith=needle)
+    def descriptionStartsWith(self, needle):
+        return self._new_object(descriptionStartsWith=needle)
+    def textMatches(self, match):
+        return self._new_object(textMatches=match)
+    def descriptionMatches(self, match):
+        return self._new_object(descriptionMatches=match)
+    def resourceIdMatches(self, match):
+        return self._new_object(resourceIdMatches=match)
+    def packageNameMatches(self, match):
+        return self._new_object(packageNameMatches=match)
+    def classNameMatches(self, match):
+        return self._new_object(classNameMatches=match)
+    def checkable(self, value):
+        return self._new_object(checkable=value)
+    def clickable(self, value):
+        return self._new_object(clickable=value)
+    def focusable(self, value):
+        return self._new_object(focusable=value)
+    def scrollable(self, value):
+        return self._new_object(scrollable=value)
+    def longClickable(self, value):
+        return self._new_object(longClickable=value)
+    def enabled(self, value):
+        return self._new_object(enabled=value)
+    def checked(self, value):
+        return self._new_object(checked=value)
+    def focused(self, value):
+        return self._new_object(focused=value)
+    def selected(self, value):
+        return self._new_object(selected=value)
+    def index(self, idx):
+        return self._new_object(index=idx)
+    def instance(self, idx):
+        return self._new_object(instance=idx)
+    def __iter__(self):
+        """
+        遍历所有符合选择器条件的元素实例
+        """
+        yield from [self.instance(i) for i in \
+                            range(self.count())]
     def count(self):
         """
         获取选择器选中控件的数量
@@ -962,7 +1033,7 @@ class UiAutomatorStub(BaseServiceStub):
         r = self.stub.waitForIdle(protos.Integer(value=timeout))
         return r.value
     def __call__(self, **kwargs):
-        return ObjectUiAutomatorOpStub(self.stub, kwargs)
+        return ObjectUiAutomatorOpStub(self, kwargs)
 
 
 class AppScriptRpcInterface(object):
@@ -2042,6 +2113,14 @@ class Device(object):
                                         session=None):
         self.certificate = certificate
         self.server = "{0}:{1}".format(host, port)
+        policy = dict()
+        policy["maxAttempts"] = 5
+        policy["retryableStatusCodes"] = ["UNAVAILABLE"]
+        policy["backoffMultiplier"] = 2
+        policy["initialBackoff"] = "0.5s"
+        policy["maxBackoff"] = "15s"
+        config = json.dumps(dict(methodConfig=[{"name": [{}],
+                                 "retryPolicy": policy,}]))
         if certificate is not None:
             with open(certificate, "rb") as fd:
                 key, crt, ca = self._parse_certdata(fd.read())
@@ -2051,10 +2130,14 @@ class Device(object):
             self._chan = grpc.secure_channel(self.server, creds,
                     options=(("grpc.ssl_target_name_override",
                                 self._parse_cname(crt)),
+                             ("grpc.service_config", config),
                              ("grpc.enable_http_proxy",
                                 0)))
         else:
-            self._chan = grpc.insecure_channel(self.server)
+            self._chan = grpc.insecure_channel(self.server,
+                    options=(("grpc.service_config", config),
+                            ("grpc.enable_http_proxy", 0))
+            )
         session = session or uuid.uuid4().hex
         interceptors = [ClientSessionMetadataInterceptor(session),
                         GrpcRemoteExceptionInterceptor(),

@@ -172,7 +172,7 @@ print (r"  \___ \  |  |  / __ \|  | \/|  |   |  Y Y  \  ||  | |  Y Y  \ ")
 print (r" /____  > |__| (____  /__|   |__|   |__|_|  /__||__| |__|_|  / ")
 print (r"      \/            \/                    \/               \/  ")
 print (r"                 Android HTTP Traffic Capture                  ")
-print (r"%60s" %                ("lamda#v%s BY rev1si0n" % (__version__)))
+print (r"%60s" %                ("lamda#v%s BY firerpa" % (__version__)))
 
 
 pkgName = None
