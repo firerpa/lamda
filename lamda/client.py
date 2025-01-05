@@ -408,7 +408,7 @@ class ObjectUiAutomatorOpStub:
         s.setdefault("childOrSiblingSelector", [])
         s["childOrSiblingSelector"].append(selector)
         s["childOrSibling"].append(name)
-        return self.__class__(self.stub, s)
+        return self.__class__(self.caller, s)
     def child(self, **selector):
         """
         匹配选择器里面的子节点
@@ -1211,6 +1211,7 @@ class ApplicationOpStub:
     def attach_script(self, script, runtime=ScriptRuntime.RUNTIME_QJS,
                                                     emit="",
                                 encode=DataEncode.DATA_ENCODE_NONE,
+                                spawn=False,
                                 standup=5):
         """
         向应用注入持久化 Hook 脚本
@@ -1222,6 +1223,7 @@ class ApplicationOpStub:
         req.script      = script
         req.runtime     = runtime
         req.standup     = standup
+        req.spawn       = spawn
         req.destination = emit
         req.encode      = encode
         r = self.stub.attachScript(req)
@@ -2151,6 +2153,14 @@ class Device(object):
     def frida(self):
         if _frida_dma is None:
             raise ModuleNotFoundError("frida")
+        try:
+            device = _frida_dma.get_device_matching(
+                        lambda d: d.name==self.server)
+            # make a call to check server connectivity
+            device.query_system_parameters()
+            return device
+        except:
+            """ No-op """
         kwargs = {}
         if self.certificate is not None:
             kwargs["certificate"] = self.certificate

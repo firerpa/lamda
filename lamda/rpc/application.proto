@@ -101,6 +101,7 @@ message HookRequest {
         string destination      = 4;
         DataEncode encode       = 5;
         uint32 standup          = 6;
+        bool spawn              = 7;
 }
 
 message HookRpcRequest {
