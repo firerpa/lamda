@@ -1,0 +1,8 @@
+# This script is used to disable the android FLAG_SECURE flag.
+# Replace YOUR_APP_ID with the ID (eg. com.android.settings) of your target application.
+enable: true
+application: "YOUR_APP_ID"
+version: "N/A"
+script: !!binary "SmF2YS5wZXJmb3JtKGZ1bmN0aW9uICgpIHsKICAgICAgICB2YXIgRkxBR19TRUNVUkUgPSAweDIwMDA7CiAgICAgICAgdmFyIFdpbmRvdyA9IEphdmEudXNlKCJhbmRyb2lkLnZpZXcuV2luZG93Iik7CiAgICAgICAgdmFyIHNldEZsYWdzID0gV2luZG93LnNldEZsYWdzOwoKICAgICAgICBzZXRGbGFncy5pbXBsZW1lbnRhdGlvbiA9IGZ1bmN0aW9uIChmbGFncywgbWFzaykgewogICAgICAgICAgICBjb25zb2xlLmxvZygiRGlzYWJsaW5nIEZMQUdfU0VDVVJFLi4uIik7CiAgICAgICAgICAgIGZsYWdzICY9IH5GTEFHX1NFQ1VSRTsKICAgICAgICAgICAgc2V0RmxhZ3MuY2FsbCh0aGlzLCBmbGFncywgbWFzayk7CiAgICAgICAgfTsKfSk7Cg=="
+standup: 0
+spawn: false

@@ -302,9 +302,6 @@ class CustomOcrBackend(object):
 
 
 class BaseCryptor(object):
-    def __str__(self):
-        return "{}".format(self.__class__.__name__)
-    __repr__ = __str__
     def encrypt(self, data):
         return data
     def decrypt(self, data):
@@ -312,9 +309,6 @@ class BaseCryptor(object):
 
 
 class BaseServiceStub(object):
-    def __str__(self):
-        return "{}".format(self.__class__.__name__)
-    __repr__ = __str__
     def __init__(self, stub):
         self.stub = stub
 
@@ -467,8 +461,6 @@ class ObjectUiAutomatorOpStub:
                                           corner=corner)
         r = self.stub.selectorClickExists(req)
         return r.value
-    def click_exist(self, *args, **kwargs):
-        return self.click_exists(*args, **kwargs)
     def long_click(self, corner=Corner.COR_CENTER):
         """
         长按选择器选中的控件
@@ -484,26 +476,12 @@ class ObjectUiAutomatorOpStub:
         req = protos.SelectorOnlyRequest(selector=self.selector)
         r = self.stub.selectorExists(req)
         return r.value
-    def exist(self, *args, **kwargs):
-        return self.exists(*args, **kwargs)
     def info(self):
         """
         获取选择器选中控件的信息
         """
         req = protos.SelectorOnlyRequest(selector=self.selector)
         return self.stub.selectorObjInfo(req)
-    def info_of_all_instances(self):
-        """
-        获取选择器选中的所有控件的信息
-        """
-        req = protos.SelectorOnlyRequest(selector=self.selector)
-        r = self.stub.selectorObjInfoOfAllInstances(req)
-        return r.objects
-    def all_instances(self):
-        """
-        获取选择器选中的所有元素控件
-        """
-        return list(self)
     def _new_object(self, **kwargs):
         selector = copy.deepcopy(self._selector)
         selector.update(**kwargs)
@@ -559,6 +537,11 @@ class ObjectUiAutomatorOpStub:
         return self._new_object(index=idx)
     def instance(self, idx):
         return self._new_object(instance=idx)
+    def get(self, idx):
+        """
+        获取匹配的第 N 个索引的元素
+        """
+        return self.instance(idx)
     def __iter__(self):
         """
         遍历所有符合选择器条件的元素实例
@@ -1042,16 +1025,21 @@ class AppScriptRpcInterface(object):
         self.application = application
         self.stub = stub
         self.name = name
+    def __str__(self):
+        return "{}:Script:{}".format(self.application,
+                                            self.name)
+    __repr__ = __str__
     def __call__(self, *args):
         call_args = dict()
         call_args["method"] = self.name
         call_args["args"] = args
         req = HookRpcRequest()
         req.package = self.application.applicationId
+        req.user = self.application.user
         req.callinfo = json.dumps(call_args)
         result = self.stub.callScript(req)
-        r = json.loads(result.callresult)
-        return r
+        data = json.loads(result.callresult)
+        return data
 
 
 class ApplicationOpStub:
@@ -1063,8 +1051,8 @@ class ApplicationOpStub:
         self.applicationId = applicationId
         self.stub = stub
     def __str__(self):
-        return "{}:{}".format(self.stub.__class__.__name__,
-                                        self.applicationId)
+        return "Application:{}@{}".format(self.applicationId,
+                                          self.user)
     __repr__ = __str__
     def is_foreground(self):
         """
@@ -1118,7 +1106,7 @@ class ApplicationOpStub:
         req.user = self.user
         r = self.stub.isPermissionGranted(req)
         return r.value
-    def delete_cache(self):
+    def clear_cache(self):
         """
         清空应用的缓存数据（非数据仅缓存）
         """
@@ -1126,7 +1114,7 @@ class ApplicationOpStub:
         req.user = self.user
         r = self.stub.deleteApplicationCache(req)
         return r.value
-    def reset_data(self):
+    def reset(self):
         """
         清空应用的所有数据
         """
@@ -1134,8 +1122,6 @@ class ApplicationOpStub:
         req.user = self.user
         r = self.stub.resetApplicationData(req)
         return r.value
-    def reset(self):
-        return self.reset_data()
     def start(self):
         """
         启动应用
@@ -1226,27 +1212,34 @@ class ApplicationOpStub:
         req.spawn       = spawn
         req.destination = emit
         req.encode      = encode
+        req.user        = self.user
         r = self.stub.attachScript(req)
         return r.value
     def detach_script(self):
         """
         移除注入应用的 Hook 脚本
         """
-        req = protos.String(value=self.applicationId)
+        req = protos.HookRequest()
+        req.package     = self.applicationId
+        req.user        = self.user
         r = self.stub.detachScript(req)
         return r.value
     def is_attached_script(self):
         """
         检查使用在此应用注入了 Hook 脚本
         """
-        req = protos.String(value=self.applicationId)
+        req = protos.HookRequest()
+        req.package     = self.applicationId
+        req.user        = self.user
         r = self.stub.isScriptAttached(req)
         return r.value
     def is_script_alive(self):
         """
         检查应用中的 Hook 脚本是否正常
         """
-        req = protos.String(value=self.applicationId)
+        req = protos.HookRequest()
+        req.package     = self.applicationId
+        req.user        = self.user
         r = self.stub.isScriptAlive(req)
         return r.value
     def __getattr__(self, name):
@@ -1263,7 +1256,7 @@ class ApplicationStub(BaseServiceStub):
         获取当前处于前台的应用的信息
         """
         top = self.stub.currentApplication(protos.Empty())
-        app = self.__call__(top.packageName)
+        app = self.__call__(top.packageName, user=top.user)
         app.activity = top.activity
         return app
     def get_application_by_name(self, name, user=0):
@@ -1305,6 +1298,7 @@ class ApplicationStub(BaseServiceStub):
         安装设备上的 apk 文件（注意此路径为设备上的 apk 路径）
         """
         req = protos.ApplicationRequest(path=fpath)
+        req.user = self.user
         r = self.stub.installFromLocalFile(req)
         return r
     def __call__(self, applicationId, user=0):
@@ -1312,10 +1306,6 @@ class ApplicationStub(BaseServiceStub):
 
 
 class StorageOpStub:
-    def __str__(self):
-        return "{}:{}".format(self.stub.__class__.__name__,
-                                            self.name)
-    __repr__ = __str__
     # 用于容器值序列化的方法
     def _decrypt(self, data):
         return self.cryptor.decrypt(data)
@@ -1734,20 +1724,20 @@ class ProxyStub(BaseServiceStub):
 
 
 class SelinuxPolicyStub(BaseServiceStub):
-    def policy_set_allow(self, source, target, tclass, action):
+    def allow(self, source, target, tclass, action):
         """
         selinux allow
         """
         req = protos.SelinuxPolicyRequest(source=source, target=target,
-                                    tclass=tclass, action=action)
+                                          tclass=tclass, action=action)
         r = self.stub.policySetAllow(req)
         return r.value
-    def policy_set_disallow(self, source, target, tclass, action):
+    def disallow(self, source, target, tclass, action):
         """
         selinux disallow
         """
         req = protos.SelinuxPolicyRequest(source=source, target=target,
-                                    tclass=tclass, action=action)
+                                          tclass=tclass, action=action)
         r = self.stub.policySetDisallow(req)
         return r.value
     def get_enforce(self):
@@ -1763,27 +1753,27 @@ class SelinuxPolicyStub(BaseServiceStub):
         req = protos.Boolean(value=enforced)
         r = self.stub.setEnforce(req)
         return r.value
-    def is_enabled(self):
+    def enabled(self):
         """
         获取设备上的 selinux 是否已经启用
         """
         r = self.stub.isEnabled(protos.Empty())
         return r.value
-    def policy_set_enforce(self, name):
+    def enforce(self, name):
         """
         设置一个域为 enforce
         """
         req = protos.String(value=name)
         r = self.stub.policySetEnforce(req)
         return r.value
-    def policy_set_permissive(self, name):
+    def permissive(self, name):
         """
         设置一个域为 permissive
         """
         req = protos.String(value=name)
         r = self.stub.policySetPermissive(req)
         return r.value
-    def policy_create_domain(self, name):
+    def create_domain(self, name):
         """
         新建一个 selinux 域
         """
@@ -2022,11 +2012,6 @@ class OcrOperator(object):
         OCR - 检查元素是否存在
         """
         return bool(self.find_target_item())
-    def exist(self):
-        """
-        OCR - 检查元素是否存在
-        """
-        return self.exists()
     def click(self):
         """
         OCR - 点击元素（不存在则报错）
@@ -2037,11 +2022,6 @@ class OcrOperator(object):
         OCR - 点击元素（不存在将不会产生异常）
         """
         return self.find_cb(self._click, False)
-    def click_exist(self):
-        """
-        OCR - 点击元素（不存在将不会产生异常）
-        """
-        return self.click_exists()
     def screenshot(self, quality=100):
         """
         OCR - 对元素进行截图

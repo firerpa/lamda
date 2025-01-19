@@ -23,7 +23,4 @@ Java.perform(function() {
                         })
                 },
         }
-// 创建名为 myRpcName 的调用接口
-createRpcEndpoint("myRpcName", rpc.exports)
-console.log("fridarpc test loaded")
 });

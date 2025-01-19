@@ -52,10 +52,10 @@ service Application {
     rpc getIdentifierByLabel(String) returns (String) {}
 
     rpc callScript(HookRpcRequest) returns (HookRpcResponse) {}
-    rpc isScriptAlive(String) returns (Boolean) {}
-    rpc isScriptAttached(String) returns (Boolean) {}
+    rpc isScriptAlive(HookRequest) returns (Boolean) {}
+    rpc isScriptAttached(HookRequest) returns (Boolean) {}
     rpc attachScript(HookRequest) returns (Boolean) {}
-    rpc detachScript(String) returns (Boolean) {}
+    rpc detachScript(HookRequest) returns (Boolean) {}
 }
 
 service Debug {

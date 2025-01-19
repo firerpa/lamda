@@ -21,7 +21,7 @@ ui_print "                                       installer   "
 pushd $(pwd)
 cd $MODPATH
 if [ ! -f $SERVER ]; then
-abort "lamda-server-${ABI}.tar.gz not found in archive"
+abort "lamda-server-${ABI}.tar.gz not in archive, please download and drop it to common/server."
 fi
 
 ui_print "- Extracting server files"

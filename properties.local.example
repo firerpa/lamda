@@ -47,6 +47,10 @@ enhanced-stealth-mode=false
 # the remote desktop, please set the following configuration:
 touch.backend=system
 
+# If the application fails to open after the service is started,
+# please set this option to true.
+dirtyfix_open_app=false
+
 # ---------- OpenVPN Configuration ----------
 # Do not manually write the following configuration. You should use
 # our accompanying OpenVPN server setup solution to set it up and

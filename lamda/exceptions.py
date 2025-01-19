@@ -22,6 +22,8 @@ class InvalidAndroidPackage(Exception):
     """ Exception """
 class InvalidArgumentError(Exception):
     """ Exception """
+class InvalidOperationError(Exception):
+    """ Exception """
 class InvalidRootCertificate(Exception):
     """ Exception """
 class MethodNotFoundException(Exception):

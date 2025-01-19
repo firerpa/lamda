@@ -54,6 +54,7 @@ message ApplicationActivityInfo {
         int64  flags            = 7;
         bool   debug            = 8;
         string data             = 9;
+        uint32 user             = 10;
 }
 
 message ApplicationActivityInfoList {
@@ -77,6 +78,7 @@ message ApplicationInfo {
         uint32 versionCode      = 10;
         string versionName      = 11;
         string activity         = 12;
+        uint32 user             = 13;
 }
 
 message ApplicationProcess {
@@ -102,11 +104,13 @@ message HookRequest {
         DataEncode encode       = 5;
         uint32 standup          = 6;
         bool spawn              = 7;
+        uint32 user             = 8;
 }
 
 message HookRpcRequest {
         string package          = 1;
         string callinfo         = 2;
+        uint32 user             = 3;
 }
 
 message HookRpcResponse {
