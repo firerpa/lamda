@@ -88,6 +88,7 @@ __all__ = [
                 "Orientation",
                 "OpenVPNProfile",
                 "GproxyProfile",
+                "TouchBuilder",
                 "Selector",
                 "TouchWait",
                 "TouchMove",
@@ -256,6 +257,7 @@ TouchSequence.load = classmethod(touchSequenceLoad)
 TouchSequence.save = touchSequenceSave
 TouchSequence.appendAction = touchSequenceAppendAction
 TouchSequence.appendDown = touchSequenceAppendDown
+TouchSequence.appendMove = touchSequenceAppendMove
 TouchSequence.appendWait = touchSequenceAppendWait
 TouchSequence.appendUp = touchSequenceAppendUp
 
@@ -326,6 +328,29 @@ class FernetCryptor(BaseCryptor):
         key = hashlib.sha256(key).digest()
         key = base64.b64encode(key)
         return key
+
+
+class TouchBuilder(object):
+    def __init__(self):
+        self.s = TouchSequence()
+    def down(self, x, y, pressure=50, track=0):
+        self.s.appendDown(tid=track, x=x, y=y,
+                          pressure=pressure)
+        return self
+    def move(self, x, y, pressure=50, track=0):
+        self.s.appendMove(tid=track, x=x, y=y,
+                          pressure=pressure)
+        return self
+    def up(self, track=0):
+        self.s.appendUp(tid=track)
+        return self
+    def wait(self, mills):
+        self.s.appendWait(wait=mills)
+        return self
+    def build(self):
+        sequence = TouchSequence()
+        sequence.CopyFrom(self.s)
+        return sequence
 
 
 class ClientLoggingInterceptor(ClientInterceptor):
@@ -2103,6 +2128,15 @@ class Device(object):
         policy["maxBackoff"] = "15s"
         config = json.dumps(dict(methodConfig=[{"name": [{}],
                                  "retryPolicy": policy,}]))
+        option = dict()
+        option["grpc.max_send_message_length"] = 64*1024*1024
+        option["grpc.max_receive_message_length"] = 128*1024*1024
+        option["grpc.keepalive_time_ms"] = 30*1000
+        option["grpc.keepalive_timeout_ms"] = 15*1000
+        option["grpc.keepalive_permit_without_calls"] = True
+        option["grpc.max_pings_without_data"] = 0
+        option["grpc.service_config"] = config
+        option["grpc.enable_http_proxy"] = 0
         if certificate is not None:
             with open(certificate, "rb") as fd:
                 key, crt, ca = self._parse_certdata(fd.read())
@@ -2112,13 +2146,10 @@ class Device(object):
             self._chan = grpc.secure_channel(self.server, creds,
                     options=(("grpc.ssl_target_name_override",
                                 self._parse_cname(crt)),
-                             ("grpc.service_config", config),
-                             ("grpc.enable_http_proxy",
-                                0)))
+                             *tuple(option.items()),))
         else:
             self._chan = grpc.insecure_channel(self.server,
-                    options=(("grpc.service_config", config),
-                            ("grpc.enable_http_proxy", 0))
+                    options=(*tuple(option.items()),)
             )
         session = session or uuid.uuid4().hex
         interceptors = [ClientSessionMetadataInterceptor(session),

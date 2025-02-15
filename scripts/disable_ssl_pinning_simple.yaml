@@ -1,0 +1,9 @@
+# EXAMPLE EXTENSION OF FIRERPA (https://github.com/firerpa/lamda)
+# This script is used to disable simple ssl pinning (checkServerTrusted).
+# Replace YOUR_APP_ID with the ID (eg. com.android.settings) of your target application.
+enable: true
+application: "YOUR_APP_ID"
+version: "N/A"
+script: !!binary "SmF2YS5wZXJmb3JtKGZ1bmN0aW9uKCkgewpKYXZhLnVzZSgiYW5kcm9pZC5zZWN1cml0eS5uZXQuY29uZmlnLlJvb3RUcnVzdE1hbmFnZXIiKS5jaGVja1NlcnZlclRydXN0ZWQub3ZlcmxvYWQoIltMamF2YS5zZWN1cml0eS5jZXJ0Llg1MDlDZXJ0aWZpY2F0ZTsiLCAiamF2YS5sYW5nLlN0cmluZyIsICJqYXZhLm5ldC5Tb2NrZXQiKS5pbXBsZW1lbnRhdGlvbiA9IGZ1bmN0aW9uIChhLCBiLCBjKSB7CiAgICAgICAgcmV0dXJuCn0KfSkK"
+standup: 0
+spawn: false

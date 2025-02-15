@@ -51,6 +51,9 @@ touch.backend=system
 # please set this option to true.
 dirtyfix_open_app=false
 
+# Set the log file location (directory must exists)
+logfile=/data/local/tmp/server.log
+
 # ---------- OpenVPN Configuration ----------
 # Do not manually write the following configuration. You should use
 # our accompanying OpenVPN server setup solution to set it up and

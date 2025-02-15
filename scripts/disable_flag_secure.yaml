@@ -1,3 +1,4 @@
+# EXAMPLE EXTENSION OF FIRERPA (https://github.com/firerpa/lamda)
 # This script is used to disable the android FLAG_SECURE flag.
 # Replace YOUR_APP_ID with the ID (eg. com.android.settings) of your target application.
 enable: true
