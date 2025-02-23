@@ -1,80 +1,112 @@
 #!/usr/bin/env python3
-#encoding=utf-8
 import os
 import sys
 import random
+import datetime
+
 from hashlib import sha256
-from OpenSSL import crypto
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.backends import default_backend
+from cryptography.x509 import (
+    Name,
+    NameAttribute,
+    CertificateBuilder,
+    CertificateSigningRequestBuilder,
+    DNSName,
+    SubjectAlternativeName,
+    load_pem_x509_certificate,
+    BasicConstraints,
+    KeyUsage,
+)
+from cryptography.x509.oid import NameOID
 
 CN = "lamda"
 if len(sys.argv) == 2:
     CN = sys.argv[1]
 
 if os.path.isfile("root.key"):
-    data = open("root.key", "rb").read()
-    rk = crypto.load_privatekey(crypto.FILETYPE_PEM, data)
+    with open("root.key", "rb") as f:
+        rk = serialization.load_pem_private_key(
+            f.read(), password=None, backend=default_backend()
+        )
 else:
-    rk = crypto.PKey()
-    rk.generate_key(crypto.TYPE_RSA, 2048)
-
-    data = crypto.dump_privatekey(crypto.FILETYPE_PEM, rk)
-    open("root.key", "wb").write(data)
+    rk = rsa.generate_private_key(
+        public_exponent=65537, key_size=2048, backend=default_backend()
+    )
+    with open("root.key", "wb") as f:
+        f.write(
+            rk.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.TraditionalOpenSSL,
+                encryption_algorithm=serialization.NoEncryption(),
+            )
+        )
 
 if os.path.isfile("root.crt"):
-    data = open("root.crt", "rb").read()
-    root = crypto.load_certificate(crypto.FILETYPE_PEM, data)
+    with open("root.crt", "rb") as f:
+        root = load_pem_x509_certificate(f.read(), default_backend())
 else:
-    root = crypto.X509()
+    subject = issuer = Name(
+        [
+            NameAttribute(NameOID.ORGANIZATION_NAME, "LAMDA"),
+            NameAttribute(NameOID.COMMON_NAME, "FireRPA LAMDA Root Trust"),
+        ]
+    )
+    root = (
+        CertificateBuilder()
+        .subject_name(subject)
+        .issuer_name(issuer)
+        .not_valid_before(datetime.datetime.utcnow())
+        .not_valid_after(datetime.datetime.utcnow() + datetime.timedelta(days=3650))
+        .public_key(rk.public_key())
+        .serial_number(random.randint(1, 2**128))
+        .add_extension(BasicConstraints(ca=True, path_length=None), critical=True)
+        .sign(rk, hashes.SHA256(), default_backend())
+    )
+    with open("root.crt", "wb") as f:
+        f.write(root.public_bytes(serialization.Encoding.PEM))
 
-    root.get_subject().O    = "LAMDA"
 
-    root.gmtime_adj_notBefore(0)
-    root.gmtime_adj_notAfter(315360000)
-    root.set_issuer(root.get_subject())
-    root.set_pubkey(rk)
-    root.sign(rk, "sha256")
+if not os.path.isfile(f"{CN}.pem"):
+    pk = rsa.generate_private_key(
+        public_exponent=65537, key_size=2048, backend=default_backend()
+    )
+    csr = (
+        CertificateSigningRequestBuilder()
+        .subject_name(Name([NameAttribute(NameOID.COMMON_NAME, CN)]))
+        .sign(pk, hashes.SHA256(), default_backend())
+    )
 
-    data = crypto.dump_certificate(crypto.FILETYPE_PEM, root)
-    open("root.crt", "wb").write(data)
+    cert = (
+        CertificateBuilder()
+        .subject_name(csr.subject)
+        .issuer_name(root.subject)
+        .not_valid_before(datetime.datetime.utcnow())
+        .not_valid_after(datetime.datetime.utcnow() + datetime.timedelta(days=3650))
+        .public_key(csr.public_key())
+        .serial_number(random.randint(1, 2**128))
+        .sign(rk, hashes.SHA256(), default_backend())
+    )
 
-if not os.path.isfile("{}.pem".format(CN)):
-    pk = crypto.PKey()
-    pk.generate_key(crypto.TYPE_RSA, 2048)
+    with open(f"{CN}.pem", "wb") as output:
+        pem_private_key = pk.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
+        pem_cert = cert.public_bytes(serialization.Encoding.PEM)
+        pem_root = root.public_bytes(serialization.Encoding.PEM)
 
-    req = crypto.X509Req()
-    req.set_version(0)
-    req.get_subject().CN    = CN
-    req.set_pubkey(pk)
-    req.sign(pk, "sha256")
+        d = pk.private_numbers().d
+        pd = d.to_bytes((d.bit_length() + 7) // 8, "little")
+        cred = sha256(pd).hexdigest()[::3]
 
-    cert = crypto.X509()
-    cert.set_version(2)
-    cert.set_subject(req.get_subject())
-    cert.set_serial_number(random.randint(1, 2**128))
-    cert.gmtime_adj_notBefore(0)
-    cert.gmtime_adj_notAfter(315360000)
-    cert.set_issuer(root.get_subject())
-    cert.set_pubkey(req.get_pubkey())
-    cert.sign(rk, "sha256")
-
-    pkey = crypto.dump_privatekey(crypto.FILETYPE_PEM, pk)
-    cert = crypto.dump_certificate(crypto.FILETYPE_PEM, cert)
-    root = crypto.dump_certificate(crypto.FILETYPE_PEM, root)
-
-    d = pk.to_cryptography_key().private_numbers().d
-    pd = d.to_bytes((d.bit_length() + 7) // 8, "little")
-    cred = sha256(pd).hexdigest()[::3]
-
-    f = open("{}.pem".format(CN), "wb")
-    hdr = "LAMDA SSL CERTIFICATE (CN={},PASSWD={})".format(CN, cred)
-    os.chmod(f.name, 0o600)
-
-    f.write(hdr.encode())
-    f.write(b"\n")
-    f.write(pkey.strip())
-    f.write(b"\n")
-    f.write(cert.strip())
-    f.write(b"\n")
-    f.write(root.strip())
-    f.write(b"\n")
-    f.close()
+        header = f"LAMDA SSL CERTIFICATE (CN={CN},PASSWD={cred})\n"
+        output.write(header.encode())
+        output.write(pem_private_key.strip())
+        output.write(b"\n")
+        output.write(pem_cert.strip())
+        output.write(b"\n")
+        output.write(pem_root.strip())
+        output.write(b"\n")
