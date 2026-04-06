@@ -1,0 +1,16 @@
+{
+  "name": "lamda",
+  "version": "0.1.0",
+  "description": "The most powerful Android RPA agent framework, next generation of mobile automation robots.",
+  "author": {
+    "name": "firerpa",
+    "url": "https://github.com/firerpa"
+  },
+  "homepage": "https://github.com/firerpa/lamda",
+  "repository": "https://github.com/firerpa/lamda",
+  "keywords": [
+    "mcp",
+    "codex"
+  ],
+  "mcpServers": "./.mcp.json"
+}

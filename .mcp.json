@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "lamda": {
+      "command": "npx",
+      "args": [
+        "firerpa-lamda"
+      ]
+    }
+  }
+}
