@@ -1,5 +1,7 @@
 # **FIRERPA Android** ｜ AI-Powered Automation
 
+[![Listed on TakoAPI](https://img.shields.io/badge/Listed%20on-TakoAPI-7c3aed)](https://takoapi.com/agents/firerpa-lamda)
+
 <img src="image/logo.svg" alt="FIRERPA" width="200" align="right" />
 
 <p>
