@@ -1,5 +1,7 @@
 # **FIRERPA Android** ｜ AI-Powered Automation
 
+[![MCP Toplist](https://mcptoplist.com/badge/mcp.so%2Flamda%2Ffirerpa.svg)](https://mcptoplist.com/server/mcp.so%2Flamda%2Ffirerpa)
+
 <img src="image/logo.svg" alt="FIRERPA" width="200" align="right" />
 
 <p>
