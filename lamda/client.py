@@ -2458,6 +2458,84 @@ class Device(object):
         device = _frida_dma.add_remote_device(self.server,
                                         **kwargs)
         return device
+    def fix_execute_only_memory(self):
+        """
+        Restore read permission on execute-only (``--x`` / XOM) segments
+        of system libraries inside zygote processes.
+
+        Some OEM ROMs (e.g. MIUI) map system libraries as execute-only
+        memory. When the frida runtime embedded in the server hooks the
+        zygote fork path, it fails to read the target memory while
+        building trampolines (SEGV_ACCERR), which makes every spawned
+        application crash at startup - apps get stuck on the splash
+        screen or die immediately after ``spawn()`` / ``resume()``.
+
+        This method walks ``--x`` ranges of zygote (64/32-bit) whose
+        backing file lives under /system, /apex or /vendor and calls
+        ``mprotect()`` to restore ``r-x`` on them, so that processes
+        forked from zygote inherit readable segments again.
+
+        It must be re-invoked after each device reboot or server restart,
+        before spawning/injecting applications. Requires the server to
+        run as root (default).
+
+        Returns a dict keyed by process name::
+
+            {
+                "zygote64": {"fixed": 294, "failed": 0},
+                ...
+            }
+
+        Processes that do not exist on the device are skipped, errors
+        while attaching are reported as {"error": "..."} entries.
+        """
+        if _frida_dma is None:
+            raise ModuleNotFoundError("frida")
+        device = self.frida
+        results = {}
+        for proc in device.enumerate_processes():
+            if proc.name not in ("zygote64", "zygote"):
+                continue
+            try:
+                session = device.attach(proc.pid)
+                res = {}
+                def on_message(msg, data):
+                    if msg.get("type") == "send":
+                        res.update(msg["payload"])
+                script = session.create_script(self.XOM_FIX_SCRIPT)
+                script.on("message", on_message)
+                script.load()
+                time.sleep(5)
+                session.detach()
+                results[proc.name] = {"fixed": res.get("fixed", 0),
+                                      "failed": res.get("failed", 0)}
+            except Exception as e:
+                results[proc.name] = {"error": str(e)}
+        return results
+    # JS: mprotect --x ranges backed by system libs back to r-x.
+    # Module.getExportByName is removed since frida 17, fall back
+    # progressively for older embedded runtimes.
+    XOM_FIX_SCRIPT = r"""
+        var resolve = null;
+        if (typeof Module != "undefined" && Module.getGlobalExportByName)
+            resolve = function (n) { return Module.getGlobalExportByName(n); };
+        else if (typeof Module != "undefined" && Module.getExportByName)
+            resolve = function (n) { return Module.getExportByName(null, n); };
+        else
+            resolve = function (n) { return Module.findExportByName(null, n); };
+        var mprotect = new NativeFunction(resolve("mprotect"),
+                                          "int", ["pointer", "uint", "int"]);
+        var fixed = 0, failed = 0;
+        Process.enumerateRanges("--x").forEach(function (r) {
+            var p = r.file ? (r.file.path || "") : "";
+            if (p.indexOf("/system") === 0 || p.indexOf("/apex") === 0
+                    || p.indexOf("/vendor") === 0) {
+                if (mprotect(r.base, r.size, 5) === 0) fixed++;
+                else failed++;
+            }
+        });
+        send({fixed: fixed, failed: failed});
+    """
     def __str__(self):
         return "Device@{}".format(self.server)
     __repr__ = __str__
