@@ -1,7 +1,10 @@
 #!/bin/bash
-TARGET=${1:-localhost}
 PORT=${PORT:-65000}
 DEFAULT_ID_RSA=$(mktemp)
+if [[ "$1" == *@* ]]; then
+     USER="${1%@*}" TARGET="${1#*@}"
+else USER="root" TARGET="$1"
+fi
 
 umask 077
 if [ ! -f "${CERTIFICATE}" ]; then
@@ -38,5 +41,6 @@ EOL
 else
 DEFAULT_ID_RSA=$CERTIFICATE
 fi
+ssh-add $DEFAULT_ID_RSA >/dev/null 2>&1 || true
 exec ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no \
-         -o LogLevel=ERROR -i $DEFAULT_ID_RSA -p $PORT root@$TARGET ${@:2}
+         -o LogLevel=ERROR -i $DEFAULT_ID_RSA -p $PORT $USER@$TARGET ${@:2}

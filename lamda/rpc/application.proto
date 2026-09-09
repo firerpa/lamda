@@ -1,4 +1,4 @@
-// Copyright 2022 rev1si0n (ihaven0emmail@gmail.com). All rights reserved.
+// Copyright 2022 rev1si0n (lamda.devel@gmail.com). All rights reserved.
 //
 // Distributed under MIT license.
 // See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
@@ -8,76 +8,194 @@ package lamda.rpc;
 import "google/protobuf/struct.proto";
 
 enum GrantType {
-                GRANT_ALLOW       = 0;
-                GRANT_DENY        = 1;
-                GRANT_IGNORE      = 2;
+        GRANT_ALLOW       = 0;
+        GRANT_DENY        = 1;
+        GRANT_IGNORE      = 2;
+}
+
+enum DataEncode {
+        DATA_ENCODE_NONE  = 0;
+        DATA_ENCODE_ZLIB  = 1;
+}
+
+enum ScriptRuntime {
+        RUNTIME_QJS        = 0;
+        RUNTIME_V8         = 1;
+}
+
+enum ActivityExtrasNullValue {
+        ACTIVITY_EXTRAS_NULL_VALUE = 0;
+}
+
+message ActivityExtrasValue {
+        // Struct Compat
+        oneof kind {
+        ActivityExtrasNullValue null_value = 1;
+        double double_value     = 2;
+        string string_value     = 3;
+        bool bool_value         = 4;
+        int64 int64_value       = 7;
+        }
+}
+
+message ActivityExtras {
+        map<string, ActivityExtrasValue> fields = 1;
 }
 
 message ApplicationRequest {
-    string name             = 1;
-    string permission       = 2;
-    GrantType mode          = 3;
-    string path             = 4;
+        string name             = 1;
+        string permission       = 2;
+        GrantType mode          = 3;
+        string path             = 4;
+        uint32 user             = 5;
+        uint32 display          = 16;
 }
 
 message ApplicationActivityRequest {
-    string package          = 1;
-    string action           = 2;
-    string category         = 3;
-    string component        = 4;
-    google.protobuf.Struct extras = 5;
-    repeated string categories = 6;
-    int64  flags            = 7;
-    bool   debug            = 8;
-    string data             = 9;
+        string package          = 1;
+        string action           = 2;
+        string category         = 3;
+        string component        = 4;
+        ActivityExtras extras   = 5;
+        int64  flags            = 7;
+        bool   debug            = 8;
+        string data             = 9;
+        uint32 user             = 10;
+        uint32 display          = 16;
 }
 
 message ApplicationActivityInfo {
-    string package          = 1;
-    string action           = 2;
-    string category         = 3;
-    string component        = 4;
-    google.protobuf.Struct extras = 5;
-    repeated string categories = 6;
-    int64  flags            = 7;
-    bool   debug            = 8;
-    string data             = 9;
-}
-
-message ApplicationActivityInfoList {
-    repeated ApplicationActivityInfo activities = 1;
+        string action           = 2;
+        string component        = 4;
+        repeated string categories = 6;
 }
 
 message ApplicationPermissions {
-    repeated string permissions = 1;
+        repeated string permissions = 1;
 }
 
 message ApplicationInfo {
-    string packageName      = 1;
-    uint32 uid              = 2;
-    bool   enabled          = 3;
-    string processName      = 4;
-    string sourceDir        = 5;
-    string dataDir          = 6;
-    uint32 baseRevisionCode = 7;
-    int64  firstInstallTime = 8;
-    int64  lastUpdateTime   = 9;
-    uint32 versionCode      = 10;
-    string versionName      = 11;
-    string activity         = 12;
+        string packageName      = 1;
+        uint32 uid              = 2;
+        bool   enabled          = 3;
+        string processName      = 4;
+        string sourceDir        = 5;
+        string dataDir          = 6;
+        uint32 baseRevisionCode = 7;
+        int64  firstInstallTime = 8;
+        int64  lastUpdateTime   = 9;
+        uint32 versionCode      = 10;
+        string versionName      = 11;
+        string activity         = 12;
+        uint32 user             = 13;
+        string label            = 14;
 }
 
 message ApplicationProcess {
-    repeated string packages = 1;
-    string processName = 2;
-    int64  uid         = 3;
-    int64  pid         = 4;
+        repeated string packages = 1;
+        string processName = 2;
+        int64  uid         = 3;
+        int64  pid         = 4;
+        string label       = 5;
 }
 
 message ApplicationProcesses {
-    repeated ApplicationProcess processes   = 1;
+        repeated ApplicationProcess processes   = 1;
 }
 
-message ApplicationPkgNames {
-    repeated string names   = 1;
+message InstalledApplicationInfo {
+        string packageName      = 1;
+        string label            = 2;
+        int64  uid              = 3;
+        int64  user             = 4;
+        bool   enabled          = 5;
+        bool   system           = 6;
+        string versionName      = 7;
+}
+
+message InstalledApplications {
+        repeated InstalledApplicationInfo applications   = 1;
+}
+
+message HookRequest {
+        string package          = 1;
+        bytes script            = 2;
+        ScriptRuntime runtime   = 3;
+        string destination      = 4;
+        DataEncode encode       = 5;
+        uint32 standup          = 6;
+        bool spawn              = 7;
+        uint32 user             = 8;
+        string process          = 9;
+}
+
+message HookRpcRequest {
+        string package          = 1;
+        string callinfo         = 2;
+        uint32 user             = 3;
+}
+
+message HookRpcResponse {
+        string package          = 1;
+        string callresult       = 2;
+}
+
+message InstallSessionCreateRequest {
+        uint32 user             = 1;
+        string installerPackageName = 2;
+        uint64 sizeBytes        = 4;
+        string package          = 5;
+        bool dontKillApp        = 14;
+        bool replaceExisting    = 15;
+        bool allowTest          = 16;
+        bool requestDowngrade   = 17;
+        bool grantRuntimePermissions=18;
+}
+
+message InstallSessionWriteRequest {
+        int32 session           = 1;
+        string path             = 2;
+        string name             = 3;
+        bool delete             = 10;
+}
+
+message InstallSessionAbandonRequest {
+        int32 session           = 1;
+}
+
+message InstallSessionQueryRequest {
+        int32 session           = 1;
+}
+
+message InstallSessionCommitRequest {
+        int32 session           = 1;
+        bool wait               = 2;
+        uint64 timeout          = 3;
+}
+
+
+message InstallSessionCreateResponse {
+        uint32 user             = 1;
+        int32 session           = 2;
+}
+
+message InstallSessionWriteResponse {
+        int32 session           = 1;
+        string name             = 2;
+        uint64 writtenBytes     = 3;
+        uint64 totalBytes       = 4;
+}
+
+message InstallSessionStatusResponse {
+        uint32 user             = 1;
+        int32 session           = 2;
+        string package          = 3;
+        int32 status            = 4;
+        int32 legacyStatus      = 5;
+        string statusMessage    = 6;
+        bool finished           = 7;
+        bool committed          = 8;
+        bool abandoned          = 9;
+        float progress          = 10;
+        bool success            = 11;
 }

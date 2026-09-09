@@ -1,0 +1,1 @@
+The scripts in this directory are intended to run in the firerpa built-in shell. They demonstrate how to perform image segmentation and recognition, while also showcasing the ability to execute automation scripts directly on the device itself.

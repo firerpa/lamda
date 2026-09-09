@@ -1,4 +1,4 @@
-// Copyright 2022 rev1si0n (ihaven0emmail@gmail.com). All rights reserved.
+// Copyright 2022 rev1si0n (lamda.devel@gmail.com). All rights reserved.
 //
 // Distributed under MIT license.
 // See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
@@ -22,6 +22,7 @@ enum Orientation {
         ORIEN_LEFT          = 1;
         ORIEN_UPSIDEDOWN    = 2;
         ORIEN_RIGHT         = 3;
+        ORIEN_UNFREEZE      = 4;
 }
 
 enum Key {
@@ -336,6 +337,31 @@ enum KeyCode {
         KEYCODE_PROFILE_SWITCH  = 288;
 }
 
+enum MetaKeyCode {
+        META_UNKNOWN            = 0;
+        META_SHIFT_ON           = 1;
+        META_ALT_ON             = 2;
+        META_SYM_ON             = 4;
+        META_FUNCTION_ON        = 8;
+        META_ALT_LEFT_ON        = 16;
+        META_ALT_RIGHT_ON       = 32;
+        META_ALT_MASK           = 50;
+        META_SHIFT_LEFT_ON      = 64;
+        META_SHIFT_RIGHT_ON     = 128;
+        META_SHIFT_MASK         = 193;
+        META_CTRL_ON            = 4096;
+        META_CTRL_LEFT_ON       = 8192;
+        META_CTRL_RIGHT_ON      = 16384;
+        META_CTRL_MASK          = 28672;
+        META_META_ON            = 65536;
+        META_META_LEFT_ON       = 131072;
+        META_META_RIGHT_ON      = 262144;
+        META_META_MASK          = 458752;
+        META_CAPS_LOCK_ON       = 1048576;
+        META_NUM_LOCK_ON        = 2097152;
+        META_SCROLL_LOCK_ON     = 4194304;
+}
+
 enum Corner {
         COR_CENTER          = 0;
         COR_BOTTOMRIGHT     = 1;
@@ -347,6 +373,12 @@ enum Direction {
         DIR_LEFT            = 1;
         DIR_DOWN            = 2;
         DIR_RIGHT           = 3;
+}
+
+enum ImePolicy {
+        IME_LOCAL           = 0;
+        IME_FALLBACK_DISPLAY=1;
+        IME_HIDE            = 2;
 }
 
 message ObjInfo {
@@ -408,6 +440,8 @@ message Selector {
         uint32 instance                 = 26;
         repeated string childOrSibling  = 27;
         repeated Selector childOrSiblingSelector  = 28;
+        uint32 resultIndex              = 49;
+        repeated string fields          = 50;
 }
 
 message DeviceInfo {
@@ -425,130 +459,113 @@ message DeviceInfo {
 }
 
 message SelectorTakeScreenshotRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
         uint32 quality            = 3;
+        uint32 display            = 16;
+}
+message DumpWindowHierarchyRequest {
+        bool compressed           = 1;
+        uint32 display            = 16;
 }
 message SelectorSetTextRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
         string text               = 3;
+        uint32 display            = 16;
 }
 message SelectorClickRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
         Corner corner             = 3;
+        uint32 timeout            = 4;
+        uint32 display            = 16;
 }
 message SelectorOnlyRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
+        uint32 display            = 16;
 }
 message SelectorDragToRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
         oneof _target {
                 Selector target   = 3;
                 Point point       = 4;
         }
         uint32 step               = 5;
-}
-message SelectorScrollToRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
-        oneof _target {
-                Selector target   = 3;
-                Point point       = 4;
-        }
-        bool vertical             = 5;
+        uint32 display            = 16;
 }
 message SelectorWaitRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
         uint32 timeout            = 3;
+        uint32 display            = 16;
 }
 message SelectorSwipeRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
         Direction direction       = 3;
         uint32 step               = 4;
+        uint32 display            = 16;
 }
 message SelectorFlingRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
         bool vertical             = 3;
         uint32 maxSwipes           = 4;
+        uint32 display            = 16;
 }
 message SelectorScrollRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
+        Selector target           = 2;
         bool vertical             = 3;
         uint32 maxSwipes          = 4;
         uint32 step               = 5;
+        uint32 display            = 16;
 }
 
 message SelectorPinchRequest {
-        oneof _selector {
-                Selector selector = 1;
-                string   object   = 2;
-        }
+        Selector selector         = 1;
         uint32 percent            = 3;
         uint32 step               = 4;
+        uint32 display            = 16;
 }
 
 message ClickPointRequest {
         Point point     = 1;
+        uint32 timeout  = 2;
+        uint32 display  = 16;
 }
 
 message DragPointRequest {
         Point A         = 1;
         Point B         = 2;
         uint32 step     = 3;
+        uint32 display  = 16;
 }
 
 message SwipePointRequest {
         Point A         = 1;
         Point B         = 2;
         uint32 step     = 3;
+        uint32 display  = 16;
 }
 
 message SwipePointsRequest {
         repeated Point points = 1;
         uint32 step     = 2;
+        uint32 display  = 16;
 }
 
 message OrientationRequest {
         Orientation orientation = 1;
+        uint32 display  = 16;
 }
 
 message PressKeyRequest {
         Key key         = 1;
         uint32 code     = 2;
         uint32 meta     = 3;
+        uint32 display  = 16;
 }
 
 message TakeScreenshotRequest {
         Bound bound     = 1;
         uint32 quality  = 2;
+        uint32 display  = 16;
 }
 
 message ClipboardRequest {
@@ -556,15 +573,88 @@ message ClipboardRequest {
         string value    = 2;
 }
 
-message WatcherNameList {
-        repeated string watchers = 1;
+message WatcherInfo {
+        string name                 = 1;
+        bool enabled                = 3;
 }
 
-message WatcherRegistRequest {
+message WatcherInfoList {
+        repeated WatcherInfo watchers = 1;
+}
+
+message WatcherControlRequest {
         string name     = 1;
         repeated Selector selectors = 2;
         oneof _target {
                 Selector target = 3;
                 Key key = 4;
         }
+        bool enable     = 5;
+        uint32 display  = 16;
+}
+
+enum FindImageMethod {
+        FIM_TEMPLATE            = 0;
+        FIM_FEATURE             = 1;
+}
+
+enum FindImageArea {
+        FIA_WHOLE_SCREEN        = 0;
+        FIA_LEFT                = 1;
+        FIA_TOP_LEFT            = 2;
+        FIA_TOP                 = 3;
+        FIA_TOP_RIGHT           = 4;
+        FIA_RIGHT               = 5;
+        FIA_BOTTOM_RIGHT        = 6;
+        FIA_BOTTOM              = 7;
+        FIA_BOTTOM_LEFT         = 8;
+}
+
+message FindImageRequest {
+        bytes partial           = 1;
+        FindImageMethod method  = 2;
+        oneof _area {
+                FindImageArea area = 3;
+                Bound bound     = 4;
+        }
+        uint32 distance         = 5;
+        float threshold         = 6;
+        float scale             = 7;
+        uint32 display          = 16;
+}
+
+message FindImageResponse {
+        repeated Bound bounds = 1;
+}
+
+message CreateVirtualDisplayRequest {
+        string name             = 1;
+        uint32 width            = 2;
+        uint32 height           = 3;
+        uint32 densityDpi       = 4;
+}
+
+message DisplayInfo {
+        string name             = 1;
+        uint32 displayId        = 2;
+        uint32 height           = 4;
+        uint32 width            = 5;
+        uint32 densityDpi       = 8;
+        uint32 rotation         = 9;
+        uint32 installOrientation=10;
+        bool virtual            = 16;
+}
+
+message DisplayInfoList {
+        repeated DisplayInfo displays = 1;
+}
+
+message ImePolicyRequest {
+        ImePolicy policy        = 1;
+        uint32 display          = 16;
+}
+
+message FreezeRotationRequest {
+        bool freeze             = 1;
+        uint32 display          = 16;
 }

@@ -1,15 +1,25 @@
 #!/usr/bin/env python3
+# Copyright 2025 rev1si0n (lamda.devel@gmail.com). All rights reserved.
+#
+# Distributed under MIT license.
+# See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
 #encoding=utf-8
 import os
+import re
 import sys
 import time
-import subprocess
-import argparse
 import uuid
+import logging
+import asyncio
+import argparse
+import subprocess
+import threading
 
 from socket import *
 from random import randint
 from multiprocessing import Process
+from urllib.parse import urlparse
+from functools import partial
 
 from mitmproxy.certs import CertStore
 from mitmproxy.tools.main import mitmweb as web
@@ -41,8 +51,24 @@ def add_server(command, spec):
     spec and command.append(spec)
 
 
+def add_upstream(args, ext):
+    u = urlparse(args.upstream)
+    upstream = "upstream:{}://{}:{}".format(u.scheme,
+                                            u.hostname,
+                                            u.port)
+    args.mode = upstream
+    cred = "{}:{}".format(u.username, u.password)
+    u.username and ext.append("--upstream-auth")
+    u.username and ext.append(cred)
+
+
 def log(*args):
     print (time.ctime(), *args)
+
+
+def die(*args):
+    print (time.ctime(), *args)
+    sys.exit (1)
 
 
 def adb(*args):
@@ -88,33 +114,14 @@ print (r"  \___ \  |  |  / __ \|  | \/|  |   |  Y Y  \  ||  | |  Y Y  \ ")
 print (r" /____  > |__| (____  /__|   |__|   |__|_|  /__||__| |__|_|  / ")
 print (r"      \/            \/                    \/               \/  ")
 print (r"                 Android HTTP Traffic Capture                  ")
-print (r"%60s" %                ("lamda#v%s BY rev1si0n" % (__version__)))
+print (r"%60s" %                ("lamda#v%s BY firerpa" % (__version__)))
 
 
 pkgName = None
 argp = argparse.ArgumentParser()
 
-def dnsopt(dns):
-    return "reverse:dns://{}@53".format(dns)
-argp.add_argument("device", nargs=1)
-argp.add_argument("-m", "--mode", default="regular")
-argp.add_argument("--serial", type=str, default=None)
-dns = argp.add_mutually_exclusive_group(required=False)
-dns.add_argument("--dns", type=dnsopt, nargs="?",
-                                    const="1.1.1.1")
-dns.add_argument("--nameserver", type=str, default="")
-args, extras = argp.parse_known_args()
-serial = args.serial
-host = args.device[0]
-
-if ":" in host:
-    host, pkgName = host.split(":")
-if args.dns and ver(VERSION) < ver("9.0.0"):
-    log ("dns mitm needs mitmproxy>=9.0.0")
-    sys.exit (1)
-
-login = "mitm"
-psw = uuid.uuid4().hex[::4]
+login = "lamda"
+psw = uuid.uuid4().hex[::3]
 cert = os.environ.get("CERTIFICATE")
 proxy = int(os.environ.get("PROXYPORT",
                     randint(28080, 58080)))
@@ -122,24 +129,42 @@ webport = randint(28080, 58080)
 lamda = int(os.environ.get("PORT",
                     65000))
 
+argp.add_argument("device", nargs=1)
+mod = argp.add_mutually_exclusive_group(required=False)
+mod.add_argument("-m", "--mode", default="socks5")
+mod.add_argument("--upstream", type=str, default=None,
+                  help="Upstream http proxy")
+argp.add_argument("--proxy-dns", type=str, default=None,
+                  help="Resolve dns(tcp) through proxy")
+argp.add_argument("--device-side-out-interface", type=str, default="auto",
+                  help="Specify the outgoing network interface on the device")
+argp.add_argument("--serial", type=str, default=None,
+                  help="Adb device serial")
+args, extras = argp.parse_known_args()
+serial = args.serial
+host = args.device[0]
+
+if ":" in host:
+    host, pkgName = host.split(":")
+
 server = get_default_interface_ip(host)
 usb = server in ("127.0.0.1", "::1")
 
 if cert:
     log ("ssl:", cert)
-if usb and args.dns:
-    log ("dns mitm not available over usb")
-    sys.exit (1)
-if usb and (forward(lamda, lamda).wait() != 0 or \
-            reverse(proxy, proxy).wait() != 0):
-    log ("forward failed")
-    sys.exit (1)
+if args.upstream:
+    add_upstream(args, extras)
+if usb and forward(lamda, lamda).wait() != 0:
+    die ("adb forward failed")
+if usb and reverse(proxy, proxy).wait() != 0:
+    die ("adb forward failed")
 
-# 创建设备实例
+# Create instance
 d = Device(host, port=lamda,
                  certificate=cert)
+logger.setLevel(logging.WARN)
 
-# 拼接证书文件路径
+# Concat mitmproxy cert path
 DIR = os.path.expanduser(CONF_DIR)
 CertStore.from_store(DIR, CONF_BASENAME, KEY_SIZE)
 ca = os.path.join(DIR, "mitmproxy-ca-cert.pem")
@@ -147,13 +172,27 @@ ca = os.path.join(DIR, "mitmproxy-ca-cert.pem")
 log ("install cacert: %s" % ca)
 d.install_ca_certificate(ca)
 
-# 初始化 proxy 配置
+# disable ipv6
+# If the local device does not have a valid public IPv6 address but the mobile device does,
+# it may cause the device to show "no network". so IPv6 is disabled here for the phone.
+d.execute_script("echo 1 | tee /proc/sys/net/ipv6/conf/all/disable_ipv6")
+
+# Initialize proxy profile
 profile = GproxyProfile()
-profile.type = GproxyType.HTTP_CONNECT
-profile.nameserver = args.nameserver
-if not usb and args.dns:
-    profile.nameserver = server
-profile.drop_udp = True
+profile.type = GproxyType.SOCKS5
+profile.bypass_local_subnet = True
+profile.interface = args.device_side_out_interface
+
+# SOCKS5 is not supported in upstream mode
+# https://github.com/mitmproxy/mitmproxy/issues/2813
+if args.upstream: profile.type = GproxyType.HTTP_CONNECT
+
+if args.proxy_dns: profile.nameserver = args.proxy_dns
+if args.proxy_dns: profile.dns_proxy = True
+# Prevent DNS from being intercepted
+if args.proxy_dns: extras.extend(["--ignore-host", args.proxy_dns])
+
+profile.udp_proxy = True
 
 profile.host = server
 profile.port = proxy
@@ -169,20 +208,18 @@ if pkgName is not None:
 d.start_gproxy(profile)
 
 command = []
-# 设置 MITMPROXY 代理模式
 add_server(command, args.mode)
-add_server(command, args.dns)
 command.append("--ssl-insecure")
-# 代理认证，防止误绑定到公网被扫描
+# Simple random auth
 command.append("--proxyauth")
 command.append("{}:{}".format(login, psw))
-# 随机 web-port
+# Random web-port
 command.append("--web-port")
 command.append(str(webport))
 command.append("--no-rawtcp")
 command.append("--listen-port")
 command.append(str(proxy))
-# 追加额外传递的参数
+# Append extra command line
 command.extend(extras)
 
 log (" ".join(command))

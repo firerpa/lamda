@@ -1,16 +1,13 @@
 #!/bin/bash
+[ $# -lt 2 ] && exit 1
 DEFAULT_ID_RSA=$(mktemp)
 PORT=${PORT:-65000}
-case "$1" in
-                *':/'*)
-                                p1=root@$1
-                                p2=$2
-                ;;
-                *)
-                                p1=$1
-                                p2=root@$2
-                ;;
-esac
+
+HOST="${1%%:*}"
+USER="${HOST%%@*}" TARGET="${HOST##*@}" && [ "$TARGET" = "$HOST" ] && USER="root"
+case "$1" in *':'*) p1="$1"; [[ "$1" != *@* ]] && p1="root@$1" ;; *) p1="$1" ;; esac
+case "$2" in *':'*) p2="$2"; [[ "$2" != *@* ]] && p2="root@$2" ;; *) p2="$2" ;; esac
+
 umask 077
 if [ ! -f "${CERTIFICATE}" ]; then
 # this is the default id_rsa for ssh service
@@ -46,5 +43,6 @@ EOL
 else
 DEFAULT_ID_RSA=$CERTIFICATE
 fi
+ssh-add $DEFAULT_ID_RSA >/dev/null 2>&1 || true
 exec scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no \
          -o LogLevel=ERROR -i $DEFAULT_ID_RSA -P $PORT -pr $p1 $p2

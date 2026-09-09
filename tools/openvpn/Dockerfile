@@ -1,6 +1,6 @@
 FROM alpine:3.15
 
-LABEL maintainer="rev1si0n <ihaven0emmail@gmail.com>"
+LABEL maintainer="rev1si0n <lamda.devel@gmail.com>"
 
 ENV VARS=/etc/openvpn/easy-rsa/vars
 ENV OVPNCONFIG=/etc/openvpn/config.ovpn

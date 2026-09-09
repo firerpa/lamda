@@ -1,32 +1,37 @@
-为了下载使用由 rev1si0n (账号 github.com/rev1si0n，邮箱 ihaven0emmail@gmail.com)（以下简称“本人”）
-个人开发的软件 lamda（以下简称“本服务”），您应当阅读并遵守本协议。请您务必审慎阅读、充分理解各条款内容，并选择接受或不接受。
-除非您已阅读并接受本协议所有条款，否则您将无权下载、安装或使用本软件及相关服务。
-您的下载、安装、使用等行为即视为您已阅读并同意受到本声明的约束。
+DISCLAIMER
 
-风险告知：
-本服务需要设备获取 root 权限才能运行，且默认的通讯协议及相关证书文件均为开放信息，这可能会增加您设备被入侵的风险。
-本服务由本人自行开发并使用，可能存在潜在的未知的风险如数据丢失、系统崩溃等，由用户自行决定是否下载、使用本服务。
+To use this service, you (hereinafter referred to as "the user") must agree to all terms of this agreement and complete the entire application process as prompted on the page. You can find DISCLAIMER.TXT in the source code or the released program, or view the copy below.
+
+To download and use the LAMDA software (hereinafter referred to as "this service"), developed by firerpa (address: github.com/firerpa, email: lamda.devel@gmail.com, hereinafter referred to as "the developer"), you must carefully read and agree to all terms in this agreement. Please ensure you have fully understood and agreed to the following content before downloading, installing, or using this software.
+You are not authorized to download, install, or use this software and its related services until you have fully read and accepted the terms of this agreement. Once you download, install, or use this software, you are deemed to have read and agreed to all terms of this agreement and are willing to be bound by them.
+
+Risk Disclosure:
+This service requires the device to have root access to run, and the default communication protocols and related certificate files are open information, which may increase the risk of your device being compromised.
+This service may contain unknown logical errors that could lead to potential risks such as data loss, system crashes, etc. The user decides whether to download and use this service at their own risk.
 
 
-1、本服务设计目的为提高安全分析及测试人员工作效率，应用行为、应用合规分析等。提供的相关工具均为合法合规的APP测试分析、Mock 场景提供。
-本服务本身不提供任何侵入、修改、抓取其他应用内存及网络数据的功能，整合了各大开源框架提供的服务供用户自行选择，方便安全分析人员使用，减少用户的重复性劳动以及管理成本。
-本服务本身不存在盈利性，用户可根据自己需求自行通过下载获取使用，下载及使用过程中不会收取任何费用。
+1. The purpose of this service is to improve the work efficiency of security analysis and testing personnel for tasks such as application behavior and compliance analysis. The related tools provided are for legitimate and compliant app testing, analysis, and mock scenarios.
+This service itself does not provide any functionality to intrude, modify, or capture memory and network data of other applications. It integrates services provided by various major open-source frameworks for users to choose from, to facilitate security analysts and to reduce users' repetitive work and management costs.
+This service is not for profit. Users can download and use it according to their own needs, and no fees will be charged during the download or use process.
 
-2、本服务尊重并保护用户的个人隐私，不会窃取任何用户设备中的信息。本框架的启动及任何对设备数据读取、存储、传输等权利均在用户自己手中。
+2. This service respects and protects the user's personal privacy and will not steal any information from the user's device. The startup of this service and any rights to read, store, or transmit device data are entirely under the user's control.
 
-3、用户必须在无隐私数据的虚拟设备或者专用设备中使用本服务。在使用本服务时，必须遵守中华人民共和国或者用户所属国家或地区的法律法规，
-不得为任何非法目的而使用本服务，不得利用本服务进行任何不利于他人的行为。
+3. Users must use this service on a virtual device or a dedicated device with no private data. When using this service, users must comply with the laws and regulations of the People's Republic of China or the user's country or region of residence.
+This service must not be used for any illegal purposes, nor for any activities detrimental to others.
 
-4、用户只可使用本服务进行正规的学习研究或是经过合法授权的应用分析、测试等行为，若用户在使用该软件服务的过程中违背以上原则对第三方造成损失，一切责任由该用户自行承担。
+4. Users may only use this service for legitimate study, research, or legally authorized application analysis, testing, and other similar activities. If a user violates the above principles and causes losses to a third party while using the software service, the user shall bear all responsibility.
 
-5、任何单位或个人因下载使用本服务而产生的任何意外、疏忽、合约毁坏、诽谤、版权或知识产权侵犯及其造成的损失 (包括但不限于直接、间接、附带或衍生的损失等)，本人不承担任何法律责任。
+5. The developer shall not be held legally responsible for any accident, negligence, contract breach, defamation, copyright or intellectual property infringement, or any resulting losses (including but not limited to direct, indirect, incidental, or consequential losses) incurred by any entity or individual as a result of downloading or using this service.
 
-6、用户明确并同意本协议条款列举的全部内容，对使用本服务过程中可能存在的风险和后果由用户自行承担，本人不承担任何法律责任。
+6. You may use this service for commercial purposes, but only for extending functionality or developing products based on the features, interfaces, or related services provided by this service. You agree not to use this service, its related services, or interfaces for any purpose that violates local laws and regulations, or to engage in activities that harm the interests of others.
 
-7、本人有权随时对本声明条款及附件内容进行单方面的变更、中断或终止部分或全部本服务的权利。并以消息推送、网页公告等方式予以公布，
-公布后立即自动生效，无需另行单独通知；若您在本声明内容公告变更后继续使用的，表示您已充分阅读、理解并接受修改后的声明内容。
+7. The user explicitly agrees to all the contents listed in the terms of this agreement and shall solely bear any potential risks and consequences arising from the use of this service. The developer assumes no legal liability.
 
-8、如果本声明的任何部分被认为无效或不可执行，则该部分应以符合相关法律的方式予以修正，以尽可能地反映出本人的原始意图，
-其余部分仍具有完全效力。不可执行的部分声明，并不构成本人放弃执行该声明的权利。
+8. The developer has the right to unilaterally change, interrupt, or terminate part or all of this service and the terms of this disclaimer and its attachments at any time. Such changes will be announced via message push, web announcements, or other means and will take effect immediately upon publication without separate notification. If you continue to use the service after the disclaimer has been changed, it indicates that you have fully read, understood, and accepted the modified content.
 
-9、保留权利：未明示授权的其他一切权利均由本人所有。
+9. If any part of this disclaimer is deemed invalid or unenforceable, that part shall be amended in a manner consistent with applicable law to reflect, as closely as possible, the developer's original intent, and the remaining portions shall remain in full force and effect. The unenforceability of any part of this disclaimer does not constitute a waiver by the developer of the right to enforce that provision.
+
+10. Reservation of Rights: All other rights not expressly granted herein are reserved by the developer.
+
+
+Please confirm that you have read and accepted all the terms of this agreement. Otherwise, you are not authorized to download, install, or use this software and its related services.

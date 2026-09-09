@@ -1,3 +1,5 @@
-mitmproxy>=7.0.0,<10.0.0
-lamda>=3.0.0,<4.0.0
+mitmproxy>9.0.0
+dnspython
+httpx[socks]<0.28.0
 packaging
+Pillow

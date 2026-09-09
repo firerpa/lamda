@@ -1,4 +1,4 @@
-// Copyright 2022 rev1si0n (ihaven0emmail@gmail.com). All rights reserved.
+// Copyright 2022 rev1si0n (lamda.devel@gmail.com). All rights reserved.
 //
 // Distributed under MIT license.
 // See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
@@ -18,6 +18,7 @@ import public "settings.proto";
 import public "status.proto";
 import public "application.proto";
 import public "uiautomator.proto";
+import public "storage.proto";
 import public "proxy.proto";
 import public "file.proto";
 import public "wifi.proto";
@@ -25,20 +26,18 @@ import public "wifi.proto";
 
 service Application {
     rpc isForeground(ApplicationRequest) returns (Boolean) {}
-    rpc currentApplication(google.protobuf.Empty) returns (ApplicationInfo) {}
-    rpc enumerateAllPkgNames(google.protobuf.Empty) returns (ApplicationPkgNames) {}
+    rpc currentApplication(Integer) returns (ApplicationInfo) {}
+    rpc enumerateInstalledApps(Integer) returns (InstalledApplications) {}
     rpc enumerateRunningProcesses(google.protobuf.Empty) returns (ApplicationProcesses) {}
     rpc queryLaunchActivity(ApplicationRequest) returns (ApplicationActivityInfo) {}
     rpc getPermissions(ApplicationRequest) returns (ApplicationPermissions) {}
     rpc resetApplicationData(ApplicationRequest) returns (Boolean) {}
     rpc deleteApplicationCache(ApplicationRequest) returns (Boolean) {}
-    rpc getLastActivities(Integer) returns (ApplicationActivityInfoList) {}
     rpc startActivity(ApplicationActivityRequest) returns (Boolean) {}
     rpc applicationInfo(ApplicationRequest) returns (ApplicationInfo) {}
     rpc startApplication(ApplicationRequest) returns (Boolean) {}
     rpc stopApplication(ApplicationRequest) returns (Boolean) {}
     rpc uninstallApplication(ApplicationRequest) returns (Boolean) {}
-    rpc installFromLocalFile(ApplicationRequest) returns (ApplicationInfo) {}
     rpc enableApplication(ApplicationRequest) returns (Boolean) {}
     rpc disableApplication(ApplicationRequest) returns (Boolean) {}
     rpc grantPermission(ApplicationRequest) returns (Boolean) {}
@@ -46,26 +45,29 @@ service Application {
     rpc isPermissionGranted(ApplicationRequest) returns (Boolean) {}
     rpc isInstalled(ApplicationRequest) returns (Boolean) {}
 
-    rpc addToDozeModeWhiteList(ApplicationRequest) returns (Boolean) {}
-    rpc removeFromDozeModeWhiteList(ApplicationRequest) returns (Boolean) {}
+    rpc getIdentifierByLabel(String) returns (String) {}
+
+    rpc callScript(HookRpcRequest) returns (HookRpcResponse) {}
+    rpc isScriptAlive(HookRequest) returns (Boolean) {}
+    rpc isScriptAttached(HookRequest) returns (Boolean) {}
+    rpc attachScript(HookRequest) returns (Boolean) {}
+    rpc detachScript(HookRequest) returns (Boolean) {}
+
+    rpc installSessionCreate(InstallSessionCreateRequest) returns (InstallSessionCreateResponse) {}
+    rpc installSessionWrite(InstallSessionWriteRequest) returns (InstallSessionWriteResponse) {}
+    rpc installSessionCommit(InstallSessionCommitRequest) returns (InstallSessionStatusResponse) {}
+    rpc installSessionQuery(InstallSessionQueryRequest) returns (InstallSessionStatusResponse) {}
+    rpc installSessionAbandon(InstallSessionAbandonRequest) returns (Boolean) {}
 }
 
 service Debug {
-    rpc isIDARunning(google.protobuf.Empty) returns (Boolean) {}
-    rpc isIDA64Running(google.protobuf.Empty) returns (Boolean) {}
     rpc isAndroidDebugBridgeRunning(google.protobuf.Empty) returns (Boolean) {}
 
     rpc installADBPubKey(ADBDConfigRequest) returns (Boolean) {}
     rpc uninstallADBPubKey(ADBDConfigRequest) returns (Boolean) {}
 
-    rpc startIDA(IDAConfigRequest) returns (Boolean) {}
-    rpc startIDA64(IDAConfigRequest) returns (Boolean) {}
     rpc startAndroidDebugBridge(google.protobuf.Empty) returns (Boolean) {}
-
-    rpc stopIDA(google.protobuf.Empty) returns (Boolean) {}
-    rpc stopIDA64(google.protobuf.Empty) returns (Boolean) {}
     rpc stopAndroidDebugBridge(google.protobuf.Empty) returns (Boolean) {}
-    rpc setDebuggable(google.protobuf.Empty) returns (Boolean) {}
 }
 
 service Proxy {
@@ -126,7 +128,7 @@ service UiAutomator {
     rpc isScreenLocked(google.protobuf.Empty) returns (Boolean) {}
     rpc setClipboard(ClipboardRequest) returns (Boolean) {}
     rpc getClipboard(google.protobuf.Empty) returns (String) {}
-    rpc freezeRotation(Boolean) returns (Boolean) {}
+    rpc freezeRotation(FreezeRotationRequest) returns (Boolean) {}
     rpc setOrientation(OrientationRequest) returns (Boolean) {}
     rpc pressKey(PressKeyRequest) returns (Boolean) {}
     rpc pressKeyCode(PressKeyRequest) returns (Boolean) {}
@@ -134,7 +136,7 @@ service UiAutomator {
     rpc deviceInfo(google.protobuf.Empty) returns (DeviceInfo) {}
 
     rpc takeScreenshot(TakeScreenshotRequest) returns (Bytes) {}
-    rpc dumpWindowHierarchy(google.protobuf.Empty) returns (Bytes) {}
+    rpc dumpWindowHierarchy(DumpWindowHierarchyRequest) returns (Bytes) {}
     rpc waitForIdle(Integer) returns (Boolean) {}
 
     rpc selectorTakeScreenshot(SelectorTakeScreenshotRequest) returns (Bytes) {}
@@ -146,6 +148,7 @@ service UiAutomator {
     rpc selectorClick(SelectorClickRequest) returns (Boolean) {}
     rpc selectorClickExists(SelectorClickRequest) returns (Boolean) {}
     rpc selectorLongClick(SelectorClickRequest) returns (Boolean) {}
+    rpc pointLongClick(ClickPointRequest) returns (Boolean) {}
 
     rpc selectorExists(SelectorOnlyRequest) returns (Boolean) {}
     rpc getLastToast(google.protobuf.Empty) returns (ToastInfo) {}
@@ -169,21 +172,34 @@ service UiAutomator {
     rpc selectorScrollToEnd(SelectorScrollRequest) returns (Boolean) {}
     rpc selectorScrollBackward(SelectorScrollRequest) returns (Boolean) {}
     rpc selectorScrollForward(SelectorScrollRequest) returns (Boolean) {}
+    rpc selectorScrollTo(SelectorScrollRequest) returns (Boolean) {}
 
     rpc selectorPinchOut(SelectorPinchRequest) returns (Boolean) {}
     rpc selectorPinchIn(SelectorPinchRequest) returns (Boolean) {}
 
-    rpc setWatcherLoopEnabled(Boolean) returns (Boolean) {}
-    rpc getWatcherLoopEnabled(google.protobuf.Empty) returns (Boolean) {}
-    rpc getWatcherTriggeredCount(String) returns (Integer) {}
-    rpc resetWatcherTriggeredCount(String) returns (Boolean) {}
+    rpc setWatcherLoopEnabled(WatcherControlRequest) returns (Boolean) {}
+    rpc getWatcherLoopEnabled(WatcherControlRequest) returns (Boolean) {}
+    rpc setWatcherEnable(WatcherControlRequest) returns (Boolean) {}
+    rpc getWatcherEnable(WatcherControlRequest) returns (Boolean) {}
+    rpc removeWatcher(WatcherControlRequest) returns (Boolean) {}
+    rpc removeAllWatchers(WatcherControlRequest) returns (Boolean) {}
+    rpc getEnabledWatchers(WatcherControlRequest) returns (WatcherInfoList) {}
+    rpc getWatchers(WatcherControlRequest) returns (WatcherInfoList) {}
+    rpc getWatcherTriggeredCount(WatcherControlRequest) returns (Integer) {}
+    rpc resetWatcherTriggeredCount(WatcherControlRequest) returns (Boolean) {}
+    rpc registerClickUiObjectWatcher(WatcherControlRequest) returns (Boolean) {}
+    rpc registerPressKeysWatcher(WatcherControlRequest) returns (Boolean) {}
+    rpc registerNoneOpWatcher(WatcherControlRequest) returns (Boolean) {}
 
-    rpc removeWatcher(String) returns (Boolean) {}
-    rpc getAppliedWatchers(google.protobuf.Empty) returns (WatcherNameList) {}
+    rpc findSimilarImage(FindImageRequest) returns (FindImageResponse) {}
 
-    rpc registerClickUiObjectWatcher(WatcherRegistRequest) returns (Boolean) {}
-    rpc registerPressKeysWatcher(WatcherRegistRequest) returns (Boolean) {}
-    rpc registerNoneOpWatcher(WatcherRegistRequest) returns (Boolean) {}
+    rpc listAllDisplays(google.protobuf.Empty) returns (DisplayInfoList) {}
+    rpc createVirtualDisplay(CreateVirtualDisplayRequest) returns (Integer) {}
+    rpc getDisplayInfo(Integer) returns (DisplayInfo) {}
+    rpc releaseVirtualDisplay(Integer) returns (Boolean) {}
+
+    rpc setDisplayImePolicy(ImePolicyRequest) returns (Boolean) {}
+    rpc getDisplayImePolicy(Integer) returns (Integer) {}
 }
 
 service Wifi {
@@ -214,16 +230,21 @@ service Util {
     rpc recordTouch(google.protobuf.Empty) returns (TouchSequence) {}
     rpc performTouch(PerformTouchRequest) returns (Boolean) {}
 
+    rpc serverInfo(google.protobuf.Empty) returns (ServerInfoResponse) {}
+
     rpc reboot(google.protobuf.Empty) returns (Boolean) {}
     rpc beepBeep(google.protobuf.Empty) returns (Boolean) {}
     rpc isCACertificateInstalled(CertifiRequest) returns (Boolean) {}
     rpc installCACertificate(CertifiRequest) returns (Boolean) {}
     rpc uninstallCACertificate(CertifiRequest) returns (Boolean) {}
     rpc shutdown(google.protobuf.Empty) returns (Boolean) {}
-    rpc reload(google.protobuf.Empty) returns (Boolean) {}
+    rpc showToast(ShowToastRequest) returns (Boolean) {}
+    rpc reload(Boolean) returns (Boolean) {}
     rpc exit(google.protobuf.Empty) returns (Boolean) {}
     rpc setProp(SetPropRequest) returns (Boolean) {}
     rpc getProp(String) returns (String) {}
+    rpc hexPatch(HexPatchRequest) returns (HexPatchResponse) {}
+    rpc playAudio(PlayAudioRequest) returns (Boolean) {}
 }
 
 service File {
@@ -236,6 +257,20 @@ service File {
 
 service Lock {
     rpc releaseLock(google.protobuf.Empty) returns (Boolean) {}
+    rpc getSessionToken(google.protobuf.Empty) returns (String) {}
     rpc acquireLock(Integer) returns (Boolean) {}
     rpc refreshLock(Integer) returns (Boolean) {}
+}
+
+service Storage {
+    rpc clearAll(StorageRequest) returns (Boolean) {}
+    rpc clearContainer(StorageRequest) returns (Boolean) {}
+    rpc exists(StorageRequest) returns (Boolean) {}
+    rpc delete(StorageRequest) returns (Boolean) {}
+    rpc expire(StorageRequest) returns (Boolean) {}
+    rpc ttl(StorageRequest) returns (Integer) {}
+    rpc set(StorageRequest) returns (Boolean) {}
+    rpc setnx(StorageRequest) returns (Boolean) {}
+    rpc setex(StorageRequest) returns (Boolean) {}
+    rpc get(StorageRequest) returns (Bytes) {}
 }

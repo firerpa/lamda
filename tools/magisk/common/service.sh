@@ -1,13 +1,10 @@
 #!/system/bin/sh
 base=${0%/*}
-ABI=$(getprop ro.product.cpu.abi)
-launch="sh ${base}/${ABI}/bin/launch.sh"
-cert=${base}/config/lamda.pem
+cert=/data/usr/lamda.pem
+launch="sh ${base}/server/bin/launch.sh"
 port=65000
 
-sleep 30
-# where to locate properties.local
-export CFGDIR=${base}/etc
+sleep 25
 export ca_store_remount=true
 if [ -f "${cert}" ]; then
 $launch --port=${port} --certificate=${cert}

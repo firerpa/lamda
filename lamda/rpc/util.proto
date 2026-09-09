@@ -1,9 +1,23 @@
-// Copyright 2022 rev1si0n (ihaven0emmail@gmail.com). All rights reserved.
+// Copyright 2022 rev1si0n (lamda.devel@gmail.com). All rights reserved.
 //
 // Distributed under MIT license.
 // See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
 syntax = "proto3";
 package lamda.rpc;
+
+enum ToastDuration {
+        TD_SHORT         = 0;
+        TD_LONG          = 1;
+}
+
+enum AudioStreamType {
+        AST_ALARM             = 0;
+        AST_MEDIA             = 1;
+        AST_NOTIFICATION      = 2;
+        AST_RING              = 3;
+        AST_SYSTEM            = 4;
+        AST_VOICE             = 5;
+}
 
 message TouchDown {
         int32 tid      = 1;
@@ -46,10 +60,50 @@ message PerformTouchRequest {
 }
 
 message SetPropRequest {
-  string name   = 1;
-  string value  = 2;
+        string name             = 1;
+        string value            = 2;
 }
 
 message CertifiRequest {
-  bytes  cert  = 1;
+        bytes  cert             = 1;
+}
+
+message ShowToastRequest {
+        string           text   = 1;
+        ToastDuration duration  = 2;
+}
+
+message ServerInfoResponse {
+        string         uniqueId = 1;
+        string          version = 2;
+        string     architecture = 3;
+        uint64           uptime = 4;
+        bool             secure = 5;
+        bool         privileged = 6;
+}
+
+message HexPatchRequest {
+        string          pattern = 1;
+        string      replacement = 2;
+        string          path    = 3;
+        int32        maxreplace = 4;
+        bool            dryrun  = 5;
+}
+
+message HexPatchItem {
+        string          path  = 1;
+        int32           index = 2;
+        uint64         offset = 3;
+}
+
+message HexPatchResponse {
+        int32           count = 1;
+        repeated HexPatchItem replaces = 2;
+}
+
+message PlayAudioRequest {
+        string          file = 1;
+        AudioStreamType type = 2;
+        int32           loop = 3;
+        int32           interval = 4;
 }

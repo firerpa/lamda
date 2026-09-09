@@ -1,0 +1,148 @@
+; properties configuration file (ini format)
+;
+; DO NOT DIRECTLY COPY OR EDIT THIS FILE. PLEASE ADD OR REMOVE CONFIGURATION FROM THE DEVICE'S REMOTE DESKTOP
+;
+; This file is the startup configuration file for the lamda server.
+; You can use this file to configure the server's startup behavior, such as port, certificate, proxy,
+; and other settings. You can configure it within the 65000 remote desktop.
+
+[DEFAULT]
+port=65000                      ; Set listening port for LAMDA.
+
+; webui.* keys are only allowed in DEFAULT section
+; You can preset various parameters of the remote desktop.
+webui.darkmode = off            ; Whether to enable remote desktop darkmode theme.
+webui.audio = on                ; Whether to enable remote desktop audio. (need android 10+)
+webui.upload-path = /data/local/tmp/uploads ; Set the default directory for drag-and-drop upload in remote desktop.
+webui.share-clipboard = off     ; Whether to enable remote desktop bidirectional clipboard sharing.
+webui.touch.use-screen-size = off ; Use the original screen size to calculate touch coordinates (enable in special cases).
+webui.webrtc = on               ; Whether to enable remote desktop WebRTC.
+webui.webrtc.ice-server = stun:stun.device-farm.com ; Set the WebRTC STUN/TURN server addresses (separate multiple entries with commas).
+                                                    ; example stun server: stun:stun.device-farm.com
+                                                    ; example turn server: turn://user:pass@example.com:3478?transport=tcp
+webui.video.h264 = on           ; Whether to enable H264 encoding (improves smoothness).
+webui.video.backend = 0         ; Set the video backend implementation (0 = default or 1 = hardware).
+webui.video.scale = 0.5         ; Set the video scaling ratio (0.1-1.0, where 1.0 represents full resolution).
+webui.video.quality = 50        ; Set video quality (10-100).
+webui.video.fps = 35            ; Set the expected video frame rate.
+
+; Set service certificate. It will encrypt your remote desktop
+; and API traffic, and enable password authentication. You can obtain
+; the following configuration value by running 'base64 -w0 lamda.pem'.
+cert=TEFNREEgU1NMIENFUlRJRklDQVRFIChDTj10ZXN0LFBBU1NXRD1hMWMwZTNlYTcwN2E1NGRlN2EwZjk1KQotLS0tLUJFR0lOIFBSSVZBVEUgS0VZLS0tLS0KTUlJRXZnSUJBREFOQmdrcWhraUc5dzBCQVFFRkFBU0NCS2d3Z2dTa0FnRUFBb0lCQVFEVmNMWlA5b0xRWkRIRgp5V0pTa2U0Z0crSUpmSCtMWlk0cXUzdS9OckRwSHZCN2k5V01rMWxRL2FMSGI0V3ZqelBLK1RITm9rRzc2MENRClhBTUpWS0dmYXRwcmNLUXdvMGhvWDZ2NlhsTVlZUlNRbW9wN3pSaUtnN3ZxKzV2S09DQ2RKcDFlSVNiZXcyTEgKTmYxL3JZelpwa1Q1bHoxTGZkem00eXJBS3VNa0tyZ3pnTzJRcE9CQVdYdmdiWG9BMDdidDdOODZZOGdNZFUwdAp6Ui9EcmhLTi9JMVdYSk11MU4wQW5UbDJRdEhEb0dCN0UyS0xpdmwybDZJdnRrYWJ4RE55Y2lHbUxOUGlMRklrCllPSHlnMUg3MUJ2NU04NE5TWDc1c2xuOXVNUGUzOVNFVlJoU0ptNHcvT2tXZnA5dGpZRUx3dHphdFhoSWJoS3MKaC9OZU1lOWRBZ01CQUFFQ2dnRUFCYlFuWUdlcFdKYjAydURtSnhLNGx2OFNhL0o1dzJpSldMYjk0dW1SUExRKwpTa1E5c1Zpc0JiQU1JNHc2dWFyNEFBVTh3WGxaTndPekMvM2V6dWNHRXFreEFReXM0VDB4SXRPUkF2WExxVlowCkl1WnpxNW53Si9OeFFzeEtmaWhBZkRLYlRmZjdmcG5MWlV0dlpNbG5LWUhQVExtRlFua3drckwyRE5YdDVVOTYKYXJUUDVOY0x1aDQ2dU93alJUOWhaNytYQi9ubU9LeTV4V3hoNWVMQmJJUTJrS0UvdWViUlVYRGZNdG5tbTh2aApRSG9VM3N5dzlZcE1xRDlWQWppcGlqQXRwbUlwa2w1emRWSE52Q1dCSGk2NjZxKzF6cUpHeFVUODBseHo1N2R1ClRvRFFQc1l0OFFEL3ZjNGkxajd0bDZyRzNQWkJNM05LNVR5ZFYyRnlnUUtCZ1FEYUcycnV3aWxyYUdZRzZNQWwKNEF2WW1BY0hHQWUwQjR0ZmtkdS9QandlRWQyWUF2TjJIQWV1Z1ZUSWg1eFplUlIwNFE4ZVNGenBTaEpwREpkNAp1TEhHcXJ2cmpXL1greEVIc081NnNjNjRiem1weWJWQXBlQnA4NlFGSTk4V3FmZkFyN3FzbzhweFJjNmdTRU1uCk5TcXV1Z2psYU05TlJmcUo4ci82RklmQkxRS0JnUUQ2aGJ0Z2dIdVJoTHhHYWNNaERvOVppcXJlNi9HN1dvZnQKR2FGZmFQM2xZNTNmM0hPdSsyNTZMWDY1ZWFYRTdrbXlQOGRDM2VWL24xT3dvTHdBYm1BZ2pEWVd1N09KdGk4QQpPbG9VNmtnTkVwNWcwOHpVWlBaR3NSMkZMd2VpUkgrQ3ZOdFBZakJydmFIQUtVU2lLa3BKdEpWeFpIdUl6SlpGCjVUZkM2VjNrOFFLQmdEeWp0TlpPKzA4V2hvOVROT0VTNnBnOHBHK1BlY3pPOEN3UkZJU1dYQWFNTnd6bGZTVVEKWS81YmpPUDMrRHRVRTZEdlZkRzRrc1IxeUtxV1NxTFF6dlNLVVpjTEN0YUV3bFplRmQvZEFibDdpdyt1dWdzUQpVMVdCM005bENzaDFWeUdtZWdNM3dyZzlqVlk0NFJyTWlHSnQ3TDFEcDZjM1ZwSDJBUFFac3lpOUFvR0JBTk9pCmpmeWtEYitNNXBDRllEWlkybmpHVURzcUQzZzZyb0Y2R1gxRWNOaU1JeDZ1V1h3RkkvdEsyN2RNTU9JQWUzbDkKcjVPcGFPczdhYlBZMVhsM3hQVTUvYWVPd2NrZ2d1d3FYMWN6NDlKSFhFeG9JSzE4N1NBakY5RWZQYyt6RmhVWAovaDA5MGJIeTdPWXM5cklZRDlIY0lETStzNjJKUjVtY1hsTG1Xay9CQW9HQkFKRVhQV05IWEwra1l6My91R1c3CnRKd0hUQzFlbEJjclcvaHpJMWt4ZEhXem5VaXNTWlcyVnA5b0wwSWNrQXVWQkx6eGUvR1h6OGJRTjZkOWwyZDAKdGtmUmo1TmpDOTUzS2N1cTNSekRmVU40cTcyUlVWTWlFOHVvSTBkVVZpalczN0tVMEhLcm1pbDBocU01eW9iNQpVZlhPQ2Q5SlRRSWx5Y2dNWER6Tm00S3oKLS0tLS1FTkQgUFJJVkFURSBLRVktLS0tLQotLS0tLUJFR0lOIENFUlRJRklDQVRFLS0tLS0KTUlJQ3FEQ0NBWkNnQXdJQkFnSVJBUHNjMVBRNXBuSDNhNk1GZkdVTXA2WXdEUVlKS29aSWh2Y05BUUVMQlFBdwpFREVPTUF3R0ExVUVDZ3dGVEVGTlJFRXdIaGNOTWpBd01UQXhNREF3TURBeFdoY05Namt4TWpJNU1EQXdNREF4CldqQVBNUTB3Q3dZRFZRUUREQVIwWlhOME1JSUJJakFOQmdrcWhraUc5dzBCQVFFRkFBT0NBUThBTUlJQkNnS0MKQVFFQTFYQzJUL2FDMEdReHhjbGlVcEh1SUJ2aUNYeC9pMldPS3J0N3Z6YXc2Ujd3ZTR2VmpKTlpVUDJpeDIrRgpyNDh6eXZreHphSkJ1K3RBa0Z3RENWU2huMnJhYTNDa01LTklhRityK2w1VEdHRVVrSnFLZTgwWWlvTzc2dnViCnlqZ2duU2FkWGlFbTNzTml4elg5ZjYyTTJhWkUrWmM5UzMzYzV1TXF3Q3JqSkNxNE00RHRrS1RnUUZsNzRHMTYKQU5PMjdlemZPbVBJREhWTkxjMGZ3NjRTamZ5TlZseVRMdFRkQUowNWRrTFJ3NkJnZXhOaWk0cjVkcGVpTDdaRwptOFF6Y25JaHBpelQ0aXhTSkdEaDhvTlIrOVFiK1RQT0RVbCsrYkpaL2JqRDN0L1VoRlVZVWladU1QenBGbjZmCmJZMkJDOExjMnJWNFNHNFNySWZ6WGpIdlhRSURBUUFCTUEwR0NTcUdTSWIzRFFFQkN3VUFBNElCQVFBWEQ0L1cKQjBhSW1aWGpQbTRxUnBOazJmUnpjU1g4MGw2TlZaWWxJV3ZYalFxUXdXZnMvSGczZDVzYUpickFmcWVPa1lQdQpjeXJEWFZPdC9RTEVDOTFBSGtjRWJ1R0dPMGNFU2YyOHdUM1UzRnJJb2cxS1VyTURqWFFIb09vZEJpOGdNaVBmCmROcWhMSTdkNDJBTXJKU3dZUTlSUG9vWG9UZ2xDa0d3R291RDhuS0V5MmNHeVMxM3lQcDRseC9TWTR1QkRFU0sKRlErR0ZRTExGQktQZHZNc2x0cHYyQWFMWmR3clF4aFQ2aTU1U1puNStLb3c1TGxYL0RHdUw5UnRPdmZ2T0tzZQpRZ3pOQUg3QkYzbGdvQmJjYk9yZkVQazY1ZEZRN0NXYi91aDZjVmlmSjdxQzkvL0xhdElmb1VQVnJiRXdZL2dRCk5BRXFYclduMGZuYUc0cUEKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQotLS0tLUJFR0lOIENFUlRJRklDQVRFLS0tLS0KTUlJQ2xEQ0NBWHdDQVFBd0RRWUpLb1pJaHZjTkFRRUxCUUF3RURFT01Bd0dBMVVFQ2d3RlRFRk5SRUV3SGhjTgpNakF3TVRBeE1EQXdNREF4V2hjTk1qa3hNakk1TURBd01EQXhXakFRTVE0d0RBWURWUVFLREFWTVFVMUVRVENDCkFTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTG5xZkJadnJHWmFxZ2s1bXNDUlJwUHoKcC8rNDY0akJrbmxtVEtldE9ja0RUVXE4VjZmSC8yR2ZiNkhqam9ENXBrQ3RENW1TS2thSE5odXhMWHNGZkVmYwpLbG1ubjNacGp5Tk9IRUEvaUFPMkR5RVlhMDh4U2V2TTdXb2piRjdjTmo1L0RZZzdlYjBpMCsvL2JCbGg4bmxPCmdoU1VoQ1RNNVBDb2ZMRFU4c1ZYdVlBaUdVNlV6QnJJQzB2SEVsdERraUpWTHBjQ3RzS2pFWk9za1BkQWM3dTYKL2FBMFA1R29uWjVVa1JEWXBhK2plSlVhYnFXWlFRRWd0bXZqbG1VVWlYd3UwalJuajFuMFQzZlBRRDNnQStMSQp2QUU5dmd2cFk1WFFqNm90cEJ2c1ozTUpKTktjVU1RdTF6T0FOVHpPMThUbEE4S29CTnNCeThaOURRWktYRjhDCkF3RUFBVEFOQmdrcWhraUc5dzBCQVFzRkFBT0NBUUVBZUduL055cUlSSS8wQUdxdkhQOTdLdFE3NlRqNmFjaGIKMzBMSVhXcCtZSFVhTWVBVmpkMlo3alNRcDVtWlpGbCtrMWZiMzM3SWVhR1hvZlZJMjFlSzUyUVgydGVOb0JrQQovVi9PMUh1MzUvK2FpejB4c2RENndXdndvNEZ5MWpsbWFlSmh3ZFFhY0JsREdGQTJqRkp4dUVwYWhmeFp2VXNiCjNqNXpVMFdLVFVDZkVEZ1hGd0J3MTJ4a3UvN1RNZENFYlJzWWFaM3pGVEMyMjZsUWJVRE43d2VxRndTRCt0QjYKUnVoSXhlOCtjRndBc0FXSENsZXJLZ1pucjN0NVFGMDc4cFcyR0h5OENzSjdWM01aVDVsWjQzbFM1TklCOUp6WgpTWXhaL2l6aFJ5aDVxUjczdUFnc0phTDU2QmorY1Fxbm9UcWhMWlZsN0orTTZXaFdLem9qc0E9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+
+; Set remote desktop login password, 6-32 characters.
+; This password will only take effect if a service certificate
+; is used. It serves as a backup password to the one generated in
+; the certificate (for easier memorization).
+ssl-web-credential=password123
+
+; Set Access-Control-Allow-Origin header of firerpa webui
+; and it's apis to allow you embed firerpa's features to your web application
+; see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
+allow_origin=https://example.com
+
+; ----- Remote Desktop Touch Fix -----
+; If there is an offset or no response when you touch the screen on
+; the remote desktop, please set the touch.backend configuration to system
+; available options are: system | native (default)
+touch.backend=system
+
+; Set service log file (directory must exists)
+logfile=/data/local/tmp/server.log
+
+; ----- OpenVPN Configuration -----
+; Do not manually write the following configuration. You should use
+; our accompanying OpenVPN server setup solution to set it up and
+; generate this configuration using its built-in commands.
+[openvpn]
+openvpn.proto=udp
+openvpn.cipher=AES-256-GCM
+openvpn.host=123.123.123.123
+openvpn.port=1190
+openvpn.ca=LS0tLS1CRU...
+openvpn.cert=LS0tLS1CRU...
+openvpn.key=LS0tLS1CRU...
+openvpn.tls_encryption=
+openvpn.tls_key_direction=
+openvpn.tls_key=
+
+; ONLY THE FOLLOWING CONFIGURATION ITEMS CAN BE MANUALLY CONFIGURED.
+openvpn.global=false            ; Whether to enable global VPN.
+openvpn.enable=true             ; Whether to enable the service true | false
+
+; ----- Proxy Configuration -----
+; This configuration is used to make the device automatically use a proxy server at startup.
+[gproxy]
+gproxy.enable=true              ; Whether to enable the service true | false
+gproxy.type=http-connect        ; The proxy type can be either http-connect, https-connect, socks5, shadowsocks
+gproxy.host=172.1.1.1           ; Proxy server address
+gproxy.port=8080                ; Proxy server port
+gproxy.password=                ; Proxy server login password (leave empty for no authentication)
+gproxy.login=                   ; Proxy server login username (leave empty for no authentication, crypto method if type is shadowsocks)
+gproxy.nameserver=              ; Custom DNS server
+gproxy.drop_udp=false           ; Whether to discard UDP packets.
+gproxy.udp_proxy=false          ; Whether to proxy UDP packets (requires proxy support, such as socks5, shadowsocks).
+gproxy.bypass_local_subnet=true ; Do not proxy local area network traffic.
+gproxy.dns_proxy=false          ; Make DNS queries go through the proxy (requires a DNS server that supports UDP and TCP).
+gproxy.uid=                     ; Only proxy for specified UIDs. (default global)
+
+# ----- CRONTAB Scheduled Task Service -----
+# If you do not need scheduled tasks, you can disable this service.
+[cron]
+cron.enable=true                ; Whether to enable the service true | false
+
+# ----- SSHD Service -----
+# If you do not need to connect to the device via SSH, you can disable this service.
+[sshd]
+sshd.enable=true                ; Whether to enable the service true | false
+
+# ----- Port Forwarding (frp) Service -----
+[fwd]
+fwd.enable=true                 ; Whether to enable the service true | false
+fwd.rport=0                     ; Port to forward to the remote (0 means randomly allocated)
+fwd.host=123.123.123.123        ; FRP server address
+fwd.port=9911                   ; FRP server port
+fwd.protocol=tcp                ; FRP protocol
+fwd.token=abc123                ; FRP login authentication (token)
+
+# ----- ADB Service -----
+[adb]
+
+adb.enable=true                 ; Whether to enable the service true | false
+adb.directory=/data/local/tmp   ; Default working directory for built-in ADB (adb shell working directory)
+; WARNING WARNING WARNING
+; If set to true, the ADB connection will have root privileges,
+; otherwise it will have shell privileges. When this option is set to false,
+; you will be using a native-like adb shell, and you will not be able to use
+; LAMDA's built-in commands. Please note that since ADB does not use TLS connections,
+; traffic may be monitored. For security reasons, when the LAMDA service is
+; started with a certificate, this value will be set to false by default.
+; However, if you specify it in the properties.local file, the configuration
+; in the file will take precedence.
+; You are responsible for ensuring security.
+adb.privileged=true
+
+# ----- Bridge Proxy Service -----
+[tunnel2]
+tunnel2.enable=true             ; Whether to enable the service true | false
+; The bridge proxy will require login authentication only if both login and password
+; are set. If either one is left empty, no login authentication will be required.
+tunnel2.login=lamda
+tunnel2.password=1234           ; Login password for the bridge proxy
+; Outbound interface (rmnet|wlan)
+; When the outbound interface is rmnet, the proxy will attempt to forward your requests through mobile data.
+; When the outbound interface is wlan, requests will be forwarded through the wlan interface.
+; If the configuration is empty, the default network will be used to forward the requests.
+tunnel2.iface=rmnet
+; You can test the proxy by using curl -x http://192.168.x.x:65000 https://httpbin.org/ip
+; (no username or password configured by default). If you have enabled certificate,
+; you need to use curl -x https://lamda:cert-password@192.168.x.x:65000 https://httpbin.org/ip--proxy-insecure -v
+; (or reconfigure the login name and password).
+
+# ----- mDNS Broadcast Service -----
+[mdns]
+mdns.enable=false               ; Enable or disable true | false
+mdns.meta=false                 ; Add TXT metadata for mDNS. When enabled, it will support querying device information such as model, ABI, and device ID using tools like python-zeroconf. Disabled by default.
+mdns.name=DEVICEID-UNIQUE.lamda ; Set the broadcast domain name using a locally unique ID, default is {DEVICEID-UNIQUE}.lamda. If the name duplicates in the local network, a suffix ID will be automatically added.
+mdns.service=lamda              ; Set the broadcast service name, default is lamda, i.e., _lamda._tcp.local.

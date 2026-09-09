@@ -1,4 +1,4 @@
-// Copyright 2022 rev1si0n (ihaven0emmail@gmail.com). All rights reserved.
+// Copyright 2022 rev1si0n (lamda.devel@gmail.com). All rights reserved.
 //
 // Distributed under MIT license.
 // See file LICENSE for detail or copy at https://opensource.org/licenses/MIT
@@ -7,23 +7,45 @@ package lamda.rpc;
 
 import "application.proto";
 
+// Supported Shadowsocks Ciphers (no ref)
+enum ShadowCipher {
+                SS_AES_128_CFB = 0;
+                SS_AES_192_CFB = 1;
+                SS_AES_256_CFB = 2;
+                SS_AES_128_CTR = 3;
+                SS_AES_192_CTR = 4;
+                SS_AES_256_CTR = 5;
+                SS_CAMELLIA_128_CFB = 6;
+                SS_CAMELLIA_192_CFB = 7;
+                SS_CAMELLIA_256_CFB = 8;
+                SS_DES_CFB = 9;
+                SS_AES_128_GCM = 20;
+                SS_AES_192_GCM = 21;
+                SS_AES_256_GCM = 22;
+                SS_CHACHA20_IETF_POLY1305 = 23;
+}
+
 enum GproxyType {
                 SOCKS5          = 0;
                 HTTP_CONNECT    = 1;
                 HTTP_RELAY      = 2;
+                HTTPS_CONNECT   = 3;
+                SHADOWSOCKS     = 4;
 }
 
 message GproxyConfigRequest {
-    ApplicationInfo application = 1;
-    GproxyType type             = 2;
-    string nameserver           = 3;
-    string login                = 4;
-    string password             = 5;
-    string host                 = 6;
-    uint32 port                 = 7;
-    bool bypass_local_subnet    = 8;
-    bool drop_udp               = 9;
-    bool udp_proxy              = 10;
+        ApplicationInfo application = 1;
+        GproxyType type             = 2;
+        string nameserver           = 3;
+        string login                = 4;
+        string password             = 5;
+        string host                 = 6;
+        uint32 port                 = 7;
+        bool bypass_local_subnet    = 8;
+        bool drop_udp               = 9;
+        bool udp_proxy              = 10;
+        bool dns_proxy              = 11;
+        string interface            = 12;
 }
 
 enum OpenVPNProto {
@@ -70,16 +92,18 @@ enum OpenVPNEncryption {
 }
 
 message OpenVPNConfigRequest {
-    bool all_traffic            = 1;
-    OpenVPNProto    proto       = 2;
-    string host                 = 3;
-    uint32 port                 = 4;
-    OpenVPNCipher   cipher      = 5;
-    string ca                   = 6;
-    string cert                 = 7;
-    string key                  = 8;
-    OpenVPNEncryption tls_encryption = 9;
-    OpenVPNKeyDirection tls_key_direction = 10;
-    string tls_key              = 11;
-    OpenVPNAuth     auth        = 12;
+        bool all_traffic            = 1;
+        OpenVPNProto    proto       = 2;
+        string host                 = 3;
+        uint32 port                 = 4;
+        OpenVPNCipher   cipher      = 5;
+        string ca                   = 6;
+        string cert                 = 7;
+        string key                  = 8;
+        OpenVPNEncryption tls_encryption = 9;
+        OpenVPNKeyDirection tls_key_direction = 10;
+        string tls_key              = 11;
+        OpenVPNAuth     auth        = 12;
+        string          login       = 13;
+        string          password    = 14;
 }

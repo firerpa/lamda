@@ -1,0 +1,44 @@
+diff --git a/console/cli.py b/console/cli.py
+index 1fc22fb..80e52dc 100644
+--- a/console/cli.py
++++ b/console/cli.py
+@@ -31,8 +31,10 @@ from ..utils.helpers import normalize_gadget_name, print_frida_connection_help,
+ @click.option('--serial', '-S', required=False, default=None, help='A device serial to connect to.')
+ @click.option('--debug', '-d', required=False, default=False, is_flag=True,
+               help='Enable debug mode with verbose output. (Includes agent source map in stack traces)')
++@click.option('--certificate', '-c', required=False, default=None, help="Frida connection certificate")
++@click.option('--token', '-t', required=False, default=None, help="Frida connection token")
+ def cli(network: bool, host: str, port: int, api_host: str, api_port: int,
+-        gadget: str, serial: str, debug: bool) -> None:
++        gadget: str, serial: str, debug: bool, certificate: str, token: str) -> None:
+     """
+         \b
+              _   _         _   _
+@@ -56,6 +58,8 @@ def cli(network: bool, host: str, port: int, api_host: str, api_port: int,
+         state_connection.use_network()
+         state_connection.host = host
+         state_connection.port = port
++        state_connection.certificate = certificate
++        state_connection.token = token
+ 
+     if serial:
+         state_connection.device_serial = serial
+diff --git a/utils/agent.py b/utils/agent.py
+index 6d88e3a..fbe9b40 100644
+--- a/utils/agent.py
++++ b/utils/agent.py
+@@ -126,8 +126,13 @@ class Agent(object):
+                 return device
+ 
+         if state_connection.get_comms_type() == state_connection.TYPE_REMOTE:
++            kwargs = {}
++            if state_connection.certificate:
++                kwargs["certificate"] = state_connection.certificate
++            if state_connection.token:
++                kwargs["token"] = state_connection.token
+             device = frida.get_device_manager().add_remote_device('{host}:{port}'.format(
+-                host=state_connection.host, port=state_connection.port))
++                host=state_connection.host, port=state_connection.port), **kwargs)
+             click.secho('Using networked device @`{n}`'.format(n=device.name), bold=True)
+ 
+             return device

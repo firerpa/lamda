@@ -1,4 +1,4 @@
 #!/system/bin/sh
 MODPATH=${0%/*}
 
-rm -rf /data/usr
+echo "/data/usr will not be removed, please remove it manually"

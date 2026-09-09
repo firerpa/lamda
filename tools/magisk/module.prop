@@ -1,6 +1,6 @@
 id=lamda
 name=LAMDA
-version=3.0
-versionCode=3000
+version=VERSION
+versionCode=VERSIONCODE
 author=rev1si0n
 description=Android reverse engineering & automation framework

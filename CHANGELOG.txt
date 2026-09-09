@@ -1,144 +1,665 @@
-3.157
-* 界面检视元素高亮
-* 支持系统崩溃计数
+CHANGELOG
 
-3.155
-* 支持 tab 键遍历界面元素
-* 支持在远程桌面输入英文字符
-* 支持远程桌面触摸
+Version 10.8
+-----------
 
-3.153
-* 修复部分场景截图失败的问题
-* 次要更改
+* Fixed int64 parameter issue in start_activity
+* Added support libraries for OpenAI, Anthropic, Ollama models, boto3, etc.
+* Temporary multi-version compatibility fix for frida-server
+* Reduced memory usage
 
-3.152
-* 次要界面样式调整
+Version 10.6
+-----------
 
-3.151
-* 高分屏投屏被拉伸的问题 #41
+* Upgrade openssl, openssh, etc.
+* Upgrade pyopenssl, cryptography, crypto, etc.
+* Fix the issue of command execution failure on Debian
+* Add built-in mitmproxy library
+* Reduce binary size
 
-3.150
-* 修改定时任务重载时的逻辑
-* 修复 scapy 路由的问题
-* 兼容部分小米设备
-* 修复安卓11接口兼容性问题（感谢 Kate Swan）
-* 支持连接 WIFI 的情况下使用 4G 作为代理
-* 新增部分界面控件
+Version 10.4
+-----------
 
-3.138
-* 修复 gRPC 依赖的问题
-* 获取系统最后一个 toast
+* Built-in environment now includes the adb command
+* Added sqlalchemy and paramiko
+* Human-friendly query semantics for child, sibling, and index access
+* Added fuser, killall, pstree, and run-parts commands
+* Other minor bug fixes
 
-3.135
-* 修复远程桌面加载中的问题
-* 彻底修复协议中的竞争条件问题
-* 修复 Windows Python310 兼容性问题
-* 允许 HTTP 接口跨站调用
-* 添加部分丢失的模块
-* 远程桌面加入服务状态指示
-* 远程桌面响应式布局
-* 预发 next 版本
+Version 10.2
+-----------
 
-3.123
-* 修复获取最近活动不全的问题
+* Added support for Android 17
+* Added support for Android 16KB page size
+* Upgraded runtime core to Python 3.12
+* Added APK/XAPK installation API
+* Fixed various issues
 
-3.120-1
-* 现 LAMDA 已支持本身作为代理
-* 新增获取系统最近 Activity 的接口
-* 修复一个协议中的 race condition (maybe)
-* 增加部分命令，移除 SQLite db view
-* 实验性的 H.264 投屏
+Version 10.0
+-----------
 
-3.108
-* 优化网络断连处理逻辑
-* 增加 Redroid (remote android) 支持
-* 部分兼容 uiautomator2
-* 支持文件夹上传
+* Support for background virtual screen automation
+* Gproxy proxy supports specifying outbound network interfaces
+* Support for non-root execution mode (adb shell)
+* Optimized real-time screen mirroring smoothness and audio
+* Support for WebRTC screen mirroring
+* WebUI supports dark mode
+* Support configuring properties via WebUI
+* File upload supports streaming, with a maximum file size of 2GB
+* Redesigned built-in tunnel2 proxy functionality
+* Optimized built-in AI token consumption
+* Optimized event system
+* Optimized service stability, etc.
 
-3.102
-* 修复文件描述符泄漏的问题
-* 支持从远程文件服务器加载启动配置
-* 现在已上传 armeabi-v7a 的服务端
-* 修复 magisk 下安装根证书失败的问题
-* 修复配置解析错误的问题
-* 轻微的UI调整
+Version 9.25
+-----------
 
-3.98
-* 加入 crontab, vi 命令
+* Fixed semaphore issues
+* Resolved MCP protocol compatibility issues
+* Multi-user support for Remote Desktop
+* Added standardized touch simulation API
+* Compatibility fixes for Android 16
 
-3.95
-* 修复构建流程存在的问题
-* 次要更改
+Version 9.20
+-----------
 
-3.93
-* 增加安卓常量定义
+* TOP Bridge now uniformly uses SAPI requests.
+* MQTT connection adds max_inflight_messages and session_expiry_interval parameters.
+* Added control tasks for system restart, file download, command execution, software update, etc.
+* Added OpenAI task executor supporting semantic task execution.
+* Integrated MCP extensions (API path /mcp/)
+* Updated built-in Frida version.
 
-3.90
-* 移除未使用的库，减小体积
-* 移除 client 中不兼容 MacOS 的命令行历史功能
-* 更新 DISCLAIMER.TXT
-* 更新部分依赖库版本
+BREAKING CHANGES
+=================================================================
+Version 9.20 includes some breaking changes, which only affect users who utilize hub and hub-bridge. The main issue is an adjustment made to the response data format of hub-bridge (this adjustment does not affect the underlying database). This will cause versions prior to 9.15 to fail to connect correctly to the new version of hub-bridge. However, the new version of lamda-server remains compatible with the old version of hub-bridge.
+The solutions are as follows:
+1. Use the new version of hub and hub-bridge (v3, which supports connecting to both local and remote devices), but all devices must be upgraded to version 9.20 or later.
+2. Continue using the old version of hub and hub-bridge, which can normally connect to all versions around 9.20 and earlier.
+=================================================================
 
-3.83
-* 支持 WSA #24 @aimardcr
-* 修复 note7pro MIUI10 黑屏 @yu1chaofan
-* 次要更改
+Version 9.9
+-----------
 
-3.80
-* 修复 ssh 断连的问题
-* 减小包体积
+* Task and event system logic adjustments.
 
-3.78
-* 修复 #21 @yu1chaofan
-* 更新 frida-server
+Version 9.8
+-----------
 
-3.76
-* 默认内置 shell 使用 bash
-* 修复断网后远程桌面触摸无法使用的问题
-* 修复 OpenVPN 僵尸进程的问题
-* startmitm.py 支持指定 adb 串号
-* 支持 magisk 自启动
+* Added Python MMKV read/write library.
+* Fixed auto exit of top bridge after removing device from hub.
+* Improved stealth performance.
 
-3.0.59
-* 所有界面提示使用英文
-* 修复一个 web 接口未认证的问题
-* 修复旧版本兼容性
+Version 9.5
+-----------
 
-3.0.55
-* 修复宽字符请求头导致的崩溃
-* 合并 mitmweb 到 startmitm 进程
-* docker 镜像小修改
-* 支持布局检视
+* Fixed functional abnormalities on some device models.
+* Fixed illegal instruction issue with Frida.
 
-3.0.50
-* 支持 child, sibling 选择器
+Version 9.4
+-----------
 
-3.0.48
------------------------
-* 免安装的 windows startmitm 命令
-* 支持从内存上传/下载文件到内存
-* 添加 screenshot() 别名
+* Added support for terminating all running tasks.
+* Optimized memory usage.
 
-3.0.47
------------------------
-* 简化 globalmitm，支持 HTTP，SOCKS5 代理
-* 增强 webview 节点查找
+Version 9.3
+-----------
 
-3.0.46
------------------------
-* 支持双指缩放
-* 简化 startmitm DNS 中间人操作
+* Other optimizations and fixes.
 
-3.0.45
------------------------
-* 支持自定义 server 端口 (--port)
-* 目录索引检测文件类型时在特殊文件上卡住
-* globalmitm 检查 DNS 服务可用性
-* startmitm.py 当存在多个网络时获取了错误的网络接口
-* client 通信不再自动使用系统代理
+Version 9.2
+-----------
 
-3.0.35
------------------------
-* 提高内置 ADB 性能
-* openvpn 服务支持 auth 参数 (默认为 SHA1)
-* 通过内置 ADB 使用 scrcpy 异常的问题
+* Fixed stack overflow issue on some devices.
+* Other optimizations and fixes.
+
+Version 9.0
+-----------
+
+* Optimized network performance of the service.
+* Switched MCP transport protocol to streamable-http with support for notifications and progress.
+* Proxy now supports HTTPS and Shadowsocks protocols.
+* Proxy now supports IPv6 and UDP protocols.
+* Added P2P Bridge (peer-to-peer connectivity) support.
+* Built-in distributed task system.
+* Other optimizations and fixes.
+
+Version 8.45
+-----------
+
+* Updated Frida version.
+* Other compatibility fixes.
+
+Version 8.44
+-----------
+
+* Optimized underlying Python compatibility.
+* Added interface for playing WAV audio.
+* Disabled H.264 screen projection by default.
+
+Version 8.40
+-----------
+
+* Fixed incomplete /data mounting issue.
+* Improved stability of enhanced automation.
+
+Version 8.38
+-----------
+
+* Enhanced automation features.
+* Fixed compatibility issues with some Samsung models.
+* Optimized audio real-time performance.
+
+Version 8.35
+-----------
+
+* Remote desktop now supports real-time audio streaming.
+* Fixed segment fault in hex_patch.
+
+Version 8.30
+-----------
+
+* Added binary patching interface.
+* Added support for using child and sibling in Selector.
+* Added support for viewing XML tree layout in remote desktop.
+* Updated Frida to fix some issues.
+
+Version 8.28
+-----------
+
+* Fixed install_local_file.
+* Fixed Frida reporting ID increment issue.
+* Improved built-in TensorFlow inference performance.
+* Updated some third-party modules.
+
+Version 8.25
+-----------
+
+* Added hexedit command.
+* Permanently fixed Permission Loophole (maybe).
+* Added on-device AI framework (tflite-runtime).
+* Updated Frida for better stealth.
+
+Version 8.22
+-----------
+
+* Switched to a new SQLite version.
+* Remote desktop inspector now displays current coordinates and RGB values.
+* Added plugin setup logic.
+
+Version 8.20
+-----------
+
+* Added official MCP plugin.
+* Improved Frida compatibility.
+* Optimized MCP protocol implementation.
+* Fixed self-recovery logic.
+
+Version 8.18
+-----------
+
+* Reverted problematic Frida version.
+* Added support for MCP and HTTP extension plugins.
+
+Version 8.15
+-----------
+
+* Fixed service unavailability issue.
+* Added support for calling exported scripts via jsonrpc.
+* Fixed SSH user directory issue.
+* Updated some submodules.
+
+Version 8.12
+-----------
+
+* Fixed touch abnormality.
+* Added some utility scripts.
+* Enhanced stability.
+
+Version 8.10
+-----------
+
+* Optimized self-recovery logic.
+* Optimized touch compatibility.
+
+Version 8.9
+-----------
+
+* Fixed parsing error.
+
+Version 8.8
+-----------
+
+* Frida data reporting now supports AMQP.
+* Fixed certificate issue caused by upstream library change in cert.py.
+* Fixed resource release issue on service restart.
+
+Version 8.5
+-----------
+
+* Optimized clipboard sharing logic.
+* Added Frida script crash logs.
+* Added support for Android 15.
+
+Version 8.0
+-----------
+
+* Interfaces now fully support multi-instance applications.
+* Remote desktop now supports shared clipboard.
+* Added fix configuration for device models that cannot open apps.
+* Added Yaml Frida script persistence.
+* Fixed compatibility with lower version systems like Android 6.0.
+* Fixed automation-related abnormalities on higher version systems.
+* Removed/renamed some methods.
+* Updated underlying implementation.
+
+Version 7.90
+-----------
+
+* Persistent scripts now support spawn mode.
+* Added support for output logs from persistent scripts.
+* Fixed dump_window_hierarchy.
+* Fixed Frida instance retrieval logic error.
+
+Version 7.85
+-----------
+
+* Added support for mDNS service broadcasting.
+* Added support for enumerating all elements selected by a selector.
+* Client now includes an automatic retry mechanism.
+* Fixed Bound comparison logic error.
+* Allowed loading certificates remotely.
+
+Version 7.80
+-----------
+
+* Optimized real-time screen projection smoothness.
+* Added support for persistent hook scripts.
+* Added Hook RPC support.
+* Added data reporting support.
+
+Version 7.76
+-----------
+
+* Fixed tool version dependencies.
+* Fixed Python version matching issue.
+* Updated some submodules.
+
+Version 7.75
+-----------
+
+* Added OCR recognition interface.
+* Added get_application_by_name.
+* Updated some submodules and dependency versions.
+
+Version 7.73
+-----------
+
+* Fixed white screen issue for some applications.
+
+Version 7.72
+-----------
+
+* Updated some submodules.
+* Fixed known issues.
+
+Version 7.71
+-----------
+
+* Fixed Permission Loophole #95.
+* Fixed enumerate_all_pkg_names.
+
+Version 7.70
+-----------
+
+* Updated some submodules.
+* Fixed known issues.
+
+Version 7.68
+-----------
+
+* Optimized H.264 real-time screen projection.
+
+Version 7.67
+-----------
+
+* Removed some invalid program logic.
+* Fixed excessively long auto-recovery time.
+* Other optimizations and fixes.
+
+Version 7.65
+-----------
+
+* Removed IDA-related tools and interfaces.
+* Fixed startup failure in some cases.
+* Other optimizations and fixes.
+* Added enhanced stealth mode.
+
+Version 7.60
+-----------
+
+* Optimized image search speed.
+* Added support for area screenshot in remote desktop.
+* Fixed some remote desktop issues.
+
+Version 7.57
+-----------
+
+* Added client interfaces for feature and template-based image search.
+* Other optimizations and fixes.
+
+Version 7.55
+-----------
+
+* Fixed abnormal display on screen rotation.
+* Fixed disconnection on initial remote desktop connection.
+* Fixed element existence check.
+* Added Meta key definition.
+* Other optimizations and fixes.
+
+Version 7.52
+-----------
+
+* Fixed Magisk version Leidian emulator compatibility.
+* Fixed service not exiting properly.
+
+Version 7.50
+-----------
+
+* Permanently fixed Nox emulator compatibility.
+* Fixed zombie process caused by logic error.
+* New network subscription service, enabling networking without Frp/OpenVPN.
+* Fixed multi-resolution system issue.
+* Optimized system certificate injection logic for Android 13/14.
+* Added support for multi-instance applications (user).
+* OpenVPN now supports IPv6.
+
+Version 7.30
+-----------
+
+* Fixed Leidian/Nox emulator compatibility.
+* Minor adjustments.
+
+Version 7.28
+-----------
+
+* Added show_toast interface.
+* Built-in proxy now supports DNS traffic.
+* startmitm now supports DNS via upstream proxy.
+* Fixed Android 10+ Frida spawn.
+
+Version 7.25
+-----------
+
+* Fixed scheduled task execution failure.
+* Fixed startup failure from Termux.
+* Updated built-in Frida version.
+
+Version 7.22
+-----------
+
+* Added automatic system time synchronization.
+* Updated some built-in modules.
+* Minor fixes.
+
+Version 7.20
+-----------
+
+* Reduced detection likelihood.
+* Optimized lock mechanism, allowing locking for all API resources.
+* Fixed emulator compatibility.
+* Other minor modifications and fixes.
+
+Version 7.15
+-----------
+
+* Added support for Android 14 (SDK 34).
+* Fixed monitor registration exception.
+* Improved remote desktop compatibility (theoretically supports all devices).
+* Fixed scroll_from_bottom_to_top_to_end anomaly. Thanks ThanhPham.
+* Fixed code errors in drag_to, long_click.
+* Built-in OpenVPN now supports user/password login.
+* Remote desktop now supports up to 60 FPS.
+* Updated DISCLAIMER.TXT.
+* Other minor modifications and fixes.
+
+Version 5.6
+-----------
+
+* Fixed incomplete layout export. Thanks ThanhPham.
+
+Version 5.5
+-----------
+
+* Fixed file corruption with adb push.
+* Added install_local_file interface.
+* Optimized code structure.
+
+Version 5.3
+-----------
+
+* Added support for custom remote desktop password after using certificate.
+* Fixed port multiplexing unsupported on some devices. Thanks alex han.
+* Fixed issues with Magisk installation script.
+* Fixed Debian launcher compatibility.
+
+Version 5.2
+-----------
+
+* Fixed Selector containing False value being invalid. Thanks ThanhPham.
+* LAMDA can now be used with other accessibility services simultaneously (Android >= 8.0 only).
+
+Version 5.0
+-----------
+
+* Fixed a series of issues related to login certificates.
+* Fixed Magisk module configuration reading strategy.
+* Remote desktop and RPC now fully support TLS.
+* Built-in Debian module can launch a Debian subsystem.
+* Fixed remote desktop bugs and made simple layout adjustments.
+* Adjusted service internal permissions and related directories.
+* Improved server-side stability.
+* Adjusted service installation method.
+* Proxy service nameserver now supports specifying port.
+* Added internal storage (memory configuration) read/write interfaces.
+* A series of other updates and fixes.
+
+=================================================================
+Note: Version 5.0 client is not fully compatible with version 3.0. Please update both simultaneously.
+=================================================================
+
+Version 3.157
+-----------
+
+* Added UI element highlighting in inspector.
+* Added support for system crash count.
+
+Version 3.155
+-----------
+
+* Added Tab key traversal for UI elements.
+* Added English character input support in remote desktop.
+* Added remote desktop touch support.
+
+Version 3.153
+-----------
+
+* Fixed screenshot failure in some scenarios.
+* Minor changes.
+
+Version 3.152
+-----------
+
+* Minor UI style adjustments.
+
+Version 3.151
+-----------
+
+* Fixed high-DPI screen projection stretching issue #41.
+
+Version 3.150
+-----------
+
+* Modified scheduled task reload logic.
+* Fixed Scapy routing issue.
+* Improved compatibility with some Xiaomi devices.
+* Fixed Android 11 interface compatibility (Thanks Kate Swan).
+* Added support for using 4G as proxy while connected to WiFi.
+* Added new UI controls.
+
+Version 3.138
+-----------
+
+* Fixed gRPC dependency issue.
+* Added retrieval of last system toast.
+
+Version 3.135
+-----------
+
+* Fixed remote desktop loading issue.
+* Completely fixed race condition in protocol.
+* Fixed Windows Python 3.10 compatibility.
+* Allowed cross-site calls for HTTP interfaces.
+* Added some missing modules.
+* Added service status indicator to remote desktop.
+* Added remote desktop responsive layout.
+* Pre-release next version.
+
+Version 3.123
+-----------
+
+* Fixed incomplete retrieval of recent activities.
+
+Version 3.120-1
+-----------
+
+* LAMDA can now act as a proxy itself.
+* Added interface to get system's recent activities.
+* Fixed a potential race condition in protocol.
+* Added some commands, removed SQLite db view.
+* Experimental H.264 screen projection.
+
+Version 3.108
+-----------
+
+* Optimized network disconnection handling.
+* Added Redroid (remote android) support.
+* Partial compatibility with uiautomator2.
+* Added folder upload support.
+
+Version 3.102
+-----------
+
+* Fixed file descriptor leak.
+* Added support for loading startup config from remote file server.
+* Now provides armeabi-v7a server build.
+* Fixed root certificate installation failure under Magisk.
+* Fixed configuration parsing error.
+* Minor UI adjustments.
+
+Version 3.98
+-----------
+
+* Added crontab, vi commands.
+
+Version 3.95
+-----------
+
+* Fixed build process issues.
+* Minor changes.
+
+Version 3.93
+-----------
+
+* Added Android constant definitions.
+
+Version 3.90
+-----------
+
+* Removed unused libraries to reduce size.
+* Removed macOS-incompatible command line history feature from client.
+* Updated DISCLAIMER.TXT.
+* Updated some dependency versions.
+
+Version 3.83
+-----------
+
+* Added WSA support #24 @aimardcr.
+* Fixed black screen on note7pro MIUI10 @yu1chaofan.
+* Minor changes.
+
+Version 3.80
+-----------
+
+* Fixed SSH disconnection issue.
+* Reduced package size.
+
+Version 3.78
+-----------
+
+* Fixed issue #21 @yu1chaofan.
+* Updated frida-server.
+
+Version 3.76
+-----------
+
+* Default built-in shell changed to bash.
+* Fixed remote desktop touch unusable after network disconnect.
+* Fixed OpenVPN zombie process issue.
+* startmitm.py now supports specifying adb serial number.
+* Added Magisk auto-start support.
+
+Version 3.0.59
+-----------
+
+* All UI prompts now in English.
+* Fixed an unauthenticated web interface issue.
+* Fixed compatibility with older versions.
+
+Version 3.0.55
+-----------
+
+* Fixed crash caused by wide-character request headers.
+* Merged mitmweb into startmitm process.
+* Minor Docker image modifications.
+* Added layout inspection support.
+
+Version 3.0.50
+-----------
+
+* Added child, sibling selector support.
+
+Version 3.0.48
+-----------
+
+* Added portable Windows startmitm command.
+* Added support for uploading/downloading files from/to memory.
+* Added screenshot() alias.
+
+Version 3.0.47
+-----------
+
+* Simplified globalmitm, added HTTP, SOCKS5 proxy support.
+* Enhanced webview node finding.
+
+Version 3.0.46
+-----------
+
+* Added two-finger zoom support.
+* Simplified startmitm DNS man-in-the-middle operations.
+
+Version 3.0.45
+-----------
+
+* Added custom server port support (--port).
+* Fixed hang on special files during directory index file type detection.
+* globalmitm now checks DNS service availability.
+* startmitm.py selected wrong network interface when multiple networks present.
+* Client communication no longer automatically uses system proxy.
+
+Version 3.0.35
+-----------
+
+* Improved built-in ADB performance.
+* OpenVPN service now supports auth parameter (default SHA1).
+* Fixed issue with scrcpy via built-in ADB.
