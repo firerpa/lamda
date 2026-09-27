@@ -57,6 +57,7 @@ message TouchSequence {
 message PerformTouchRequest {
         TouchSequence sequence  = 1;
         bool wait               = 2;
+        uint32 display          = 16;
 }
 
 message SetPropRequest {

@@ -402,9 +402,10 @@ class MultiTouchContact:
 
 class MultiTouchOpStub:
     def __init__(self, caller, track=0,
-                                builder=None):
+                                builder=None, display=0):
         self.stub = caller.stub
         self.builder = builder or TouchBuilder()
+        self.display = display
         self.track = track
     def contact(self, id):
         return MultiTouchContact(self.builder, id)
@@ -422,7 +423,8 @@ class MultiTouchOpStub:
         return self.builder.s.save(fpath)
     def perform(self, wait=True):
         tas = self.builder.build()
-        req = protos.PerformTouchRequest(sequence=tas, wait=wait)
+        req = protos.PerformTouchRequest(sequence=tas, wait=wait,
+                                         display=self.display)
         r = self.stub.performTouch(req)
         return r.value
 
@@ -674,7 +676,7 @@ class ObjectUiAutomatorOpStub:
         req.point.CopyFrom(target)
     def _set_target_Selector(self, req, target):
         req.target.CopyFrom(target)
-    def drag_to(self, target, step=32):
+    def drag_to(self, target, step=22):
         """
         Drag the selected widget to another selector or point.
         """
@@ -704,7 +706,7 @@ class ObjectUiAutomatorOpStub:
                                          timeout=timeout)
         r = self.stub.selectorWaitUntilGone(req)
         return r.value
-    def swipe(self, direction=Direction.DIR_UP, step=32):
+    def swipe(self, direction=Direction.DIR_UP, step=22):
         """
         Swipe on the selected element.
         """
@@ -755,20 +757,6 @@ class ObjectUiAutomatorOpStub:
                                           vertical=is_vertical)
         r = self.stub.selectorFlingBackward(req)
         return r.value
-    def _fling_to_end(self, max_swipes, is_vertical=True):
-        req = protos.SelectorFlingRequest(display=self.display,
-                                          selector=self.selector,
-                                          maxSwipes=max_swipes,
-                                          vertical=is_vertical)
-        r = self.stub.selectorFlingToEnd(req)
-        return r.value
-    def _fling_to_beginning(self, max_swipes, is_vertical=True):
-        req = protos.SelectorFlingRequest(display=self.display,
-                                          selector=self.selector,
-                                          maxSwipes=max_swipes,
-                                          vertical=is_vertical)
-        r = self.stub.selectorFlingToBeginning(req)
-        return r.value
     def fling_from_top_to_bottom(self):
         """
         Perform one top-to-bottom reading swipe on the selected element.
@@ -789,26 +777,6 @@ class ObjectUiAutomatorOpStub:
         Perform one right-to-left reading swipe on the selected element.
         """
         return self._fling_forward(is_vertical=False)
-    def fling_from_top_to_bottom_to_end(self, max_swipes):
-        """
-        Swipe top-to-bottom until scrolling stops or max_swipes is reached.
-        """
-        return self._fling_to_beginning(max_swipes, is_vertical=True)
-    def fling_from_bottom_to_top_to_end(self, max_swipes):
-        """
-        Swipe bottom-to-top until scrolling stops or max_swipes is reached.
-        """
-        return self._fling_to_end(max_swipes, is_vertical=True)
-    def fling_from_left_to_right_to_end(self, max_swipes):
-        """
-        Swipe left-to-right until scrolling stops or max_swipes is reached.
-        """
-        return self._fling_to_beginning(max_swipes, is_vertical=False)
-    def fling_from_right_to_left_to_end(self, max_swipes):
-        """
-        Swipe right-to-left until scrolling stops or max_swipes is reached.
-        """
-        return self._fling_to_end(max_swipes, is_vertical=False)
     def _scroll_forward(self, step, is_vertical=True):
         req = protos.SelectorScrollRequest(display=self.display,
                                            selector=self.selector,
@@ -822,22 +790,6 @@ class ObjectUiAutomatorOpStub:
                                            vertical=is_vertical,
                                            step=step)
         r = self.stub.selectorScrollBackward(req)
-        return r.value
-    def _scroll_to_end(self, max_swipes, step, is_vertical=True):
-        req = protos.SelectorScrollRequest(display=self.display,
-                                           selector=self.selector,
-                                           maxSwipes=max_swipes,
-                                           vertical=is_vertical,
-                                           step=step)
-        r = self.stub.selectorScrollToEnd(req)
-        return r.value
-    def _scroll_to_beginning(self, max_swipes, step, is_vertical=True):
-        req = protos.SelectorScrollRequest(display=self.display,
-                                           selector=self.selector,
-                                           maxSwipes=max_swipes,
-                                           vertical=is_vertical,
-                                           step=step)
-        r = self.stub.selectorScrollToBeginning(req)
         return r.value
     def scroll_from_top_to_bottom(self, step):
         """
@@ -859,26 +811,6 @@ class ObjectUiAutomatorOpStub:
         Perform a normal right-to-left swipe on the selected element.
         """
         return self._scroll_forward(step, is_vertical=False)
-    def scroll_from_top_to_bottom_to_end(self, max_swipes, step):
-        """
-        Repeat normal top-to-bottom swipes until scrolling stops or max_swipes is reached.
-        """
-        return self._scroll_to_beginning(max_swipes, step, is_vertical=True)
-    def scroll_from_bottom_to_top_to_end(self, max_swipes, step):
-        """
-        Repeat normal bottom-to-top swipes until scrolling stops or max_swipes is reached.
-        """
-        return self._scroll_to_end(max_swipes, step, is_vertical=True)
-    def scroll_from_left_to_right_to_end(self, max_swipes, step):
-        """
-        Repeat normal left-to-right swipes until scrolling stops or max_swipes is reached.
-        """
-        return self._scroll_to_beginning(max_swipes, step, is_vertical=False)
-    def scroll_from_right_to_left_to_end(self, max_swipes, step):
-        """
-        Repeat normal right-to-left swipes until scrolling stops or max_swipes is reached.
-        """
-        return self._scroll_to_end(max_swipes, step, is_vertical=False)
 
 
 class UiAutomatorStub(BaseServiceStub):
@@ -1009,7 +941,7 @@ class UiAutomatorStub(BaseServiceStub):
                                        point=point)
         r = self.stub.click(req)
         return r.value
-    def drag(self, A, B, step=32):
+    def drag(self, A, B, step=22):
         """
         Drag from point A to point B.
         """
@@ -1017,7 +949,7 @@ class UiAutomatorStub(BaseServiceStub):
                                       A=A, B=B, step=step)
         r = self.stub.drag(req)
         return r.value
-    def swipe(self, A, B, step=32):
+    def swipe(self, A, B, step=22):
         """
         Swipe from point A to point B.
         """
@@ -1025,7 +957,7 @@ class UiAutomatorStub(BaseServiceStub):
                                        A=A, B=B, step=step)
         r = self.stub.swipe(req)
         return r.value
-    def swipe_points(self, *points, step=32):
+    def swipe_points(self, *points, step=22):
         """
         Swipe across a sequence of points.
         """
@@ -1216,6 +1148,9 @@ class VirtualDisplayStub(UiAutomatorStub):
     def get_display_ime_policy(self):
         req = protos.Integer(value=self.display)
         return self.stub.getDisplayImePolicy(req).value
+    def touch(self):
+        return MultiTouchOpStub(self.device.proxy("Util"),
+                                display=self.display)
     def __enter__(self):
         return self
     def __exit__(self, type, value, traceback):
@@ -1491,6 +1426,7 @@ class ApplicationInstallSession(object):
         self.device  = device
         self.session = session
     def _write(self, path, name=None, delete=False):
+        name = name or os.path.basename(path)
         req = protos.InstallSessionWriteRequest(session=self.session,
                                                 path=path, name=name,
                                                 delete=delete)
@@ -2603,11 +2539,11 @@ class Device(object):
         return self.stub("UiAutomator").click(point)
     def long_click(self, point, timeout=0):
         return self.stub("UiAutomator").long_click(point, timeout=timeout)
-    def drag(self, A, B, step=32):
+    def drag(self, A, B, step=22):
         return self.stub("UiAutomator").drag(A, B, step=step)
-    def swipe(self, A, B, step=32):
+    def swipe(self, A, B, step=22):
         return self.stub("UiAutomator").swipe(A, B, step=step)
-    def swipe_points(self, *points, step=32):
+    def swipe_points(self, *points, step=22):
         return self.stub("UiAutomator").swipe_points(*points, step=step)
     def open_notification(self):
         return self.stub("UiAutomator").open_notification()

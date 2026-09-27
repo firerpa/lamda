@@ -163,13 +163,9 @@ service UiAutomator {
     rpc selectorWaitUntilGone(SelectorWaitRequest) returns (Boolean) {}
     rpc selectorSwipe(SelectorSwipeRequest) returns (Boolean) {}
 
-    rpc selectorFlingToBeginning(SelectorFlingRequest) returns (Boolean) {}
-    rpc selectorFlingToEnd(SelectorFlingRequest) returns (Boolean) {}
     rpc selectorFlingBackward(SelectorFlingRequest) returns (Boolean) {}
     rpc selectorFlingForward(SelectorFlingRequest) returns (Boolean) {}
 
-    rpc selectorScrollToBeginning(SelectorScrollRequest) returns (Boolean) {}
-    rpc selectorScrollToEnd(SelectorScrollRequest) returns (Boolean) {}
     rpc selectorScrollBackward(SelectorScrollRequest) returns (Boolean) {}
     rpc selectorScrollForward(SelectorScrollRequest) returns (Boolean) {}
     rpc selectorScrollTo(SelectorScrollRequest) returns (Boolean) {}

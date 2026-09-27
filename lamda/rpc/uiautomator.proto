@@ -505,14 +505,12 @@ message SelectorSwipeRequest {
 message SelectorFlingRequest {
         Selector selector         = 1;
         bool vertical             = 3;
-        uint32 maxSwipes           = 4;
         uint32 display            = 16;
 }
 message SelectorScrollRequest {
         Selector selector         = 1;
         Selector target           = 2;
         bool vertical             = 3;
-        uint32 maxSwipes          = 4;
         uint32 step               = 5;
         uint32 display            = 16;
 }

@@ -1,5 +1,11 @@
 CHANGELOG
 
+Version 10.9
+-----------
+
+* New WebUI Agent
+* Fix multi-touch multi-screen support
+
 Version 10.8
 -----------
 
