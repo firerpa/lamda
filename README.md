@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/firerpa-lamda-badge.png)](https://mseep.ai/app/firerpa-lamda)
+
 # **FIRERPA Android** ｜ AI-Powered Automation
 
 <img src="image/logo.svg" alt="FIRERPA" width="200" align="right" />
