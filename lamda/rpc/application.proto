@@ -127,6 +127,7 @@ message HookRequest {
         bool spawn              = 7;
         uint32 user             = 8;
         string process          = 9;
+        bool upsert             = 10;
 }
 
 message HookRpcRequest {

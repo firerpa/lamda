@@ -1,10 +1,18 @@
 CHANGELOG
 
+Version 10.12
+-----------
+* Optimize public IP retrieval logic
+* Update Python 3.12 to the latest minor version
+* Fix crash issues in specific scenarios
+* Optimize the web remote desktop access experience
+
 Version 10.9
 -----------
 
 * New WebUI Agent
 * Fix multi-touch multi-screen support
+* Remove scroll/fling to end
 
 Version 10.8
 -----------

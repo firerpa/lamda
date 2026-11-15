@@ -1366,7 +1366,8 @@ class ApplicationOpStub:
                                 process=None,
                                 encode=DataEncode.DATA_ENCODE_NONE,
                                 spawn=False,
-                                standup=5):
+                                standup=5,
+                                upsert=False):
         """
         Inject a persistent hook script into the app.
         """
@@ -1382,6 +1383,7 @@ class ApplicationOpStub:
         req.encode      = encode
         req.user        = self.user
         req.process     = process or ""
+        req.upsert      = upsert
         r = self.stub.attachScript(req)
         return r.value
     def detach_script(self):

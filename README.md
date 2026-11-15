@@ -11,7 +11,7 @@
 
 <h6>An all-in-one Android automation framework that combines on-device services, AI-ready agents, and extensible tool invocation.</h6>
 
-<p align="left"><a href="https://device-farm.com/docs/en/">Documentation</a> | <a href="https://device-farm.com/docs/zh/">使用文档</a> | <a href="https://device-farm.com/contact#telegram">TELEGRAM</a> | <a href="https://device-farm.com/contact#QQ">QQ Group</a> | <a href="https://github.com/firerpa/skills">SKILLS</a> | <a href="https://device-farm.com/llms-full.txt">llms-full.txt</a> | <a href="README.zh.md">中文版本</a></p>
+<p align="left"><a href="https://device-farm.com/docs/en/">Documentation</a> | <a href="https://device-farm.com/docs/zh/">使用文档</a> | <a href="https://github.com/firerpa/skills">SKILLS</a> | <a href="https://device-farm.com/llms-full.txt">llms-full.txt</a> | <a href="README.zh.md">中文版本</a></p>
 
 FIRERPA is an **all-in-one Android device control platform**. The server runs directly on the device with **no extra runtime dependencies**; it **supports multiple generations of Android** and works **with or without root**. On the PC side, the Python client library orchestrates UI automation, remote operations, traffic capture, Hook-based reverse engineering, network proxying, distributed networking, AI agents, and **MCP** through a single service and API. Compared with stitching together Appium, mitmproxy, frida-server, adb, uiautomator2, and ad-hoc scripts and ops tools, FIRERPA offers **one source of capabilities, unified configuration, connected workflows, and a stack built for multi-device, long-running, production use**.
 
