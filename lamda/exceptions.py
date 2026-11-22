@@ -26,6 +26,8 @@ class InvalidOperationError(Exception):
     """ Exception """
 class InvalidRootCertificate(Exception):
     """ Exception """
+class IOException(Exception):
+    """ Exception """
 class MethodNotFoundException(Exception):
     """ Exception """
 class NameNotFoundException(Exception):
@@ -33,6 +35,8 @@ class NameNotFoundException(Exception):
 class NotImplementedException(Exception):
     """ Exception """
 class NullPointerException(Exception):
+    """ Exception """
+class RuntimeException(Exception):
     """ Exception """
 class SecurityException(Exception):
     """ Exception """

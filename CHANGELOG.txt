@@ -1,7 +1,15 @@
 CHANGELOG
 
+Version 10.14
+-----------
+
+* Optimize health check and self-recovery logic
+* Fix thread pool leak
+* Optimize resource usage
+
 Version 10.12
 -----------
+
 * Optimize public IP retrieval logic
 * Update Python 3.12 to the latest minor version
 * Fix crash issues in specific scenarios
